@@ -10,48 +10,6 @@ import codecs
 
 cnt=0
 LCStable=[]
-def jj(k,e):
-    k_tmp = []
-    e_tmp = []
-    
-    s_k = k.split(', ')
-    s_e = e.split(', ')
-    
-    for x in range(len(s_k)):
-        if(s_k[x]==''):
-            continue
-        k_tmp.append(s_k[x])
-    
-    for y in range(len(s_e)):
-        if(s_e[y]==''):
-            continue
-        e_tmp.append(s_e[y])
-    
-
-    
-
-    tmp = copy.deepcopy(k_tmp)
-    for x in range(len(e_tmp)):
-        chk=0
-        for y in range(len(tmp)):
-            if(tmp[y]==e_tmp[x]):
-                chk=1
-        if(chk==0):
-            tmp.append(e_tmp[x])
-
-
-    kyo = []
-    for x in range(len(k_tmp)):
-        for y in range(len(e_tmp)):
-            if(k_tmp[x]==e_tmp[y]):
-                kyo.append(k_tmp[x])
-                break;
-
-
-    if(len(tmp)!=0):
-        return float(len(kyo))/float(len(tmp))
-    else:
-        return 0
 
 def jaccard(kor, eng):
     deno=0
