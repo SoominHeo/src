@@ -9,21 +9,30 @@ import time
 #import datetime
 
 data_number=0
-#csv = open("html_attribute.csv","w")
-csv2 = open("match_attribute.csv","w")
+
+Ted = "../../tmp/Ted/"
+html_attributeDir = Ted + "original_html/html_attribute.csv"
+match_attributeDir = Ted + "matching_text/match_attribute.csv"
+originalHtmlKorDir = Ted + "original_html/kor/"
+originalHtmlEngDir = Ted + "original_html/eng/"
+originalTextKorDir = Ted + "original_text/kor/"
+originalTextEngDir = Ted + "original_text/eng/"
+matchingTextKorDir = Ted + "matching_text/kor/"
+matchingTextEngDir = Ted + "matching_text/eng/"
+
 
 def remove_tags(data):
     p=re.compile(r'<.*?>')
     return p.sub('', data)
 
 
-def TimeAndEngScript(url_last):
-    insert_transcript = "https://www.ted.com"+url_last
-    asdf = insert_transcript.split('/')
-    d = insert_transcript.split('?')
+def TimeAndEngScript(url,i):
+    
+    asdf = url.split('/')
+    d = url.split('?')
     eee = d[0]+"/transcript?language=en"
-    address1 = urlopen(eee)
-    data1 = BeautifulSoup(address1,"html.parser")
+    htmlfile = open(originalHtmlEngDir+str(i)+".html","r",encoding='UTF8')
+    data1 = BeautifulSoup(htmlfile,"html.parser")
     source_time1 = data1.findAll('span',attrs={'class':'talk-transcript__fragment'})
     source1 = []
     for x in range(len(source_time1)):
@@ -34,16 +43,16 @@ def TimeAndEngScript(url_last):
         #print(tmp)
         source1.append(tmp)
         #print(tmp[2])
-
+    htmlfile.close()
     return source1
 
-def TimeAndKorScript(url_last):
-    insert_transcript = "https://www.ted.com"+url_last
-    asdf = insert_transcript.split('/')
-    d = insert_transcript.split('?')
+def TimeAndKorScript(url,i):
+    
+    asdf = url.split('/')
+    d = url.split('?')
     kkk = d[0]+"/transcript?language=ko"
-    address1 = urlopen(kkk)
-    data1 = BeautifulSoup(address1,"html.parser")
+    htmlfile = open(originalHtmlKorDir+str(i)+".html","r",encoding='UTF8')
+    data1 = BeautifulSoup(htmlfile,"html.parser")
     source_time1 = data1.findAll('span',attrs={'class':'talk-transcript__fragment'})
     source1 = []
     for x in range(len(source_time1)):
@@ -54,7 +63,7 @@ def TimeAndKorScript(url_last):
         #print(tmp)
         source1.append(tmp)
         #print(tmp[2])
-
+    htmlfile.close()
     return source1
 
 def sub_kor(p):
@@ -201,17 +210,17 @@ def sub_kor(p):
 
 
 
-def kor(url_last):
-    insert_transcript = "https://www.ted.com"+url_last
-    d = insert_transcript.split('?')
+def kor(url,i):
+    
+    d = url.split('?')
     s = d[0]+"/transcript?"+d[1]
-    address1 = urlopen(s)
-    data = BeautifulSoup(address1, "html.parser")
+    htmlfile = open(originalHtmlKorDir+str(i)+".html","r",encoding='UTF8')
+    data = BeautifulSoup(htmlfile, "html.parser")
     script = data.findAll('span',attrs={'class':'talk-transcript__para__text'})
 
-    ttt=TimeAndKorScript(url_last)
+    ttt=TimeAndKorScript(url,i)
 
-    f = open("Ted_ko/Ted_kor."+str(data_number)+".txt","w",encoding='UTF8')
+    f = open(originalTextKorDir+str(data_number)+".txt","w",encoding='UTF8')
     paragraph = len(script)
     y=0
     
@@ -253,21 +262,22 @@ def kor(url_last):
       
       
     f.close()
+    htmlfile.close()
     
 
 
 
-def en(url_last):
-    insert_transcript = "https://www.ted.com"+url_last
-    d = insert_transcript.split('?')
+def en(url,i):
+    
+    d = url.split('?')
     s = d[0]+"/transcript?language=en"
-    address1 = urlopen(s)
-    data = BeautifulSoup(address1, "html.parser")
+    htmlfile = open(originalHtmlEngDir+str(i)+".html","r",encoding='UTF8')
+    data = BeautifulSoup(htmlfile, "html.parser")
     script = data.findAll('span',attrs={'class':'talk-transcript__para__text'})
 
-    ttt=TimeAndEngScript(url_last)
+    ttt=TimeAndEngScript(url,i)
     
-    f = open("Ted_en/Ted_eng."+str(data_number)+".txt","w",encoding='UTF8')
+    f = open(originalTextEngDir+str(data_number)+".txt","w",encoding='UTF8')
     paragraph = len(script)
     y=0
     for y in range(paragraph):
@@ -316,22 +326,21 @@ def en(url_last):
         f.write("\n")
              
     f.close()
+    htmlfile.close()
 
 
 
-
-def diff_percent(url_last):
-    
-    insert_transcript = "https://www.ted.com"+url_last
-    asdf = insert_transcript.split('/')
-    d = insert_transcript.split('?')
+def diff_percent(i):
+    '''
+    asdf = url.split('/')
+    d = url.split('?')
     eee = d[0]+"/transcript?language=en"
     kkk = d[0]+"/transcript?language=ko"
-
-    address1=urlopen(eee)
-    address2=urlopen(kkk)
-    data1 = BeautifulSoup(address1,"html.parser")
-    data2 = BeautifulSoup(address2,"html.parser")
+    '''
+    htmlfile1 = open(originalHtmlKorDir+str(i)+".html","r",encoding='UTF8')
+    htmlfile2 = open(originalHtmlEngDir+str(i)+".html","r",encoding='UTF8')
+    data1 = BeautifulSoup(htmlfile1,"html.parser")
+    data2 = BeautifulSoup(htmlfile2,"html.parser")
     source_time1 = data1.findAll('span',attrs={'class':'talk-transcript__fragment'})
     source_time2 = data2.findAll('span',attrs={'class':'talk-transcript__fragment'})
     source1 = []
@@ -369,14 +378,15 @@ def diff_percent(url_last):
     aver1=(float)(diff+diff2)/2
     aver2=(float)(len(source1)+len(source2))/2
     per=aver1/aver2
-
+    htmlfile1.close()
+    htmlfile2.close()
     return per*100
 
-def matching():
-    f_eng= open("Ted_en/Ted_eng."+str(data_number)+".txt","r",encoding='UTF8')
-    f_kor = open("Ted_ko/Ted_kor."+str(data_number)+".txt","r",encoding='UTF8')
-    f_ENmat = open("Ted_ENmatch/Ted_ENmat."+str(data_number)+".txt","w",encoding='UTF8')
-    f_KOmat = open("Ted_KOmatch/Ted_KOmat."+str(data_number)+".txt","w",encoding='UTF8')
+def matching(csv2):
+    f_eng= open(originalTextEngDir+str(data_number)+".txt","r",encoding='UTF8')
+    f_kor = open(originalTextKorDir+str(data_number)+".txt","r",encoding='UTF8')
+    f_ENmat = open(matchingTextEngDir+str(data_number)+".txt","w",encoding='UTF8')
+    f_KOmat = open(matchingTextKorDir+str(data_number)+".txt","w",encoding='UTF8')
 
     to_write=''
     now = time.localtime()
@@ -412,74 +422,105 @@ def matching():
     f_ENmat.close()
     f_KOmat.close()
 
-def save_html(url_last):
-    insert_transcript = "https://www.ted.com"+url_last
-    asdf = insert_transcript.split('/')
-    ddd = asdf[4].split('?')
-    to_write = str(ddd[0])+","+insert_transcript+","
-    d = insert_transcript.split('?')
-    s = d[0]+"/transcript?language=en"
-    s1 = d[0]+"/transcript?language=ko"
-    
-    now = time.localtime()
-    tt = "%04d-%02d-%02d %02d:%02d:%02d" % (now.tm_year, now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec)
-    to_write=to_write+tt+"\n"
-    csv.write(to_write)
+def save_html_csv():
+    html_attribute = open(html_attributeDir,"w")
+    i=0
+    while i<=61:
+        number = str(i)
+        try:
+            address = urlopen('https://www.ted.com/talks?language=ko&page='+number+'&sort=newest')
+        except:
+            break
+        sources = BeautifulSoup(address,"html.parser")
+        list_audio = sources.findAll('a',attrs={'lang':'ko'})
+        x=0
+        list_number_audio = len(list_audio)
+        #부분적으로는 쓰고, 전체는 없애고
+        data_number=i*36
+        for x in range(list_number_audio):
+            tmp = str(list_audio[x])
+            sp = tmp.split('href="')
+            y=0
+            url_last=""
+            while 1:
+                if(sp[1][y]=='"'):
+                    break;
+        
+                url_last = url_last + sp[1][y]
+                y=y+1
 
-    '''
-    f = open("html/eng/html"+str(data_number),"w")
-    address=urlopen(s)
-    data=BeautifulSoup(address,"html.parser")
-    f.write(str(data))
-    f.close()
+
+        url = "https://www.ted.com"+url_last
+        asdf = url.split('/')
+        ddd = asdf[4].split('?')
+        to_write = str(ddd[0])+","+url+","
+        d = url.split('?')
+        s = d[0]+"/transcript?language=en"
+        s1 = d[0]+"/transcript?language=ko"
+        now = time.localtime()
+        tt = "%04d-%02d-%02d %02d:%02d:%02d" % (now.tm_year, now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec)
+        to_write=to_write+tt+"\n"
+        html_attribute.write(to_write)
+        i=i+1
+    html_attribute.close()
+
+
+def save_html():
+    html_attribute = open(html_attributeDir,"r")
+    i = 0
+    while 1:
+        line = html_attribute.readline()
+        if not line:
+            break;
+        onelinecsv = line.split(',')
+        url = onelinecsv[1]
+        asdf = url.split('/')
+        ddd = asdf[4].split('?')
+        to_write = str(ddd[0])+","+url+","
+        d = url.split('?')
+        s = d[0]+"/transcript?language=en"
+        s1 = d[0]+"/transcript?language=ko"
+
+
+        f = open(originalHtmlKorDir+str(i)+"html","w")
+        address=urlopen(s)
+        data=BeautifulSoup(address,"html.parser")
+        f.write(str(data))
+        f.close()
     
-    f1 = open("html/kor/html"+str(data_number),"w")
-    address1=urlopen(s1)
-    data1=BeautifulSoup(address1,"html.parser")
-    f1.write(str(data1))
-    f1.close()
-    '''
-    
+        f1 = open(originalHtmlEngDir+str(i)+"html","w")
+        address1=urlopen(s1)
+        data1=BeautifulSoup(address1,"html.parser")
+        f1.write(str(data1))
+        f1.close()
+        i = i + 1
+    html_attribute.close()
+
+
+'''
+print("save html csv")
+save_html_csv()
+
+print("save html")
+save_html()
+'''
+
 i=0
-while i<=61:
+readcsv = open(html_attributeDir,"r")
+csv2 = open(match_attributeDir,"w")
+while i<=2228:
     number = str(i)
-    address = urlopen('https://www.ted.com/talks?language=ko&page='+number+'&sort=newest')
-    sources = BeautifulSoup(address,"html.parser")
-    list_audio = sources.findAll('a',attrs={'lang':'ko'})
-    x=0
-    list_number_audio = len(list_audio)
-    #부분적으로는 쓰고, 전체는 없애고
-    data_number=i*36
-    for x in range(list_number_audio):
-        tmp = str(list_audio[x])
-        sp = tmp.split('href="')
-        y=0
-        url_last=""
-        while 1:
-            if(sp[1][y]=='"'):
-                break;
-
-            url_last = url_last + sp[1][y]
-            y=y+1
-    
-        insert_transcript = "https://www.ted.com"+url_last
-        print("[",data_number,"] lecture")
-
-        sss=diff_percent(url_last)
-
-        print("퍼센트:",sss)
-        if sss<=50:
-            kor(url_last)
-            en(url_last)
-            matching()
-            #save_html(url_last)
+    line = readcsv.readline()
+    onelinecsv=line.split(',')
+    url = onelinecsv[1]
+    sss=diff_percent(i)
+    if sss<=50:
+        kor(url,i)
+        en(url,i)
+        matching(csv2)
         data_number=data_number+1
-
-            
-
-    #time.sleep(3.00)
-
-    i=i+1
     
-#csv.close()
+    i=i+1
+
 csv2.close()
+
