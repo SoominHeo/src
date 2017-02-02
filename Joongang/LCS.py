@@ -156,10 +156,10 @@ def seq(i,a):
             else:
                 x=x+1
     
-    f_ko = open("./joongang_corpus_data/no_single_space_text/ko/"+str(i)+".kor.txt","rU")
-    f_en = open("./joongang_corpus_data/no_single_space_text/en/"+str(i)+".eng.txt","rU")
-    f_total_kor = open("./total/ko/"+str(i)+".kor.txt","w")
-    f_total_eng = open("./total/en/"+str(i)+".eng.txt","w")
+    f_ko = open("../../data/Joongang/no_single_space_text/ko/"+str(i)+".kor.txt","rU")
+    f_en = open("../../data/Joongang/no_single_space_text/en/"+str(i)+".eng.txt","rU")
+    f_total_kor = open("../../data/Joongang/total/ko/"+str(i)+".kor.txt","w")
+    f_total_eng = open("../../data/Joongang/total/en/"+str(i)+".eng.txt","w")
     i_ko=0
     k=0
     
@@ -185,7 +185,7 @@ def seq(i,a):
         i_ko=i_ko+1
 
     f_ko.close()
-    f_ko = open("./joongang_corpus_data/no_single_space_text/ko/"+str(i)+".kor.txt","rU")
+    f_ko = open("../../data/Joongang/no_single_space_text/ko/"+str(i)+".kor.txt","rU")
     i_ko=0
     k=0
     f_total_kor.write("\n")
@@ -234,7 +234,7 @@ def seq(i,a):
         f_en.readline()
         i_en=i_en+1
     f_en.close()
-    f_en = open("./joongang_corpus_data/no_single_space_text/en/"+str(i)+".eng.txt","rU")
+    f_en = open("../../data/Joongang/no_single_space_text/en/"+str(i)+".eng.txt","rU")
     i_en=0
     e=0
     f_total_eng.write("\n")
@@ -268,8 +268,8 @@ i=1
 while i<=1:
     print(i)
     try:
-        f_eng = open("./joongang_corpus_data/no_single_space_text/num/en/"+str(i)+".eng.txt","rU",)
-        f_kor = open("./joongang_corpus_data/no_single_space_text/num/ko/"+str(i)+".kor.txt","rU",)
+        f_eng = open("../../data/Joongang/no_single_space_text/num/en/"+str(i)+".eng.txt","rU",)
+        f_kor = open("../../data/Joongang/no_single_space_text/num/ko/"+str(i)+".kor.txt","rU",)
     except:
         i=i+1
         continue
