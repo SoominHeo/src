@@ -49,7 +49,7 @@ def div_english_sentence(bodies_split,filenumber,csv2):
         
     a = len(mun_split)
         
-    f = open("er/"+str(filenumber)+".eng.txt","w",encoding="UTF8")
+    f = open("../../data/Joongang/original_text/en/"+str(filenumber)+".txt","w",encoding="UTF8")
     tmp=""
     for n in range(a):
         tokens = sent_tokenize(mun_split[n])
@@ -250,7 +250,7 @@ def div_korean_sentence(bodies_split,filenumber,csv2):
 
     a = len(mun_split)
         
-    f = open("ko/"+str(filenumber)+".kor.txt","w",encoding="UTF8")
+    f = open("../../data/Joongang/original_text/ko/"+str(filenumber)+".txt","w",encoding="UTF8")
     for n in range(a): 
         tokens=sub_div_korean_sentence(mun_split[n])
 
