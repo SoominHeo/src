@@ -255,15 +255,15 @@ def check_all_pair(dic, i):
         return -1
     #Metric
     metric_result=metric.metric(t1,t2,t3,t4,t5,t6)
-
+    #print (metric_result)
     if metric_result>=0.8:
         ck=header.header(sources_k, sources_e,i)
         if ck==-1:
             return -1
-    else:
-        ck2=header_for_link.header_for_link(sources_k,sources_e,i)
-        if ck2==-1:
-            return -1
+        else:
+            ck2=header_for_link.header_for_link(sources_k,sources_e,i)
+            if ck2==-1:
+                return -1
         translate_k_to_e.translate_k_to_e(dic,i)
 
 def delete_subtitle():
