@@ -10,7 +10,7 @@ import time
 
 data_number=0
 
-Ted = "../../tmp/Ted/"
+Ted = "../../data/Ted/"
 html_attributeDir = Ted + "original_html/html_attribute.csv"
 match_attributeDir = Ted + "matching_text/match_attribute.csv"
 originalHtmlKorDir = Ted + "original_html/kor/"
