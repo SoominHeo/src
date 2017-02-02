@@ -258,8 +258,8 @@ def check_all_pair(dic, i):
 
     if metric_result>=0.8:
         ck=header.header(sources_k, sources_e,i)
-    if ck==-1:
-        return -1
+        if ck==-1:
+            return -1
     else:
         ck2=header_for_link.header_for_link(sources_k,sources_e,i)
         if ck2==-1:
