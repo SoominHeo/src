@@ -19,17 +19,19 @@ num_ = {
 }
 
 def nomalization(list):
-    #print (list)
     #time.sleep(0.5)
     min = 0
     max = 0
 
     for i in range(len(list)):
-        #print (list[i])
-        for j in range(len(list[i])-1):
+        k = len(list[i])-1
+        for j in range(k):
+            if k<=j: break
+            #print (list[i], i, j, k)
             if list[i][j] == ',':
                 string = list[i][:j] + list[i][j+1:]
                 list[i] = str(string)
+                k = k - 1
             if list[i][j] == 'Z':
                 list[i] = " "
                 break
@@ -73,8 +75,6 @@ lines = 0
 
 def extract_num_KOR(num):
     n = str(num)
-    print (n + ".txt")
-
     num = num + 1
     try:
         file = open("../../data/Wiki/sample/header/kor/" + n + ".txt", "rt", encoding='UTF8')
@@ -134,12 +134,3 @@ def extract_num_KOR(num):
             if len(fin_list[i][j])>0 and fin_list[i][j][0].isdigit() and fin_list[i][j][0] in ['1','2','3','4','5','6','7','8','9','0']:
                 k_num_list[i].append(str(fin_list[i][j]))
     return k_num_list
-
-'''
-i = 0
-while 1:
-    print (i)
-    k_num_list = extract_num_KOR(i)
-    i = i + 1
-    if i == 1: break
-'''

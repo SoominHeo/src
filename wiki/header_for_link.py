@@ -168,13 +168,7 @@ def header_for_link(sourcesKOR, sourcesENG, i):
     # 문단이 없으면 다음 문서로 넘어가기
     if len(para_kor) == 0 or len(para_eng) == 0:
         i = i + 1
-        return -1
-
-    # print(str(i)+".txt")
-
-    # 추출할 header_link를 저장하기 위한 파일오픈
-    f_header_kor = open("../../data/wiki/sample/header_list/kor/" + str(i) + ".txt", "w", encoding='UTF8')
-    f_header_eng = open("../../data/wiki/sample/header_list/eng/" + str(i) + ".txt", "w", encoding='UTF8')
+        return -1, -1
 
     ####  KOREA  HEADER  ####
     # header만 추출
@@ -217,9 +211,9 @@ def header_for_link(sourcesKOR, sourcesENG, i):
 
     # <a ~ </a>부분에서 단어만 뽑아서 파일에 쓰기
     tmp = [[] for j in range(len(tmp_kor_link))]
+    k_link_list = [[] for j in range(len(tmp_kor_link))]
     for k in range(len(tmp_kor_link)):
         if len(tmp_kor_link[k]) == 0:
-            f_header_kor.write("\n")
             continue
         for j in range(len(tmp_kor_link[k])):
             # title 부분
@@ -237,31 +231,7 @@ def header_for_link(sourcesKOR, sourcesENG, i):
             kk = tt.find(':')
             if kk >= 0:
                 tt = tt[kk + 1:]
-
-            # > ... </a> 부분
-            '''
-            st2=tmp_kor_link[k][j].find('>')
-            fi2=tmp_kor_link[k][j].find('</a>')
-            tt2=tmp_kor_link[k][j]
-
-            if str(tt2[fi2-1])==' ':
-                   tt2=tt2[st2+1:fi2-1]
-            else:
-                   tt2=tt2[st2+1:fi2]
-
-            #title과 > .. </a>비교
-            tt=tt.lower()
-            tt2=tt2.lower()
-
-            if tt==tt2:
-                f_header_kor.write(str(tt)+",")
-
-            else:
-                continue
-            '''
-            f_header_kor.write(str(tt) + ", ")
-        f_header_kor.write("\n")
-    f_header_kor.write("\n")
+            k_link_list[k].append(str(tt))
 
     ####  ENGLISH HEADER  ####
     # header만 추출
@@ -302,9 +272,9 @@ def header_for_link(sourcesKOR, sourcesENG, i):
             break
     # <a ~ </a>부분에서 단어만 뽑아서 파일에 쓰기
     tmp = [[] for j in range(len(tmp_eng_link))]
+    e_link_list = [[] for j in range(len(tmp_eng_link))]
     for k in range(len(tmp_eng_link)):
         if len(tmp_eng_link[k]) == 0:
-            f_header_eng.write("\n")
             continue
         for j in range(len(tmp_eng_link[k])):
             # title 부분
@@ -322,31 +292,6 @@ def header_for_link(sourcesKOR, sourcesENG, i):
             kk = tt.find(':')
             if kk >= 0:
                 tt = tt[kk + 1:]
-
-            # > ... </a> 부분
-            '''
-            st2=tmp_eng_link[k][j].find('>')
-            fi2=tmp_eng_link[k][j].find('</a>')
-            tt2=tmp_eng_link[k][j]
-
-            if str(tt2[fi2-1])==' ':
-                   tt2=tt2[st2+1:fi2-1]
-            else:
-                   tt2=tt2[st2+1:fi2]
-
-            #title과 > .. </a>비교
-            tt=tt.lower()
-            tt2=tt2.lower()
-
-            if tt==tt2:
-                f_header_eng.write(str(tt)+",")
-                print("tt",tt)
-                print("tt2",tt2)
-            else:
-                continue
-            '''
-            f_header_eng.write(str(tt) + ", ")
-        f_header_eng.write("\n")
-    f_header_eng.write("\n")
-
+            e_link_list[k].append(str(tt))
     i = i + 1
+    return (k_link_list, e_link_list)
