@@ -259,7 +259,7 @@ def header_for_link(sourcesKOR, sourcesENG, i):
             else:
                 continue
             '''
-            f_header_kor.write(str(tt) + ",")
+            f_header_kor.write(str(tt) + ", ")
         f_header_kor.write("\n")
     f_header_kor.write("\n")
 
@@ -345,7 +345,7 @@ def header_for_link(sourcesKOR, sourcesENG, i):
             else:
                 continue
             '''
-            f_header_eng.write(str(tt) + ",")
+            f_header_eng.write(str(tt) + ", ")
         f_header_eng.write("\n")
     f_header_eng.write("\n")
 

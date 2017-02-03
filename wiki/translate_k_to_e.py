@@ -19,10 +19,10 @@ def translate_k_to_e(dic, i):
     k = open("../../data/wiki/sample/header_list/changed_kor/" + str(i)+".txt", "w", encoding = "UTF8")
     a = 0
     for i in f.readlines():
-        words = i.split(",")
+        words = i.split(", ")
         words.pop()
         for element in words:
             if element in dic.keys():
-                k.write(str(dic[element].replace("_", " ")) + ",")
+                k.write(str(dic[element].replace("_", " ")) + ", ")
         k.write("\n")
         a = a + 1

@@ -85,7 +85,6 @@ def LCS(k_art, e_art, k_len, e_len):
             k = k_art[mm].split(', ')
             e = e_art[nn].split(', ')
             if jaccard(k,e)>=0.8:
-                print("0.8")
                 LCStable[mm+1][nn+1]=LCStable[mm][nn]+1
             else:
                 if LCStable[mm+1][nn]>=LCStable[mm][nn+1]:
@@ -156,13 +155,13 @@ def seq(i,a):
             else:
                 x=x+1
     try:
-        f_ko = open("../../data/wiki/sample/header/kor/"+str(i)+".txt","rU")
-        f_en = open("../../data/wiki/sample/header/eng/"+str(i)+".txt","rU")
+        f_ko = open("../../data/wiki/sample/header/kor/"+str(i)+".txt","rU", encoding="UTF8")
+        f_en = open("../../data/wiki/sample/header/eng/"+str(i)+".txt","rU", encoding="UTF8")
     except:
         return -1
 
-    f_total_kor = open("../../data/wiki/sample/result/kor/"+str(i)+".txt","w")
-    f_total_eng = open("../../data/wiki/sample/result/eng/"+str(i)+".txt","w")
+    f_total_kor = open("../../data/wiki/sample/result/kor/"+str(i)+".txt","w", encoding="UTF8")
+    f_total_eng = open("../../data/wiki/sample/result/eng/"+str(i)+".txt","w", encoding="UTF8")
     i_ko=0
     k=0
 
@@ -190,7 +189,7 @@ def seq(i,a):
         i_ko=i_ko+1
 
     f_ko.close()
-    f_ko = open("../../data/wiki/sample/header/kor/"+str(i)+".txt","rU")
+    f_ko = open("../../data/wiki/sample/header/kor/"+str(i)+".txt","rU", encoding="UTF8")
     i_ko=0
     k=0
     f_total_kor.write("\n")
@@ -239,7 +238,7 @@ def seq(i,a):
         f_en.readline()
         i_en=i_en+1
     f_en.close()
-    f_en = open("../../data/wiki/sample/header/eng/"+str(i)+".txt","rU")
+    f_en = open("../../data/wiki/sample/header/eng/"+str(i)+".txt","rU", encoding="UTF8")
     i_en=0
     e=0
     f_total_eng.write("\n")
@@ -273,7 +272,7 @@ def using_LCS(i):
     #print("[LCS]" + str(i))
     try:
         f_eng = open("../../data/wiki/sample/header_list/eng/"+str(i)+".txt","rU", encoding="UTF8")
-        f_kor = open("../../data/wiki/sample/header_list/kor/"+str(i)+".txt","rU", encoding="UTF8")
+        f_kor = open("../../data/wiki/sample/header_list/changed_kor/"+str(i)+".txt","rU", encoding="UTF8")
     except:
         #i=i+1
         return -1
@@ -289,7 +288,7 @@ def using_LCS(i):
             en[y]=en[y][:len(en[y])-1]
 
     length=LCS(ko, en, len(ko), len(en))
-    #print(length)
+    print(length)
 
     result=[]
 

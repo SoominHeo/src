@@ -7,10 +7,10 @@ import LCS
 dic = make_dictionary.make_dictionary()
 #wiki.pair_cro()
 
-i = 0
+i = 10
 while 1:
     #print (str(i)+".txt")
-    #wiki.check_all_pair(dic, i)
+    wiki.check_all_pair(dic, i)
     LCS.using_LCS(i)
     #if i == 10: break
     i = i + 1
