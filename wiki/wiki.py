@@ -5,6 +5,7 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import time
 import sys
+sys.path.insert(0, './metric')
 from urllib import parse
 import urllib
 import zss

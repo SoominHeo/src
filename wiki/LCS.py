@@ -288,7 +288,7 @@ def using_LCS(i):
             en[y]=en[y][:len(en[y])-1]
 
     length=LCS(ko, en, len(ko), len(en))
-    print(length)
+    #print(length)
 
     result=[]
 

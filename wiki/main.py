@@ -7,7 +7,7 @@ import LCS
 dic = make_dictionary.make_dictionary()
 #wiki.pair_cro()
 
-i = 10
+i = 0
 while 1:
     #print (str(i)+".txt")
     wiki.check_all_pair(dic, i)

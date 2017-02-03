@@ -1,9 +1,13 @@
+import sys
+sys.path.insert(0, './metric')
 import check_translate_pair
 import paragraph
 import photo_check
 import reading
 import reference
 import tree_compare
+
+sys.path.insert(0, "./metric")
 
 def average(sources_k, sources_e):
     lst = ['','','','','','']
