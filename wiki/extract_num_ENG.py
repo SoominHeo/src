@@ -173,6 +173,3 @@ def extract_num_ENG(index):
 		return result
 	except FileNotFoundError:
 		pass
-
-
-print(extract_num_ENG(0))

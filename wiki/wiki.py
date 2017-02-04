@@ -20,7 +20,9 @@ import header
 import header_for_link
 import translate_k_to_e
 import extract_num_KOR
-#import extractNNP_ENG
+import extract_num_ENG
+import extractNNP_ENG
+
 cnt = 40
 
 
@@ -289,11 +291,10 @@ def check_all_pair(dic, i):
 
 def make_file_for_LCS(ck_link_list, e_link_list, i):
     k_num_list = extract_num_KOR.extract_num_KOR(i)
-    e_num_list = []
+    e_num_list = extract_num_ENG.extract_num_ENG(i)
 
     k_NNP_list = []
-    e_NNP_list = []
-    # e_NNP_list = extractNNP_ENG.extractNNP_ENG(i)
+    e_NNP_list = extractNNP_ENG.extractNNP_ENG(i)
 
     print("k_link: " + str(ck_link_list))
     print("k_num: " + str(k_num_list))
@@ -307,6 +308,5 @@ def make_file_for_LCS(ck_link_list, e_link_list, i):
         #ck_link_list[i].extend(k_NNP_list[i])
 
     for i in range(len(e_link_list)):
-        pass
-        #e_link_list[i].extend(e_num_list[i])
-        #e_link_list[i].extend(e_NNP_list[i])
+        e_link_list[i].extend(e_num_list[i])
+        e_link_list[i].extend(e_NNP_list[i])
