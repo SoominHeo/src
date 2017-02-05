@@ -8,14 +8,6 @@ sys.path.insert(0, './metric')
 from urllib import parse
 import zss
 import re
-import photo_check
-import paragraph
-import reference
-import reading
-import tree_compare
-import check_translate_pair
-
-
 
 def metric( reference, tree_compare, photo_check, check_translate_pair, paragraph, reading ):
 

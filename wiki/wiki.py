@@ -5,7 +5,6 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import time
 import sys
-sys.path.insert(0, './metric')
 from urllib import parse
 import urllib
 import zss
@@ -20,6 +19,10 @@ import metric
 import header
 import header_for_link
 import translate_k_to_e
+import extract_num_KOR
+import extract_num_ENG
+import extractNNP_ENG
+
 cnt = 40
 
 
@@ -235,6 +238,23 @@ def pair_cro():
     p.close()
     f.close()
 
+def delete_subtitle():
+    a=0
+    f = open("subtitle.txt","w")
+    while 1:
+        address = urlopen("https://ko.wikipedia.org/w/index.php?title=%ED%8A%B9%EC%88%98:%EB%84%98%EA%B2%A8%EC%A3%BC%EA%B8%B0%EB%AA%A9%EB%A1%9D&limit=500&offset="+str(a*500))
+        sources = BeautifulSoup(address,"html.parser")
+        list = sources.findAll('li')
+        for x in list:
+            if(str(x).find("#.")!=-1):
+                sp = str(x).split("title=\"")
+                subtitle = sp[1][:sp[1].find("\"")]
+                print(subtitle)
+                f.write(subtitle+"\n")
+        a = a+1
+        if(a==10):
+            break;
+    f.close()
 
 def check_all_pair(dic, i):
 
@@ -258,37 +278,48 @@ def check_all_pair(dic, i):
     metric_result=metric.metric(t1,t2,t3,t4,t5,t6)
     #print (metric_result)
     if metric_result>=0.8:
-        ck=header.header(sources_k, sources_e,i)
-        if ck==-1:
+        ck = header.header(sources_k, sources_e,i)
+        if ck == -1:
             return -1
         else:
-            ck2=header_for_link.header_for_link(sources_k,sources_e,i)
-            if ck2==-1:
+            k_link_list, e_link_list = header_for_link.header_for_link(sources_k,sources_e,i)
+            if k_link_list==-1:
                 return -1
-        translate_k_to_e.translate_k_to_e(dic,i)
+        ck_link_list = translate_k_to_e.translate_k_to_e(dic,k_link_list)
 
-def delete_subtitle():
-    a=0
-    f = open("subtitle.txt","w")
-    while 1:
-        address = urlopen("https://ko.wikipedia.org/w/index.php?title=%ED%8A%B9%EC%88%98:%EB%84%98%EA%B2%A8%EC%A3%BC%EA%B8%B0%EB%AA%A9%EB%A1%9D&limit=500&offset="+str(a*500))
-        sources = BeautifulSoup(address,"html.parser")
-        list = sources.findAll('li')
-        for x in list:
-            if(str(x).find("#.")!=-1):
-                sp = str(x).split("title=\"")
-                subtitle = sp[1][:sp[1].find("\"")]
-                print(subtitle)
-                f.write(subtitle+"\n")
-        a = a+1
-        if(a==10):
-            break;
-    f.close()
-    
-#make_list_csv()
-#pair_dic()
-#pair_cro()
-#check_all_pair()
-#delete_subtitle()
+    return ck_link_list, e_link_list
 
+def make_file_for_LCS(ck_link_list, e_link_list, i):
+    k_num_list = extract_num_KOR.extract_num_KOR(i)
+    e_num_list = extract_num_ENG.extract_num_ENG(i)
 
+    k_NNP_list = []
+    e_NNP_list = extractNNP_ENG.extractNNP_ENG(i)
+    '''
+    print("k_link: " + str(ck_link_list))
+    print("k_num: " + str(k_num_list))
+    print("k_NNP: " + str(k_NNP_list))
+    print("e_link: " + str(e_link_list))
+    print("e_num: " + str(e_num_list))
+    print("e_NNP: " + str(e_NNP_list) + "\n")
+    '''
+    write_file(ck_link_list, e_link_list, "list/link_list/", i)
+    write_file(k_NNP_list, e_NNP_list, "list/NNP_list/", i)
+    write_file(k_num_list, e_num_list, "list/num_list/", i)
+
+def write_file(k_list, e_list, path, index):
+    k_file = open("../../data/wiki/sample/" + path + "kor/" + str(index) + ".txt", "w", encoding="UTF8")
+    e_file = open("../../data/wiki/sample/" + path + "eng/"+ str(index) + ".txt", "w", encoding="UTF8")
+
+    for i in range (len(k_list)):
+        for j in range (len(k_list[i])):
+            k_file.write(k_list[i][j] + ", ")
+        k_file.write("\n")
+
+    for i in range (len(e_list)):
+        for j in range (len(e_list[i])):
+            e_file.write(e_list[i][j] + ", ")
+        e_file.write("\n")
+
+    k_file.close()
+    e_file.close()

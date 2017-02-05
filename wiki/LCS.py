@@ -18,7 +18,6 @@ def jaccard(kor, eng):
 
     tmp_d=[]
     tmp_k=[]
-    
 
     if kor=='\n' or eng=='\n':
         return 0.0
@@ -29,8 +28,7 @@ def jaccard(kor, eng):
                 tmp_k.append(kor[kk])
         else:
             continue
-    
-    
+
     tmp_d=copy.deepcopy(tmp_k)
     for ee in range(len(eng)):
         if eng[ee]:
@@ -39,9 +37,7 @@ def jaccard(kor, eng):
         else:
             continue
 
-
     deno=len(tmp_d)
-
     
     for x in tmp_k:
         if x=='':
@@ -58,17 +54,12 @@ def jaccard(kor, eng):
     if deno==0:
         return 0.0
     else:
-      
         aver=numer/deno
-        
         return aver
 
-
 def LCS(k_art, e_art, k_len, e_len):
-
     m=0
     n=0
-
 
     for m in range(k_len+1):
         LCStable.append([])
@@ -79,7 +70,6 @@ def LCS(k_art, e_art, k_len, e_len):
             else:
                 LCStable[m].append(-1)
                 
-
     for mm in range(k_len):
         for nn in range(e_len):
             k = k_art[mm].split(', ')
@@ -91,10 +81,6 @@ def LCS(k_art, e_art, k_len, e_len):
                     LCStable[mm+1][nn+1]=LCStable[mm+1][nn]
                 else:
                     LCStable[mm+1][nn+1]=LCStable[mm][nn+1]
-
-
-
-    
 
     return LCStable[k_len][e_len]
 
@@ -119,7 +105,7 @@ def LCS_TraceBack(m, n, lcs):
     return result
 
 
-def seq(i,a):
+def seq(i,a, k_path, e_path):
     global cnt
     kor = []
     eng = []
@@ -154,19 +140,18 @@ def seq(i,a):
                 eng.pop(x)
             else:
                 x=x+1
+
     try:
         f_ko = open("../../data/wiki/sample/header/kor/"+str(i)+".txt","rU", encoding="UTF8")
         f_en = open("../../data/wiki/sample/header/eng/"+str(i)+".txt","rU", encoding="UTF8")
     except:
         return -1
 
-    f_total_kor = open("../../data/wiki/sample/result/kor/"+str(i)+".txt","w", encoding="UTF8")
-    f_total_eng = open("../../data/wiki/sample/result/eng/"+str(i)+".txt","w", encoding="UTF8")
+    f_total_kor = open(k_path+str(i)+".txt","w", encoding="UTF8")
+    f_total_eng = open(e_path+str(i)+".txt","w", encoding="UTF8")
+
     i_ko=0
     k=0
-
-    print (str(i)+".txt")
-    
     while 1:
         if(k==len(kor)):
             break;
@@ -187,15 +172,14 @@ def seq(i,a):
                 break;
         f_ko.readline()
         i_ko=i_ko+1
-
     f_ko.close()
+
     f_ko = open("../../data/wiki/sample/header/kor/"+str(i)+".txt","rU", encoding="UTF8")
     i_ko=0
     k=0
     f_total_kor.write("\n")
     
     while 1:
-        
         if(k==len(p_kor)):
             break;
         if(len(p_kor)==0):
@@ -213,9 +197,8 @@ def seq(i,a):
             k=k+1
         else:
             f_ko.readline()
-
         i_ko=i_ko+1
-            
+
     i_en=0
     e=0
     while 1:
@@ -261,21 +244,22 @@ def seq(i,a):
             f_en.readline()
         i_en=i_en+1
 
-
     f_ko.close()
     f_en.close()
     f_total_kor.close()
     f_total_eng.close()
 
-#i = 0
-def using_LCS(i):
-    #print("[LCS]" + str(i))
+def using_LCS(i, attr):
     try:
-        f_eng = open("../../data/wiki/sample/header_list/eng/"+str(i)+".txt","rU", encoding="UTF8")
-        f_kor = open("../../data/wiki/sample/header_list/changed_kor/"+str(i)+".txt","rU", encoding="UTF8")
+        f_eng = open("../../data/wiki/sample/list/" + attr + "/eng/" + str(i) + ".txt", "rU", encoding="UTF8")
+        f_kor = open("../../data/wiki/sample/list/" + attr + "/kor/" + str(i) + ".txt", "rU", encoding="UTF8")
     except:
         #i=i+1
         return -1
+
+    k_path = "../../data/wiki/sample/result/"+attr+"/kor/"
+    e_path = "../../data/wiki/sample/result/"+attr+"/eng/"
+
     en=f_eng.readlines()
     ko=f_kor.readlines()
 
@@ -288,12 +272,12 @@ def using_LCS(i):
             en[y]=en[y][:len(en[y])-1]
 
     length=LCS(ko, en, len(ko), len(en))
-    #print(length)
-
     result=[]
-
     a = LCS_TraceBack(len(ko),len(en),result)
-    seq(i,a)
-    #i=i+1
 
+    seq(i,a, k_path, e_path)
 
+def run_3LCS(i):
+    using_LCS(i, "link_list")
+    #using_LCS(i, "NNP_list")
+    using_LCS(i, "num_list")
