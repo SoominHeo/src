@@ -282,7 +282,7 @@ def check_all_pair(dic, i):
         if ck == -1:
             return -1
         else:
-            k_link_list, e_link_list=header_for_link.header_for_link(sources_k,sources_e,i)
+            k_link_list, e_link_list = header_for_link.header_for_link(sources_k,sources_e,i)
             if k_link_list==-1:
                 return -1
         ck_link_list = translate_k_to_e.translate_k_to_e(dic,k_link_list)
@@ -295,18 +295,31 @@ def make_file_for_LCS(ck_link_list, e_link_list, i):
 
     k_NNP_list = []
     e_NNP_list = extractNNP_ENG.extractNNP_ENG(i)
-
+    '''
     print("k_link: " + str(ck_link_list))
     print("k_num: " + str(k_num_list))
     print("k_NNP: " + str(k_NNP_list))
     print("e_link: " + str(e_link_list))
     print("e_num: " + str(e_num_list))
     print("e_NNP: " + str(e_NNP_list) + "\n")
+    '''
+    write_file(ck_link_list, e_link_list, "list/link_list/", i)
+    write_file(k_NNP_list, e_NNP_list, "list/NNP_list/", i)
+    write_file(k_num_list, e_num_list, "list/num_list/", i)
 
-    for i in range(len(ck_link_list)):
-        ck_link_list[i].extend(k_num_list[i])
-        #ck_link_list[i].extend(k_NNP_list[i])
+def write_file(k_list, e_list, path, index):
+    k_file = open("../../data/wiki/sample/" + path + "kor/" + str(index) + ".txt", "w", encoding="UTF8")
+    e_file = open("../../data/wiki/sample/" + path + "eng/"+ str(index) + ".txt", "w", encoding="UTF8")
 
-    for i in range(len(e_link_list)):
-        e_link_list[i].extend(e_num_list[i])
-        e_link_list[i].extend(e_NNP_list[i])
+    for i in range (len(k_list)):
+        for j in range (len(k_list[i])):
+            k_file.write(k_list[i][j] + ", ")
+        k_file.write("\n")
+
+    for i in range (len(e_list)):
+        for j in range (len(e_list[i])):
+            e_file.write(e_list[i][j] + ", ")
+        e_file.write("\n")
+
+    k_file.close()
+    e_file.close()

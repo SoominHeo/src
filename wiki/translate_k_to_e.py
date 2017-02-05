@@ -18,5 +18,5 @@ def translate_k_to_e(dic, k_link_list):
     for i in range (len(k_link_list)):
         for element in k_link_list[i]:
             if element in dic.keys():
-                changed_k_link_list[i].append(str(dic[element]))
+                changed_k_link_list[i].append(str(dic[element]).replace("_", ' '))
     return (changed_k_link_list)

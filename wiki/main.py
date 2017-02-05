@@ -12,6 +12,8 @@ while 1:
     print (str(i)+".txt")
     ck_link_list, e_link_list = wiki.check_all_pair(dic, i)
     wiki.make_file_for_LCS(ck_link_list, e_link_list, i)
-    LCS.using_LCS(i)
+    LCS.run_3LCS(i)
     i = i + 1
+    if i == 10:
+        break
 
