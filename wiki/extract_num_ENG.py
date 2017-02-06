@@ -112,8 +112,6 @@ def getNumberList(element, number_list):
             else:
                 new_element = str(Unit[new_element.lower()])
 
-            #new_element = (str(Unit[new_element.lower()]))
-
         else:
             # delete comma
             if ',' in new_element:
@@ -136,17 +134,11 @@ def getNumberList(element, number_list):
 
 def extract_num_ENG(index):
 	result = []
-
-
 	url = "./../../data/wiki/sample/header/eng/"
-	
 	en = open(url + str(index) + ".txt", 'r', encoding= 'utf8')
-
-	#write_en_File = open("./../../data/wiki/sample/{index}.txt".format(index=index), 'w', encoding='utf8')
 	try:
 		count_en_line = 0
 		#write_en_File.write(file_name + "\n")
-
 		for line in en:
 			tmp = []
 			count_en_line += 1
@@ -162,14 +154,9 @@ def extract_num_ENG(index):
 			for element in getList:
 				if(element is not " "):
 					tmp.append(element)
-					#write_en_File.write(str(element) +", ")
 			result.append(tmp)
-			#write_en_File.write("\n")
-		#write_en_File.write("\n")
-
 
 		en.close()
-		#write_en_File.close()
 		return result
 	except FileNotFoundError:
 		pass
