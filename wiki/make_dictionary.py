@@ -7,5 +7,5 @@ def make_dictionary():
     for line in lines:
         splt = re.split(",\t|\n", line)
         dict[splt[2]] = splt[3]
-    return dict
     f.close()
+    return dict

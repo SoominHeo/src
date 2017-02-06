@@ -21,6 +21,7 @@ import header_for_link
 import translate_k_to_e
 import extract_num_KOR
 import extract_num_ENG
+import extractNNP_KOR
 import extractNNP_ENG
 
 cnt = 40
@@ -293,7 +294,8 @@ def make_file_for_LCS(ck_link_list, e_link_list, i):
     k_num_list = extract_num_KOR.extract_num_KOR(i)
     e_num_list = extract_num_ENG.extract_num_ENG(i)
 
-    k_NNP_list = []
+    #k_NNP_list = []
+    k_NNP_list = extractNNP_KOR.extractNNP_KOR(i)
     e_NNP_list = extractNNP_ENG.extractNNP_ENG(i)
     '''
     print("k_link: " + str(ck_link_list))
