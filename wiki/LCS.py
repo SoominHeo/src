@@ -104,17 +104,6 @@ def LCS_TraceBack(m, n, lcs):
 
     return result
 
-def fill_line(frame):
-    length = len(frame)
-    for idx in range(length-1):
-        ko_diff = frame[idx + 1][0] - frame[idx][0]
-        en_diff = frame[idx + 1][1] - frame[idx][1]
-        if(ko_diff == en_diff and en_diff <= 5):
-            for fill_idx in range(1,ko_diff):
-                frame.append([frame[idx][0] + fill_idx, frame[idx][1] + fill_idx])
-    frame.sort()
-    print(frame)
-    return frame
 
 def seq(i,a, k_path, e_path):
     global cnt
@@ -286,10 +275,62 @@ def using_LCS(i, attr):
     result=[]
     a = LCS_TraceBack(len(ko),len(en),result)
 
-    fill_line(a)
-    # seq(i,a, k_path, e_path)
+    return fill_line(a)
+    #seq(i,a, k_path, e_path)
 
-def run_3LCS(i):
-    using_LCS(i, "link_list")
-    #using_LCS(i, "NNP_list")
-    using_LCS(i, "num_list")
+def fill_line(frame):
+    length = len(frame)
+    for idx in range(length-1):
+        ko_diff = frame[idx + 1][0] - frame[idx][0]
+        en_diff = frame[idx + 1][1] - frame[idx][1]
+        if(ko_diff == en_diff and en_diff <= 5):
+            for fill_idx in range(1,ko_diff):
+                frame.append([frame[idx][0] + fill_idx, frame[idx][1] + fill_idx])
+    frame.sort()
+    return frame
+
+def run_3LCS(index):
+    a = using_LCS(index, "link_list")
+    b = using_LCS(index, "num_list")
+    c = using_LCS(index, "NNP_list")
+
+    k_lst = []
+    e_lst = []
+
+    for i in range(len(a)):
+        k_lst.append(a[i][0])
+        e_lst.append(a[i][1])
+
+    for i in range(len(b)):
+        if (b[i][0] not in k_lst) and (b[i][1] not in e_lst):
+            k_lst.append(b[i][0])
+            e_lst.append(b[i][1])
+
+    for i in range(len(c)):
+        if (c[i][0] not in k_lst) and (c[i][1] not in e_lst):
+            k_lst.append(c[i][0])
+            e_lst.append(c[i][1])
+
+    try:
+        f_ko = open("../../data/wiki/sample/header/kor/"+str(index)+".txt","rU", encoding="UTF8")
+        f_en = open("../../data/wiki/sample/header/eng/"+str(index)+".txt","rU", encoding="UTF8")
+    except:
+        return -1
+
+    k_result = open("../../data/wiki/sample/result/kor/"+str(index)+".txt","w", encoding="UTF8")
+    e_result = open("../../data/wiki/sample/result/eng/"+str(index)+".txt","w", encoding="UTF8")
+
+    k_contents = f_ko.readlines()
+    e_contents = f_en.readlines()
+
+    for i in range (len(k_contents)):
+        if i in k_lst:
+            k_result.write(k_contents[i])
+    for i in range (len(e_contents)):
+        if i in e_lst:
+            e_result.write(e_contents[i])
+
+    f_ko.close()
+    f_en.close()
+    k_result.close()
+    e_result.close()
