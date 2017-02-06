@@ -14,6 +14,3 @@ while 1:
     wiki.make_file_for_LCS(ck_link_list, e_link_list, i)
     LCS.run_3LCS(i)
     i = i + 1
-    if i == 10:
-        break
-

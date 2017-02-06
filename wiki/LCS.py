@@ -275,15 +275,17 @@ def using_LCS(i, attr):
     result=[]
     a = LCS_TraceBack(len(ko),len(en),result)
 
+    seq(i,a, k_path, e_path)
+
     return fill_line(a)
-    #seq(i,a, k_path, e_path)
+
 
 def fill_line(frame):
     length = len(frame)
     for idx in range(length-1):
         ko_diff = frame[idx + 1][0] - frame[idx][0]
         en_diff = frame[idx + 1][1] - frame[idx][1]
-        if(ko_diff == en_diff and en_diff <= 5):
+        if(ko_diff == en_diff and en_diff < 5):
             for fill_idx in range(1,ko_diff):
                 frame.append([frame[idx][0] + fill_idx, frame[idx][1] + fill_idx])
     frame.sort()
