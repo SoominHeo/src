@@ -24,9 +24,6 @@ import extract_num_ENG
 import extractNNP_KOR
 import extractNNP_ENG
 
-cnt = 40
-
-
 def remove_tags(data):
     p=re.compile(r'<.*?>')
     return p.sub('', data)
@@ -273,6 +270,9 @@ def check_all_pair(dic, i):
     t5=paragraph.paragraph(sources_k,sources_e)
     t6=reading.reading(sources_k,sources_e)
 
+    ck_link_list = [[]]
+    e_link_list = [[]]
+
     if(t5==-1):
         return -1
     #Metric
@@ -291,6 +291,12 @@ def check_all_pair(dic, i):
     return ck_link_list, e_link_list
 
 def make_file_for_LCS(ck_link_list, e_link_list, i):
+    try:
+        f = open("../../data/Wiki/sample/header/eng/" + str(i) + ".txt", "rU", encoding='UTF8')
+    except:
+        print ("no_file >> " + str(i) + ".txt")
+        return -1
+
     k_num_list = extract_num_KOR.extract_num_KOR(i)
     e_num_list = extract_num_ENG.extract_num_ENG(i)
 
@@ -322,6 +328,5 @@ def write_file(k_list, e_list, path, index):
         for j in range (len(e_list[i])):
             e_file.write(e_list[i][j] + ", ")
         e_file.write("\n")
-
     k_file.close()
     e_file.close()

@@ -2,7 +2,10 @@
 # -*- coding:utf-8 -*-
 from nltk.tag import pos_tag
 def extractNNP_ENG(i):
-    f = open("../../data/Wiki/sample/header/eng/"+str(i)+".txt","rU",encoding='UTF8')
+    try:
+        f = open("../../data/Wiki/sample/header/eng/"+str(i)+".txt","rU",encoding='UTF8')
+    except:
+        return -1
     e_list = []
     while 1:
         sentence = f.readline()

@@ -8,7 +8,7 @@ import time
 import datetime
 import codecs
 
-cnt=0
+count=0
 LCStable=[]
 
 def jaccard(kor, eng):
@@ -275,7 +275,7 @@ def using_LCS(i, attr):
     result=[]
     a = LCS_TraceBack(len(ko),len(en),result)
 
-    seq(i,a, k_path, e_path)
+    #seq(i,a, k_path, e_path)
 
     return fill_line(a)
 
@@ -295,6 +295,10 @@ def run_3LCS(index):
     a = using_LCS(index, "link_list")
     b = using_LCS(index, "num_list")
     c = using_LCS(index, "NNP_list")
+
+    print (a)
+    print (b)
+    print (c)
 
     k_lst = []
     e_lst = []
@@ -325,13 +329,16 @@ def run_3LCS(index):
     k_contents = f_ko.readlines()
     e_contents = f_en.readlines()
 
+    print (k_lst, e_lst)
+    global count
     for i in range (len(k_contents)):
         if i in k_lst:
+            count = count + 1
             k_result.write(k_contents[i])
     for i in range (len(e_contents)):
         if i in e_lst:
             e_result.write(e_contents[i])
-
+    print (count)
     f_ko.close()
     f_en.close()
     k_result.close()

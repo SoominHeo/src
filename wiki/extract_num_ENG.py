@@ -133,30 +133,31 @@ def getNumberList(element, number_list):
         exception_number(element[0],number_list)
 
 def extract_num_ENG(index):
-	result = []
-	url = "./../../data/wiki/sample/header/eng/"
-	en = open(url + str(index) + ".txt", 'r', encoding= 'utf8')
-	try:
-		count_en_line = 0
-		#write_en_File.write(file_name + "\n")
-		for line in en:
-			tmp = []
-			count_en_line += 1
-			getList = []
-			line = delete_symbol(line, '-')
-			line = delete_symbol(line, ':')
+    result = []
+    url = "./../../data/wiki/sample/header/eng/"
+    #en = open(url + str(index) + ".txt", 'r', encoding= 'utf8')
+    try:
+        en = open(url + str(index) + ".txt", 'r', encoding='utf8')
+        count_en_line = 0
+        #write_en_File.write(file_name + "\n")
+        for line in en:
+            tmp = []
+            count_en_line += 1
+            getList = []
+            line = delete_symbol(line, '-')
+            line = delete_symbol(line, ':')
 
-			tokens = nltk.word_tokenize(line)
-			tagged = nltk.pos_tag(tokens)
-			for element in tagged:
-				getNumberList(element,getList)
-			nomalization(getList)
-			for element in getList:
-				if(element is not " "):
-					tmp.append(element)
-			result.append(tmp)
+            tokens = nltk.word_tokenize(line)
+            tagged = nltk.pos_tag(tokens)
+            for element in tagged:
+                getNumberList(element,getList)
+            nomalization(getList)
+            for element in getList:
+                if(element is not " "):
+                    tmp.append(element)
+            result.append(tmp)
 
-		en.close()
-		return result
-	except FileNotFoundError:
-		pass
+        en.close()
+        return result
+    except FileNotFoundError:
+        pass

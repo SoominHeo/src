@@ -5,7 +5,10 @@ kkma = Kkma()
 
 def extractNNP_KOR(i):
 	dic = make_dictionary.make_dictionary()
-	read_page = open("../../data/Wiki/sample/header/kor/"+str(i)+".txt","rU",encoding='UTF8')
+	try:
+		read_page = open("../../data/Wiki/sample/header/kor/"+str(i)+".txt","rU",encoding='UTF8')
+	except:
+		return -1
 	result = [] # all noun list
 	for line in read_page: # if file is empty, skip
 		if(len(line) < 2):
