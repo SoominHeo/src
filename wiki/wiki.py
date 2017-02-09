@@ -9,13 +9,13 @@ from urllib import parse
 import urllib
 import zss
 import re
-import photo_check
-import paragraph
+import metric
 import reference
+import photo_check
+import check_translate_pair
+import paragraph
 import reading
 import tree_compare
-import check_translate_pair
-import metric
 import header
 import header_for_link
 import translate_k_to_e
@@ -23,7 +23,9 @@ import extract_num_KOR
 import extract_num_ENG
 import extractNNP_KOR
 import extractNNP_ENG
+import os
 
+sys.path.append(os.getcwd()+"\metric")
 def remove_tags(data):
     p=re.compile(r'<.*?>')
     return p.sub('', data)
