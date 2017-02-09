@@ -91,7 +91,7 @@ def insert_word_to_dictionary(table_name, kor_2d, eng_2d):
             else:
                 add_new_word(table_name, eng_2d[i][j], "e") #매칭되는 한글 단어가 없음
 
-drop_table("NNP_DIC")
+#drop_table("NNP_DIC")
 create_table("NNP_DIC")
 insert_link_dictionary("NNP_DIC")
 #print_table("NNP_DIC")
