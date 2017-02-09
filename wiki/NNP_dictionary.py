@@ -33,8 +33,9 @@ def insert_link_dictionary(table_name):
     dic = make_dictionary.make_dictionary()
     i = 0
     for word in dic.keys():
-        if i % 100 == 0:
+        if i % 100 == 1:
             print (i)
+            break
         i = i + 1
         if '\"' in dic[word]:
             continue
@@ -58,7 +59,7 @@ def print_table(table_name):
     con.close()
 
 def add_new_word(table_name, word, language):
-    con = sqlite3.content("NNP.db")
+    con = sqlite3.connect("NNP.db")
     cursor = con.cursor()
     if language == "k":
         cursor.execute('INSERT INTO ' + table_name + ' VALUES("' + str(word) + '", NULL, 1)')
@@ -68,31 +69,36 @@ def add_new_word(table_name, word, language):
     con.close()
 
 def add_count(table_name, word, language):
-    con = sqlite3.content("NNP.db")
+    con = sqlite3.connect("NNP.db")
     cursor = con.cursor()
     if language == "k":
         cursor.execute("UPDATE NNP_DIC SET count=count+1 WHERE kor = '"+word+"'") # count + 1
     if language == "e":
         cursor.execute("UPDATE NNP_DIC SET count=count+1 WHERE eng = '"+word+"'") # count + 1
-    pass
+    con.commit()
+    con.close()
 
+#header를 열고 /list/NNP_list/를
 def insert_word_to_dictionary(table_name, kor_2d, eng_2d):
-    dic = make_dictionary()
+    dic = make_dictionary.make_dictionary()
     for i in range(len(kor_2d)):
         for j in range(len(kor_2d[i])):
             if kor_2d[i][j] in dic.keys():
                 add_count(table_name, kor_2d[i][j], "k")
             else:
-                add_new_word(table_name, kor_2d[i][j], "k") #매칭되는 영어단어가 없음
+                pass
+                #add_new_word(table_name, kor_2d[i][j], "k") #매칭되는 영어단어가 없고, 이것도 추가하고 싶으면 if dic.keys()안에 있으면을 >> if db안에 있으면 으로 바꿔야 함
     for i in range(len(eng_2d)):
         for j in range(len(eng_2d[i])):
             if eng_2d[i][j] in dic.values():
                 add_count(table_name, eng_2d[i][j], "e")
             else:
-                add_new_word(table_name, eng_2d[i][j], "e") #매칭되는 한글 단어가 없음
+                pass
+                #add_new_word(table_name, eng_2d[i][j], "e") #매칭되는 한글 단어가 없고, 이것도 추가하고 싶으면 if dic.keys()안에 있으면을 >> if db안에 있으면 으로 바꿔야 함
 
 #drop_table("NNP_DIC")
-create_table("NNP_DIC")
-insert_link_dictionary("NNP_DIC")
+#create_table("NNP_DIC")
+#insert_link_dictionary("NNP_DIC")
 #print_table("NNP_DIC")
-#insert_word_to_dictionary("NNP_DIC", [['한국 경제']], [['apple']['banana']])
+#insert_word_to_dictionary("NNP_DIC", [['', '허수민']], [['banana', 'apple'],['pine apple']])
+#print_table("NNP_DIC")
