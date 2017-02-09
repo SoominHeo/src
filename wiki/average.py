@@ -1,5 +1,7 @@
 import sys
-sys.path.insert(0, './metric')
+import os
+sys.path.append(os.getcwd()+"\metric")
+
 import check_translate_pair
 import paragraph
 import photo_check

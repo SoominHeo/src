@@ -25,7 +25,4 @@ while 1:
     except:
         error_list.append(i)
         i = i + 1
-
-
-
 print(error_list)

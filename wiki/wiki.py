@@ -5,6 +5,9 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import time
 import sys
+import os
+sys.path.append(os.getcwd()+"\metric")
+sys.path.append(os.getcwd()+"\extract")
 from urllib import parse
 import urllib
 import zss
@@ -23,9 +26,8 @@ import extract_num_KOR
 import extract_num_ENG
 import extractNNP_KOR
 import extractNNP_ENG
-import os
 
-sys.path.append(os.getcwd()+"\metric")
+
 def remove_tags(data):
     p=re.compile(r'<.*?>')
     return p.sub('', data)
