@@ -281,7 +281,7 @@ def check_all_pair(dic, i):
     #Metric
     metric_result=metric.metric(t1,t2,t3,t4,t5,t6)
     #print (metric_result)
-    if metric_result>=0.8:
+    if metric_result>=0.6:
         ck = header.header(sources_k, sources_e,i)
         if ck == -1:
             return -1
