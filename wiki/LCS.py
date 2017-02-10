@@ -74,7 +74,7 @@ def LCS(k_art, e_art, k_len, e_len):
         for nn in range(e_len):
             k = k_art[mm].split(', ')
             e = e_art[nn].split(', ')
-            if jaccard(k,e)>=0.8:
+            if jaccard(k,e)>=0.6:
                 LCStable[mm+1][nn+1]=LCStable[mm][nn]+1
             else:
                 if LCStable[mm+1][nn]>=LCStable[mm][nn+1]:
