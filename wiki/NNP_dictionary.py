@@ -1,104 +1,128 @@
 import sqlite3
 import make_dictionary
-import operator
-# cursor.execute("CREATE TABLE NNP(kor text, eng text, count int)")
-# cursor.execute("INSERT INTO NNP VALUES('사과', 'apple', 1)")
-# cursor.execute("INSERT INTO NNP VALUES('바나나', 'banana', 1)")
-# con.commit()
-# cursor.execute("SELECT * FROM NNP")
-# for row in cursor:
-#    print (row)
-# cursor.execute("DROP TABLE NNP")
+import re
 
+#1 table 생성 (1회 사용)
 def create_table(table_name):
-    print("[create table] " + table_name)
-    con = sqlite3.connect("NNP.db")
-    cursor = con.cursor()
     cursor.execute("CREATE TABLE " + table_name + "(kor text, eng text, count int)")
     con.commit()
-    con.close()
-    print ("[create table done]")
+    print("[create table] " + table_name)
 
+#2 table 삭제 (1회 사용)
 def drop_table(table_name):
-    print("[drop table] " + table_name)
-    con = sqlite3.connect("NNP.db")
-    cursor = con.cursor()
     cursor.execute("DROP TABLE " + table_name)
     con.commit()
-    con.close()
-    print("[drop table done]")
+    print("[drop table] " + table_name)
 
+#3 링크사전으로 DB 기반 만들기 (1회 사용)
 def insert_link_dictionary(table_name):
-    print("[insert] fill with link dictionary")
     dic = make_dictionary.make_dictionary()
     i = 0
     for word in dic.keys():
-        if i % 100 == 1:
+        if i % 100 == 0:
             print (i)
-            break
         i = i + 1
         if '\"' in dic[word]:
             continue
         dic[word] = dic[word].replace("_", " ")
 
-        con = sqlite3.connect("NNP.db")
-        cursor = con.cursor()
-        #cursor.execute("INSERT INTO " + table_name + " VALUES('" + str(word) + "', '" + str(dic[word]) + "', 1)")
         cursor.execute('INSERT INTO ' + table_name + ' VALUES("' + str(word) + '", "' + str(dic[word]) + '", 1)')
-        #time.sleep(0.1)
         con.commit()
-        con.close()
-    print("[insert link dictionary done]")
+    print("[insert] fill with link dictionary")
 
-def print_table(table_name):
-    con = sqlite3.connect("NNP.db")
-    cursor = con.cursor()
-    cursor.execute("SELECT * FROM " + table_name)
-    for row in cursor:
-       print (row)
-    con.close()
-
-def add_new_word(table_name, word, language):
-    con = sqlite3.connect("NNP.db")
-    cursor = con.cursor()
+#4 한 문서에서 count된 만큼 DB에 숫자 올려주기
+def insert_word_to_dictionary(language, word, count):
     if language == "k":
-        cursor.execute('INSERT INTO ' + table_name + ' VALUES("' + str(word) + '", NULL, 1)')
+        print(word + " +" + str(count))
+        cursor.execute('UPDATE NNP_DIC SET count=count+' + str(count) + ' WHERE kor="' + word + '"')
     if language == "e":
-        cursor.execute('INSERT INTO ' + table_name + ' VALUES(NULL, "' + str(word) + '", 1)')
+        print(word + " +" + str(count))
+        cursor.execute('UPDATE NNP_DIC SET count=count+' + str(count) + ' WHERE eng="' + word + '"')
     con.commit()
-    con.close()
 
-def add_count(table_name, word, language):
-    con = sqlite3.connect("NNP.db")
-    cursor = con.cursor()
-    if language == "k":
-        cursor.execute("UPDATE NNP_DIC SET count=count+1 WHERE kor = '"+word+"'") # count + 1
-    if language == "e":
-        cursor.execute("UPDATE NNP_DIC SET count=count+1 WHERE eng = '"+word+"'") # count + 1
-    con.commit()
-    con.close()
+#5 정규표현식 쓸 때 의미 있는 글자들 앞에 \ 붙이기 ex) + -> \+
+def special_character(key):
+    result = ""
+    special_character_list = ['.', '^', '$', '*', '+', '?', '{', '}', '[', ']', '\\', '|', '(', ')']
+    for i in range(len(key)):
+        if key[i] in special_character_list:
+            result += "\\"+key[i]
+        else:
+            result += key[i]
+    return result
 
-#header를 열고 /list/NNP_list/를
-def insert_word_to_dictionary(table_name, kor_2d, eng_2d):
+#6 dictionary에 있는 문자 하나하나 article에 집어 넣고 비교 된 것은 삭제
+def dictionary_to_article_check(dic, index):
+    print(str(index) + ".txt")
+    k_file = open("../../data/Wiki/sample/header/kor/" + str(index) + ".txt", "rU", encoding='UTF8')
+    e_file = open("../../data/Wiki/sample/header/eng/" + str(index) + ".txt", "rU", encoding='UTF8')
+
+    k_header_list = str(k_file.readlines())
+    e_header_list = str(e_file.readlines())
+
+    for k in sorted(dic, key=len, reverse=True):
+        if k == '"': continue
+        k = special_character(k)
+        length = len(re.findall(k, k_header_list))
+        if length > 0:
+            insert_word_to_dictionary("k", k, length)
+            k_header_list = k_header_list.replace(k, "")
+
+    for e in sorted(dic, key=len, reverse=True):
+        if e == '"': continue
+        e = special_character(e)
+        length = len(re.findall(e, e_header_list))
+        if length > 0:
+            insert_word_to_dictionary("e", e, length)
+            e_header_list = e_header_list.replace(e, "")
+
+    k_file.close()
+    e_file.close()
+
+#7
+def run(start, end):
     dic = make_dictionary.make_dictionary()
-    for i in range(len(kor_2d)):
-        for j in range(len(kor_2d[i])):
-            if kor_2d[i][j] in dic.keys():
-                add_count(table_name, kor_2d[i][j], "k")
-            else:
-                pass
-                #add_new_word(table_name, kor_2d[i][j], "k") #매칭되는 영어단어가 없고, 이것도 추가하고 싶으면 if dic.keys()안에 있으면을 >> if db안에 있으면 으로 바꿔야 함
-    for i in range(len(eng_2d)):
-        for j in range(len(eng_2d[i])):
-            if eng_2d[i][j] in dic.values():
-                add_count(table_name, eng_2d[i][j], "e")
-            else:
-                pass
-                #add_new_word(table_name, eng_2d[i][j], "e") #매칭되는 한글 단어가 없고, 이것도 추가하고 싶으면 if dic.keys()안에 있으면을 >> if db안에 있으면 으로 바꿔야 함
+    index = start
+    while 1:
+        if index == end+1: # 몇 개 돌리길 원하는지
+            break
+        dictionary_to_article_check(dic, index)
+        index = index + 1
 
-#drop_table("NNP_DIC")
-#create_table("NNP_DIC")
-#insert_link_dictionary("NNP_DIC")
-#print_table("NNP_DIC")
-#insert_word_to_dictionary("NNP_DIC", [['', '허수민']], [['banana', 'apple'],['pine apple']])
-#print_table("NNP_DIC")
+''' main 문 '''
+con = sqlite3.connect("NNP.db")
+cursor = con.cursor()
+query = ""
+'''########## 항상 코드는 이 뒤에 ##########'''
+
+#drop_table("NNP_DIC") #1
+#create_table("NNP_DIC") #2
+#insert_link_dictionary("NNP_DIC") #3
+#7<run> -> #6 -> (#5 & #4)
+
+'''
+아래의 run 함수 호출 시
+몇 번 부터 몇 번 까지 돌려서 dictionary에 넣을지
+(중복되면 안됨..그럼 DB에 2번 들어감..)
+추천하는거는 (0,99), (100,199) 이렇게 해서 안겹치게 하는 것!
+'''
+run(0,1)
+
+'''
+여기에 쿼리 쓰면 됨 (쿼리는 지형오빠가 잘 알거같음_디비 들었으니ㅎㅎ)
+'''
+#query = "SELECT * FROM NNP_DIC WHERE COUNT> 2"
+
+'''############### 이 전에 ###############'''
+if query != "":
+    print (query)
+    if query.split(" ")[0] == "SELECT":
+        cursor.execute(query)
+        for row in cursor:
+            print(row)
+    else:
+        cursor.execute(query)
+        con.commit()
+
+con.commit()
+con.close()
