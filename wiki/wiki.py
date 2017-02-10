@@ -222,13 +222,14 @@ def pair_cro():
         print("response : ",sp[0])
         if(sp[0]==s[2]):
             print("SAME!")
-            f.write(line)
             kor = open("./noredirect_kor_html/kor_"+str(filenumber)+".html","w",encoding='UTF8')
             eng = open("./noredirect_eng_html/eng_"+str(filenumber)+".html","w",encoding='UTF8')
             try:
                 address_eng = urlopen(s[1])
+                f.write(line)
             except:
                 log.write(line)
+                print("URL OPEN ERROR!")
                 continue
             sources_eng = BeautifulSoup(address_eng,"html.parser")
             kor.write(str(sources_kor))
