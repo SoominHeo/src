@@ -1,21 +1,28 @@
 import sqlite3
 import make_dictionary
 import re
+from bs4 import BeautifulSoup
+import header
+pair_list = []
 
-#1 table 생성 (1회 사용)
-def create_table(table_name):
-    cursor.execute("CREATE TABLE " + table_name + "(kor text, eng text, count int)")
-    con.commit()
-    print("[create table] " + table_name)
+'''
+<각 함수에 대한 설명>
+def insert_link_dictionary(table_name): 링크사전으로 DB 기반 만들기 (1회 사용)
+def query_statement(query): 그냥 parameter에 쿼리 넣어주면 돌려줌
+def insert_word_to_dictionary(language, word, count): 함수 dictionary_to_article_check에 사용되는 함수.
+def special_character(key): 함수 dictionary_to_article_check에 사용되는 함수.
+def dictionary_to_article_check(dic, index): 함수 dictionary에 있는 문자 하나하나 article에 집어 넣고(글자가 긴 순서로), 먼저 찾아진 단어는 삭제 후 다음 단어를 적용.
+def run(start, end): 함수 dictionary_to_article_check를 돌리는 메인문 같은 역할.
+def count_rows_larger_than(num): 함수 extract_NNP_DIC_in_LINK_DIC에서 나중에 num번 이상 나온 단어가 얼마나 있는지 계산하기 위해서 만듦.
+def extract_NNP_DIC_in_LINK_DIC(num): num번 미만으로 나온 단어들로만 dictionary를 만들고 반환.
+def make_index_kor_eng_list(): 예시가 이해가 더 잘 됨. ex) '전리수소영역'에서 '전리수소영역'이라는 단어는 빼고 돌려야되니까
+'''
 
-#2 table 삭제 (1회 사용)
-def drop_table(table_name):
-    cursor.execute("DROP TABLE " + table_name)
-    con.commit()
-    print("[drop table] " + table_name)
-
-#3 링크사전으로 DB 기반 만들기 (1회 사용)
+# 링크사전으로 DB 기반 만들기 (1회 사용)
 def insert_link_dictionary(table_name):
+    con = sqlite3.connect("NNP.db")
+    cursor = con.cursor()
+
     dic = make_dictionary.make_dictionary()
     i = 0
     for word in dic.keys():
@@ -26,12 +33,28 @@ def insert_link_dictionary(table_name):
             continue
         dic[word] = dic[word].replace("_", " ")
 
-        cursor.execute('INSERT INTO ' + table_name + ' VALUES("' + str(word) + '", "' + str(dic[word]) + '", 1)')
+        cursor.execute('INSERT INTO ' + table_name + ' VALUES("' + str(word) + '", "' + str(dic[word]) + '", 0)')
         con.commit()
     print("[insert] fill with link dictionary")
 
-#4 한 문서에서 count된 만큼 DB에 숫자 올려주기
-def insert_word_to_dictionary(language, word, count):
+def query_statement(query):
+    con = sqlite3.connect("NNP.db")
+    cursor = con.cursor()
+
+    print(query)
+    if query.split(" ")[0] == "SELECT":
+        cursor.execute(query)
+        for row in cursor:
+            print(row)
+    else:
+        cursor.execute(query)
+    con.commit()
+    con.close()
+
+
+# 한 문서에서 단어가 존재하는 만큼 DB의 count 올려주기
+def insert_word_to_dictionary(con, language, word, count):
+    cursor = con.cursor()
     if language == "k":
         print(word + " +" + str(count))
         cursor.execute('UPDATE NNP_DIC SET count=count+' + str(count) + ' WHERE kor="' + word + '"')
@@ -40,7 +63,7 @@ def insert_word_to_dictionary(language, word, count):
         cursor.execute('UPDATE NNP_DIC SET count=count+' + str(count) + ' WHERE eng="' + word + '"')
     con.commit()
 
-#5 정규표현식 쓸 때 의미 있는 글자들 앞에 \ 붙이기 ex) + -> \+
+# 정규표현식 쓸 때 의미 있는 글자들 앞에 escape character 붙이기 ex) + -> \+
 def special_character(key):
     result = ""
     special_character_list = ['.', '^', '$', '*', '+', '?', '{', '}', '[', ']', '\\', '|', '(', ')']
@@ -51,8 +74,9 @@ def special_character(key):
             result += key[i]
     return result
 
-#6 dictionary에 있는 문자 하나하나 article에 집어 넣고 비교 된 것은 삭제
-def dictionary_to_article_check(dic, index):
+# dictionary에 있는 문자 하나하나 article에 집어 넣고(글자가 긴 순서로), 먼저 찾아진 단어는 삭제 후 다음 단어를 적용
+def dictionary_to_article_check(con, dic, pair_list):
+    index = pair_list[0]
     print(str(index) + ".txt")
     k_file = open("../../data/Wiki/sample/header/kor/" + str(index) + ".txt", "rU", encoding='UTF8')
     e_file = open("../../data/Wiki/sample/header/eng/" + str(index) + ".txt", "rU", encoding='UTF8')
@@ -60,12 +84,15 @@ def dictionary_to_article_check(dic, index):
     k_header_list = str(k_file.readlines())
     e_header_list = str(e_file.readlines())
 
+    k_header_list = k_header_list.replace(pair_list[1], "") #'전리수소영역'에서 '전리수소영역'빼기
+    e_header_list = e_header_list.replace(pair_list[2], "")
+
     for k in sorted(dic, key=len, reverse=True):
         if k == '"': continue
         k = special_character(k)
         length = len(re.findall(k, k_header_list))
         if length > 0:
-            insert_word_to_dictionary("k", k, length)
+            insert_word_to_dictionary(con, "k", k, length)
             k_header_list = k_header_list.replace(k, "")
 
     for e in sorted(dic, key=len, reverse=True):
@@ -73,56 +100,102 @@ def dictionary_to_article_check(dic, index):
         e = special_character(e)
         length = len(re.findall(e, e_header_list))
         if length > 0:
-            insert_word_to_dictionary("e", e, length)
+            insert_word_to_dictionary(con, "e", e, length)
             e_header_list = e_header_list.replace(e, "")
 
     k_file.close()
     e_file.close()
 
-#7
+def count_rows_larger_than(cursor, num):
+    cursor.execute("SELECT COUNT(*) FROM NNP_DIC WHERE COUNT >= "+str(num))
+    for row in cursor:
+        return row[0]
+
+def extract_NNP_DIC_in_LINK_DIC(num):
+    con = sqlite3.connect("NNP.db")
+    cursor = con.cursor()
+
+    print ("빈도수가 " + str(num) + " 이상인 row의 수는 " + str(count_rows_larger_than(cursor, num)) + "개 이고, \n\t고유명사사전은 빈도수가 " + str(num) + " 미만인 것들로 만들고 반환합니다")
+    dic = {}
+    cursor.execute("SELECT * FROM NNP_DIC WHERE COUNT < " + str(num))
+    for row in cursor:
+        dic[row[0]] = row[1]
+    con.commit()
+    con.close()
+    return dic
+
 def run(start, end):
+    con = sqlite3.connect("NNP.db")
+    cursor = con.cursor()
+    pair_list = make_index_kor_eng_list()
     dic = make_dictionary.make_dictionary()
     index = start
     while 1:
         if index == end+1: # 몇 개 돌리길 원하는지
             break
-        dictionary_to_article_check(dic, index)
+        dictionary_to_article_check(con, dic, pair_list[index])
         index = index + 1
 
-''' main 문 '''
-con = sqlite3.connect("NNP.db")
-cursor = con.cursor()
-query = ""
-'''########## 항상 코드는 이 뒤에 ##########'''
+    con.commit()
+    con.close()
 
-#drop_table("NNP_DIC") #1
-#create_table("NNP_DIC") #2
-#insert_link_dictionary("NNP_DIC") #3
-#7<run> -> #6 -> (#5 & #4)
+def make_index_kor_eng_list():
+    f = open("../../data/wiki/pair.csv", "r", encoding='UTF8')
+    lines = f.readlines()
+    pair_list = []
+    index = 0
+    for line in lines:
+        splt = re.split(",\t|\n", line)
+        #print(splt[2], splt[3])
+        pair_list.append([index, splt[2], splt[3]])
+        index = index + 1
+    f.close()
+    return pair_list
 
-'''
-아래의 run 함수 호출 시
-몇 번 부터 몇 번 까지 돌려서 dictionary에 넣을지
-(중복되면 안됨..그럼 DB에 2번 들어감..)
-추천하는거는 (0,99), (100,199) 이렇게 해서 안겹치게 하는 것!
-'''
-run(0,1)
+def store_only_header():
+    index = 0
+    while 1:
+        print (str(index)+".txt")
+        k = open("../../data/wiki/sample/random_sample1/kor/" + str(index) + ".txt", "r", encoding='UTF8')
+        sources_k = BeautifulSoup(k, "html.parser")
 
-'''
-여기에 쿼리 쓰면 됨 (쿼리는 지형오빠가 잘 알거같음_디비 들었으니ㅎㅎ)
-'''
-#query = "SELECT * FROM NNP_DIC WHERE COUNT> 2"
+        e = open("../../data/wiki/sample/random_sample1/eng/" + str(index) + ".txt", "r", encoding='UTF8')
+        sources_e = BeautifulSoup(e, "html.parser")
 
-'''############### 이 전에 ###############'''
-if query != "":
-    print (query)
-    if query.split(" ")[0] == "SELECT":
-        cursor.execute(query)
-        for row in cursor:
-            print(row)
-    else:
-        cursor.execute(query)
-        con.commit()
+        ck = header.header(sources_k, sources_e, index)
+        if ck == -1:
+            index = index + 1
+            continue
+        index = index + 1
 
-con.commit()
-con.close()
+
+#query_statement("CREATE TABLE NNP_DIC(kor text, eng text, count int)")
+#query_statement("DROP TABLE NNP_DIC")
+#run(0,1)
+#query_statement("SELECT * FROM NNP_DIC WHERE COUNT> 2") # n개 이상인 row만 print
+#NNP_DICTIONARY = extract_NNP_DIC_in_LINK_DIC(1) #여기서 반환하는
+
+
+
+# 이 모든 것들은 시간이 매우 오래 걸릴 예정이므로, 교수님 컴퓨터에서 돌리기를 권장합니다.
+
+#step.0     NNP.db에서 NNP_DIC table은 (한글, 영어, 나타난 횟수)로 되어있습니다.
+#           지윤이가 교수님 컴퓨터에서 받은 NNP.db가 초기 버전인지 확인한다. (초기 버전이 아닐 경우 꼭 초기버전-교수님컴퓨터에 있음-으로 다시 받아서 해놓길)
+#step1.     header 부분만 일단 다 다운 받아야지 거기서 고유명사 사전을 만들 수 있습니다.
+#           header는 html이 다 뽑혀야 뽑을 수 있는 것이고, 아마 월요일이면 다 받지 않을까 싶습니다.
+'''           !!!!!!! 0.txt가 !(느낌표), Exclamation_mark 인지 꼭 확인하세요 !!!!!!!! 전리수소영역이면 안됩니다. 꼭 꼮 꼭
+                그리고 경로는 이제 sample이 아니라 새로운 경로로 해야합니다!!!   '''
+# step2.    그럼 html 파일에서 header만 뽑아 sample/header/eng와 sample/header/kor에 저장합니다. (html은 0.txt ~ 47xxxxx.txt로 저장해주세요)
+store_only_header()
+#step3.     step2가 완성되면 run 함수를 돌립니다. 이 함수는 단어가 나타난 횟수를 증가시켜줍니다. 매~~우 오래 걸릴 예정입니다.
+run(0,474445)
+#step4.     앞의 작업이 끝나면 extract_NNP_DIC_in_LINK_DIC(num) 함수를 돌려서, 자주 나왔던 단어(예를들어 count-전체 글에서 단어가 나온 횟수-가 20보다 큰)가 몇 개 인지 확인하고
+#           고유명사 사전에서 걸러내야할 빈도수는 어느정도인지 일일이 좀 봐야할 것 같습니다. 이 함수 돌리면 친절하게 한글이 나올 것 입니다.
+#                       '빈도수가 20 이상인 row의 수는 300000개 이고,
+#                       	고유명사사전은 빈도수가 20 미만인 것들로 만들고 반환합니다'
+#           이렇게요. 친절하죠? 판단 방법: 여기서 저는 빈도수가 20 미만인 것들은 매우 드문 경우(17만개 밖에 안남았으니)라고 판단해서 여기서 반환된 dictionary를 사용하려 합니다.
+'''             여기까지 딱 한번만 돌리는 거에요              '''
+dic = extract_NNP_DIC_in_LINK_DIC(20)
+#step5.     step4에서 만들어진 사전이 우리가 최종적으로 얻고자 하는 고유명사사전이 됩니다. 물론... 빈도수로만 했기 때문에 정확한 dictionary는 될 수 없겠지만,
+#           우리가 고유명사사전을 만드려고 한 이유가 드물게 나오는 것들을 뽑아내는 것이므로, 취지에는 적합한 사전이 완성되었다 생각합니다.
+#           아 그리고 이 함수는 이제 NNP_list를 만드는데 사용이 되겠죠? ㅎㅎㅎ Good Luck... 오빠들 사랑해여 지윤아 사랑해 ㅠㅠ 하루이틀은 꼭 쉬세여 ㅎㅎ 라뷰
