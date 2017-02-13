@@ -140,7 +140,7 @@ def run(start, end):
     con.close()
 
 def make_index_kor_eng_list():
-    f = open("../../data/wiki/pair.csv", "r", encoding='UTF8')
+    f = open("../../data/wiki/data.csv", "r", encoding='UTF8')
     lines = f.readlines()
     pair_list = []
     index = 0

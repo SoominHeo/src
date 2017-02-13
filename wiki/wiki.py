@@ -222,8 +222,8 @@ def pair_cro():
         print("response : ",sp[0])
         if(sp[0]==s[2]):
             print("SAME!")
-            kor = open("./noredirect_kor_html/kor_"+str(filenumber)+".html","w",encoding='UTF8')
-            eng = open("./noredirect_eng_html/eng_"+str(filenumber)+".html","w",encoding='UTF8')
+            kor = open("./noredirect_kor_html/"+str(filenumber)+".html","w",encoding='UTF8')
+            eng = open("./noredirect_eng_html/"+str(filenumber)+".html","w",encoding='UTF8')
             try:
                 address_eng = urlopen(s[1])
                 f.write(line)
