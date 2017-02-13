@@ -4,8 +4,8 @@ import LCS
 
 #wiki.make_list_csv()
 #wiki.pair_dic()
-dic = make_dictionary.make_dictionary()
 #wiki.pair_cro()
+dic = make_dictionary.make_dictionary()
 start_idx = 0
 end_idx = 9999
 error_list = []

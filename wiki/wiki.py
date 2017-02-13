@@ -63,7 +63,7 @@ def save_csv(url,title,tt,csv):
     csv.write(str(url)+",\t"+str(title)+",\t"+str(tt)+"\n")
 
 def make_list_csv():
-    csv = open("urlindex.csv","w",encoding='UTF8')
+    csv = open("../../data/wiki/urlindex.csv","w",encoding='UTF8')
     nexturl = 'https://ko.wikipedia.org/w/index.php?title=%ED%8A%B9%EC%88%98:%EB%AA%A8%EB%93%A0%EB%AC%B8%EC%84%9C&from=%21';
 
     i=0
@@ -126,7 +126,7 @@ def make_list_csv():
     csv.close()
 
 def readcsv():
-    f = open("500.csv","r",encoding='UTF8')
+    f = open("urlindex.csv","r",encoding='UTF8')
     return f
 
 
@@ -172,7 +172,7 @@ def cro():
 
 def pair_dic(): #pair있는 인덱스 만들기
     f = readcsv();
-    p = open("pair.csv","w",encoding='UTF8')
+    p = open("../../data/wiki/pair470000.csv","w",encoding='UTF8')
     while 1:
         line = f.readline()
         if not line: break
@@ -200,7 +200,7 @@ def pair_dic(): #pair있는 인덱스 만들기
 
 def pair_cro():
     p = open("./list/pair470000.csv","r",encoding='UTF8')
-    f = open("pair_cro.csv","w",encoding='UTF8')
+    f = open("../../data/wiki/data.csv","w",encoding='UTF8')
     log = open("log.txt","w",encoding='UTF8')
     filenumber = 0
     while 1:
@@ -222,8 +222,8 @@ def pair_cro():
         print("response : ",sp[0])
         if(sp[0]==s[2]):
             print("SAME!")
-            kor = open("./noredirect_kor_html/"+str(filenumber)+".html","w",encoding='UTF8')
-            eng = open("./noredirect_eng_html/"+str(filenumber)+".html","w",encoding='UTF8')
+            kor = open("../../data/wiki/kor_html/"+str(filenumber)+".html","w",encoding='UTF8')
+            eng = open("../../data/wiki/eng_html/"+str(filenumber)+".html","w",encoding='UTF8')
             try:
                 address_eng = urlopen(s[1])
                 f.write(line)
@@ -239,24 +239,6 @@ def pair_cro():
             filenumber = filenumber+1
     log.close()
     p.close()
-    f.close()
-
-def delete_subtitle():
-    a=0
-    f = open("subtitle.txt","w")
-    while 1:
-        address = urlopen("https://ko.wikipedia.org/w/index.php?title=%ED%8A%B9%EC%88%98:%EB%84%98%EA%B2%A8%EC%A3%BC%EA%B8%B0%EB%AA%A9%EB%A1%9D&limit=500&offset="+str(a*500))
-        sources = BeautifulSoup(address,"html.parser")
-        list = sources.findAll('li')
-        for x in list:
-            if(str(x).find("#.")!=-1):
-                sp = str(x).split("title=\"")
-                subtitle = sp[1][:sp[1].find("\"")]
-                print(subtitle)
-                f.write(subtitle+"\n")
-        a = a+1
-        if(a==10):
-            break;
     f.close()
 
 def check_all_pair(dic, i):
