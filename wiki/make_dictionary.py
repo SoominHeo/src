@@ -6,6 +6,6 @@ def make_dictionary():
     a = 0
     for line in lines:
         splt = re.split(",\t|\n", line)
-        dict[splt[2]] = splt[3]
+        dict[splt[2]] = splt[3].replace("_"," ")
     f.close()
     return dict
