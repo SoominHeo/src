@@ -278,7 +278,7 @@ def check_all_pair(dic, i):
 
 def make_file_for_LCS(ck_link_list, e_link_list, i):
     try:
-        f = open("../../data/Wiki/sample/header/eng/" + str(i) + ".txt", "rU", encoding='UTF8')
+        f = open("../../data/wiki/sample/header/eng/" + str(i) + ".txt", "rU", encoding='UTF8')
     except:
         print ("no_file >> " + str(i) + ".txt")
         return -1

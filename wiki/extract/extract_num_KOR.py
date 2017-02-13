@@ -77,7 +77,7 @@ def extract_num_KOR(num):
     n = str(num)
     num = num + 1
     try:
-        file = open("../../data/Wiki/sample/header/kor/" + n + ".txt", "rt", encoding='UTF8')
+        file = open("../../data/wiki/sample/header/kor/" + n + ".txt", "rt", encoding='UTF8')
     except IOError as e:
         print ("There is no" + n + ".txt")
         return -1

@@ -3,7 +3,7 @@
 from nltk.tag import pos_tag
 def extractNNP_ENG(i):
     try:
-        f = open("../../data/Wiki/sample/header/eng/"+str(i)+".txt","rU",encoding='UTF8')
+        f = open("../../data/wiki/sample/header/eng/"+str(i)+".txt","rU",encoding='UTF8')
     except:
         return -1
     e_list = []
@@ -16,4 +16,3 @@ def extractNNP_ENG(i):
         e_list.append(propernouns)
 
     return e_list
-extractNNP_ENG(1)
