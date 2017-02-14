@@ -285,7 +285,7 @@ def fill_line(frame):
     for idx in range(length-1):
         ko_diff = frame[idx + 1][0] - frame[idx][0]
         en_diff = frame[idx + 1][1] - frame[idx][1]
-        if(ko_diff == en_diff and en_diff < 5):
+        if(ko_diff == en_diff and en_diff < 6):
             for fill_idx in range(1,ko_diff):
                 frame.append([frame[idx][0] + fill_idx, frame[idx][1] + fill_idx])
     frame.sort()
@@ -296,9 +296,6 @@ def run_3LCS(index):
     b = using_LCS(index, "num_list")
     c = using_LCS(index, "NNP_list")
 
-    print (a)
-    print (b)
-    print (c)
 
     k_lst = []
     e_lst = []
@@ -333,11 +330,13 @@ def run_3LCS(index):
     global count
     for i in range (len(k_contents)):
         if i in k_lst:
+            assert i > 0
             count = count + 1
-            k_result.write(k_contents[i])
+            k_result.write(k_contents[i-1])
     for i in range (len(e_contents)):
         if i in e_lst:
-            e_result.write(e_contents[i])
+            assert i > 0
+            e_result.write(e_contents[i-1])
     print (count)
     f_ko.close()
     f_en.close()
