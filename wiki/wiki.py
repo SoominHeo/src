@@ -6,8 +6,8 @@ from bs4 import BeautifulSoup
 import time
 import sys
 import os
-sys.path.append(os.getcwd()+"\metric")
-sys.path.append(os.getcwd()+"\extract")
+sys.path.append(os.getcwd()+"/metric/")
+sys.path.append(os.getcwd()+"/extract/")
 from urllib import parse
 import urllib
 import zss
