@@ -248,6 +248,7 @@ def check_all_pair(dic, i):
 
     e = open("../../data/wiki/sample/random_sample1/eng/"+str(i)+".txt","r",encoding='UTF8')
     sources_e = BeautifulSoup(e,"html.parser")
+    
     #Metric 평가요소
     t1=reference.reference(sources_k, sources_e)
     t2=tree_compare.tree_compare(sources_k,sources_e)
@@ -255,26 +256,30 @@ def check_all_pair(dic, i):
     t4=check_translate_pair.check_translate_pair(sources_k)
     t5=paragraph.paragraph(sources_k,sources_e)
     t6=reading.reading(sources_k,sources_e)
-
+    
     ck_link_list = [[]]
     e_link_list = [[]]
-
+    
     if(t5==-1):
         return -1
+    
     #Metric
     metric_result=metric.metric(t1,t2,t3,t4,t5,t6)
     #print (metric_result)
-    if metric_result>=0.8:
-        ck = header.header(sources_k, sources_e,i)
-        if ck == -1:
-            return -1
-        else:
-            k_link_list, e_link_list = header_for_link.header_for_link(sources_k,sources_e,i)
-            if k_link_list==-1:
-                return -1
-        ck_link_list = translate_k_to_e.translate_k_to_e(dic,k_link_list)
 
-    return ck_link_list, e_link_list
+
+    ck = header.header(sources_k, sources_e,i)
+        
+    if ck == -1:
+        return -1
+    else:
+        k_link_list, e_link_list = header_for_link.header_for_link(sources_k,sources_e,i)
+            
+        if k_link_list==-1:
+            return -1
+    ck_link_list = translate_k_to_e.translate_k_to_e(dic,k_link_list)
+
+    return ck_link_list, e_link_list, metric_result
 
 def make_file_for_LCS(ck_link_list, e_link_list, i):
     try:

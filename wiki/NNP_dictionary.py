@@ -176,7 +176,7 @@ def store_only_header():
 #NNP_DICTIONARY = extract_NNP_DIC_in_LINK_DIC(1) #여기서 반환하는
 
 
-
+#insert_link_dictionary("NNP_DIC")
 # 이 모든 것들은 시간이 매우 오래 걸릴 예정이므로, 교수님 컴퓨터에서 돌리기를 권장합니다.
 
 #step.0     NNP.db에서 NNP_DIC table은 (한글, 영어, 나타난 횟수)로 되어있습니다.
@@ -186,7 +186,7 @@ def store_only_header():
 '''           !!!!!!! 0.txt가 !(느낌표), Exclamation_mark 인지 꼭 확인하세요 !!!!!!!! 전리수소영역이면 안됩니다. 꼭 꼮 꼭
                 그리고 경로는 이제 sample이 아니라 새로운 경로로 해야합니다!!!   '''
 # step2.    그럼 html 파일에서 header만 뽑아 sample/header/eng와 sample/header/kor에 저장합니다. (html은 0.txt ~ 47xxxxx.txt로 저장해주세요)
-store_only_header()
+#store_only_header()
 #step3.     step2가 완성되면 run 함수를 돌립니다. 이 함수는 단어가 나타난 횟수를 증가시켜줍니다. 매~~우 오래 걸릴 예정입니다.
 run(0,474445)
 #step4.     앞의 작업이 끝나면 extract_NNP_DIC_in_LINK_DIC(num) 함수를 돌려서, 자주 나왔던 단어(예를들어 count-전체 글에서 단어가 나온 횟수-가 20보다 큰)가 몇 개 인지 확인하고

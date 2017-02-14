@@ -189,7 +189,7 @@ def header(sourcesKOR, sourcesENG,i):
     kor_content_list=str(para_kor).translate(non_bmp_map).split("<p></p>")
     #kor_content_list="<p>".join(kor_content_list).split("</table>\n<p>")
     header_kor=remove_comma(str(kor_content_list[0]).translate(non_bmp_map))
-    header_kor=remove_span(header_kor)
+    #header_kor=remove_span(header_kor)
     header_kor=remove_tags(header_kor)
     if header_kor[len(header_kor)-2]==',':
         header_kor=header_kor[1:len(header_kor)-2]
@@ -212,7 +212,7 @@ def header(sourcesKOR, sourcesENG,i):
     eng_content_list=str(para_eng).translate(non_bmp_map2).split("<p></p>")
     #eng_content_list="<p>".join(eng_content_list).split("</table>\n<p>")
     header_eng=remove_comma(str(eng_content_list[0]).translate(non_bmp_map2))
-    header_eng=remove_span(header_eng)
+    #header_eng=remove_span(header_eng)
     header_eng=remove_tags(header_eng)
     if header_eng[len(header_eng)-2]==',':
         header_eng=header_eng[1:len(header_eng)-2]

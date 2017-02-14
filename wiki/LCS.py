@@ -8,7 +8,7 @@ import time
 import datetime
 import codecs
 
-count=0
+G_count=0
 LCStable=[]
 
 def jaccard(kor, eng):
@@ -57,7 +57,7 @@ def jaccard(kor, eng):
         aver=numer/deno
         return aver
 
-def LCS(k_art, e_art, k_len, e_len):
+def LCS(k_art, e_art, k_len, e_len,percent):
     m=0
     n=0
 
@@ -74,7 +74,7 @@ def LCS(k_art, e_art, k_len, e_len):
         for nn in range(e_len):
             k = k_art[mm].split(', ')
             e = e_art[nn].split(', ')
-            if jaccard(k,e)>=0.6:
+            if jaccard(k,e)>percent:
                 LCStable[mm+1][nn+1]=LCStable[mm][nn]+1
             else:
                 if LCStable[mm+1][nn]>=LCStable[mm][nn+1]:
@@ -104,7 +104,7 @@ def LCS_TraceBack(m, n, lcs):
 
     return result
 
-
+'''
 def seq(i,a, k_path, e_path):
     global cnt
     kor = []
@@ -248,8 +248,8 @@ def seq(i,a, k_path, e_path):
     f_en.close()
     f_total_kor.close()
     f_total_eng.close()
-
-def using_LCS(i, attr):
+'''
+def using_LCS(i, attr,percent,isStrong):
     try:
         f_eng = open("../../data/wiki/sample/list/" + attr + "/eng/" + str(i) + ".txt", "rU", encoding="UTF8")
         f_kor = open("../../data/wiki/sample/list/" + attr + "/kor/" + str(i) + ".txt", "rU", encoding="UTF8")
@@ -271,13 +271,15 @@ def using_LCS(i, attr):
         if en[y][-1]=='\n':
             en[y]=en[y][:len(en[y])-1]
 
-    length=LCS(ko, en, len(ko), len(en))
+    length=LCS(ko, en, len(ko), len(en), percent)
     result=[]
     a = LCS_TraceBack(len(ko),len(en),result)
 
     #seq(i,a, k_path, e_path)
-
-    return fill_line(a)
+    if isStrong:
+        return fill_line(a)
+    else:
+        return a
 
 
 def fill_line(frame):
@@ -291,10 +293,21 @@ def fill_line(frame):
     frame.sort()
     return frame
 
-def run_3LCS(index):
-    a = using_LCS(index, "link_list")
-    b = using_LCS(index, "num_list")
-    c = using_LCS(index, "NNP_list")
+def run_3LCS(index, percent):
+    if percent >= 0.8:
+        a_percent = 0
+        b_percent = 0.2
+        c_percent = 0.2
+        isStrong = True
+    else:
+        a_percent = 0
+        b_percent = 0.8
+        c_percent = 0.8
+        isStrong = False
+
+    a = using_LCS(index, "link_list",a_percent,isStrong)
+    b = using_LCS(index, "num_list",b_percent,isStrong)
+    c = using_LCS(index, "NNP_list",c_percent,isStrong)
 
 
     k_lst = []
@@ -318,6 +331,7 @@ def run_3LCS(index):
         f_ko = open("../../data/wiki/sample/header/kor/"+str(index)+".txt","rU", encoding="UTF8")
         f_en = open("../../data/wiki/sample/header/eng/"+str(index)+".txt","rU", encoding="UTF8")
     except:
+        print("header open error")
         return -1
 
     k_result = open("../../data/wiki/sample/result/kor/"+str(index)+".txt","w", encoding="UTF8")
@@ -326,8 +340,9 @@ def run_3LCS(index):
     k_contents = f_ko.readlines()
     e_contents = f_en.readlines()
 
-    print (k_lst, e_lst)
-    global count
+    #print (k_lst, e_lst)
+    global G_count
+    count=0
     for i in range (len(k_contents)):
         if i in k_lst:
             assert i > 0
@@ -337,7 +352,11 @@ def run_3LCS(index):
         if i in e_lst:
             assert i > 0
             e_result.write(e_contents[i-1])
-    print (count)
+    print("KOREA  ",len(k_contents))
+    print("ENGLISH",len(e_contents))
+    print("COUNT  ",count)
+    G_count = G_count+count
+    print("G_COUNT",G_count)
     f_ko.close()
     f_en.close()
     k_result.close()
