@@ -78,8 +78,8 @@ def special_character(key):
 def dictionary_to_article_check(con, dic, pair_list):
     index = pair_list[0]
     print(str(index) + ".txt")
-    k_file = open("../../data/Wiki/sample/header/kor/" + str(index) + ".txt", "rU", encoding='UTF8')
-    e_file = open("../../data/Wiki/sample/header/eng/" + str(index) + ".txt", "rU", encoding='UTF8')
+    k_file = open("../../data/wiki/sample/header/kor/" + str(index) + ".txt", "rU", encoding='UTF8')
+    e_file = open("../../data/wiki/sample/header/eng/" + str(index) + ".txt", "rU", encoding='UTF8')
 
     k_header_list = str(k_file.readlines())
     e_header_list = str(e_file.readlines())
