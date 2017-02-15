@@ -8,6 +8,9 @@ from nltk import sent_tokenize
 import time
 import copy
 #import datetime
+import number_ko
+import number_en
+import LCS
 def remove_br_tags(data):
     newstr = data.replace("<br/>","=br=")
     newstr = newstr.replace("<br>\n<br>","=br=")
@@ -303,55 +306,68 @@ def store_html_csv(address, data, filenumber,csv,id):
     f.write(str(data))
     f.close()
 
-#Begging page number
-i=1
-filenumber=i*10-10;
-csv = open("../../data/Joongang/original_html/attribute.csv","w",encoding="UTF8")
-csv2 = open("../../data/Joongang/original_text/attribute.csv","w",encoding="UTF8")
-while i<=822:    #Ending page number
-    print(str(i)+" page")
-    
-    # Get articles from joongangdaily
-    number = str(i)
-    address = urlopen('http://koreajoongangdaily.joins.com/news/list/list.aspx?gCat=060201&pgi='+number)
-    sources = BeautifulSoup(address,"html.parser")
-    test0 = sources.findAll('a',attrs={'class':'title_cr'})
-    x=0
-    
-    while 1:
-        print("\t"+str(filenumber)+" article")
-        if(x==10): #10 online articles in one page
-            break;
-        
-        ddd = str(test0[x])
-        test1 = ddd.split('href="')
-        y=0
-        url_last =""
-        
-        while 1:
-            if(test1[1][y]=='"'):
-                break;
-            
-            url_last = url_last + test1[1][y]
-            y = y+1
+def get_html_csv():
 
+    #Begging page number
+    i=1
+    filenumber=i*10-10;
+    csv = open("../../data/Joongang/original_html/attribute.csv","w",encoding="UTF8")
+    while i<=822:    #Ending page number
+        print(str(i)+" page")
+    
+        # Get articles from joongangdaily
+        number = str(i)
+        address = urlopen('http://koreajoongangdaily.joins.com/news/list/list.aspx?gCat=060201&pgi='+number)
+        sources = BeautifulSoup(address,"html.parser")
+        test0 = sources.findAll('a',attrs={'class':'title_cr'})
+        x=0
+    
+        while 1:
+            print("\t"+str(filenumber)+" article")
+            if(x==10): #10 online articles in one page
+                break;
+        
+            ddd = str(test0[x])
+            test1 = ddd.split('href="')
+            y=0
+            url_last =""
+        
+            while 1:
+                if(test1[1][y]=='"'):
+                    break;
             
-        id = str(url_last)
-        urladdress = "http://koreajoongangdaily.joins.com"+id
-        address = urlopen('http://koreajoongangdaily.joins.com/'+id)
-        data = BeautifulSoup(address,"html.parser")
-        
-        store_html_csv(urladdress, data, filenumber,csv,id)
-        
+                url_last = url_last + test1[1][y]
+                y = y+1
+            id = str(url_last)
+            urladdress = "http://koreajoongangdaily.joins.com"+id
+            address = urlopen('http://koreajoongangdaily.joins.com/'+id)
+            data = BeautifulSoup(address,"html.parser")
+            store_html_csv(urladdress, data, filenumber,csv,id)
+            filenumber = filenumber+1
+            x = x+1
+            
+        i = i+1
+
+    csv.close()
+
+
+
+def save_content():
+    filenumber = 0
+    csv2 = open("../../data/Joongang/original_text/attribute.csv","w",encoding="UTF8")
+    while 1:
+        print(filenumber)
+        file = open("../../data/Joongang/original_html/html/"+str(filenumber)+".html","rU",encoding='UTF8')
+        data = BeautifulSoup(file,"html.parser")
         #for raw data that contains a lot of tags and space.
         f = open("raw_data.txt","w",encoding='UTF8')
         f.write(str(data.prettify))
-        f.close
+        f.close()
         s = open("raw_data.txt","r",encoding='UTF8')
         tmp=""
         chk=0
-        
-        #Get specific parts of raw data. Beginng note, that is for cutting contents, is "<span class="data">", and Ending note is "id="language">" in the raw data. 
+            
+        #Get specific parts of raw data. Beginng note, that is for cutting contents, is "<span class="data">", and Ending note is "id="language">" in the raw data.
         for st in s :
             if chk==2:
                 break
@@ -370,28 +386,23 @@ while i<=822:    #Ending page number
         tmp = remove_br_tags(tmp)
         tmp = div_english_korean(tmp)
         bodies=remove_tags(tmp)
-        
+            
         bodies=bodies.replace("=br=","\n\n")
-        
+            
         bodies_split=bodies.split("!div_eng_kor!")
-        
+            
         if len(bodies_split)<2:
             x=x+1
             filenumber = filenumber+1
             continue;
-
+            
         div_english_sentence(bodies_split,filenumber,csv2)
         div_korean_sentence(bodies_split,filenumber,csv2)
+        filenumber = filenumber + 1
+    csv2.close()
 
-
-        
-
-        filenumber = filenumber+1
-        x = x+1
-    time.sleep(3.00)
-        
-        
-    i = i+1
-
-csv.close()
-csv2.close()
+#get_html_csv()
+#save_content()
+#number_ko.number_ko()
+#number_en.nunmber_en()
+#LCS.LCS()

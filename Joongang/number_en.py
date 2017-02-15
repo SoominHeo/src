@@ -135,44 +135,44 @@ Unit = {
 }
 
 
-url = "C:\joongang\er\\"
 
 
-for index in range(0, 8217):
-    try:
-        write_en_File = open(url + "result\\" + str(index) + ".txt", 'w', encoding= 'utf-8')
-        file_name = "er\\" + str(index) + ".eng.txt"
-        en = open(url + file_name, 'r', encoding='utf-8')
-        print (index)
+def number_en():
+    for index in range(0, 8217):
+        try:
+            write_en_File = open("../../data/Joongang/original_text/num/en/" + str(index) + ".txt", 'w', encoding= 'utf-8')
+            file_name = str(index) + ".txt"
+            en = open("../../data/Joongang/original_text/en/" + file_name, 'r', encoding='utf-8')
+            print (index)
 
-        count_en_line = 0
-        #write_en_File.write(file_name + "\n")
+            count_en_line = 0
+            #write_en_File.write(file_name + "\n")
 
-        for line in en:
-            count_en_line += 1
-            getList = []
+            for line in en:
+                count_en_line += 1
+                getList = []
 
-            line = delete_symbol(line, '-')
-            line = delete_symbol(line, ':')
+                line = delete_symbol(line, '-')
+                line = delete_symbol(line, ':')
 
 
-            tokens = nltk.word_tokenize(line)
-            tagged = nltk.pos_tag(tokens)
+                tokens = nltk.word_tokenize(line)
+                tagged = nltk.pos_tag(tokens)
 
-            write_en_File.write("[" + str(count_en_line) + "] ")
+           
 
-            for element in tagged:
-                getNumberList(element,getList)
+                for element in tagged:
+                    getNumberList(element,getList)
 
-            nomalization(getList)
-            for element in getList:
-                if(element is not " "):
-                    write_en_File.write(str(element) +", ")
+                nomalization(getList)
+                for element in getList:
+                    if(element is not " "):
+                        write_en_File.write(str(element) +", ")
+                write_en_File.write("\n")
             write_en_File.write("\n")
-        write_en_File.write("\n")
 
 
-        en.close()
-        write_en_File.close()
-    except FileNotFoundError:
-        pass
+            en.close()
+            write_en_File.close()
+        except FileNotFoundError:
+            pass

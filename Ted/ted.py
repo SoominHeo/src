@@ -509,6 +509,7 @@ i=0
 readcsv = open(html_attributeDir,"r")
 csv2 = open(match_attributeDir,"w")
 while i<=2228:
+    print(i)
     number = str(i)
     line = readcsv.readline()
     onelinecsv=line.split(',')

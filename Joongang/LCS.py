@@ -263,6 +263,7 @@ def seq(i,a):
     f_total_kor.close()
     f_total_eng.close()
 
+
 i=1
 
 while i<=1:
