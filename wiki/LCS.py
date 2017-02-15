@@ -10,7 +10,12 @@ import codecs
 
 G_count=0
 LCStable=[]
-
+'''
+    path
+'''
+header_path = "../../data/wiki/header/{lang}/{idx}.txt"
+result_path = "../../data/wiki/result/{lang}/{idx}.txt"
+list_path = "../../data/wiki/result/{attr}/{lang}/{idx}.txt"
 def jaccard(kor, eng):
     deno=0
     numer=0
@@ -142,8 +147,8 @@ def seq(i,a, k_path, e_path):
                 x=x+1
 
     try:
-        f_ko = open("../../data/wiki/sample/header/kor/"+str(i)+".txt","rU", encoding="UTF8")
-        f_en = open("../../data/wiki/sample/header/eng/"+str(i)+".txt","rU", encoding="UTF8")
+        f_ko = open(header_path.format(lang='kor',idx=i),"rU", encoding="UTF8")
+        f_en = open(header_path.format(lang='eng',idx=i),"rU", encoding="UTF8")
     except:
         return -1
 
@@ -251,14 +256,12 @@ def seq(i,a, k_path, e_path):
 '''
 def using_LCS(i, attr,percent,isStrong):
     try:
-        f_eng = open("../../data/wiki/sample/list/" + attr + "/eng/" + str(i) + ".txt", "rU", encoding="UTF8")
-        f_kor = open("../../data/wiki/sample/list/" + attr + "/kor/" + str(i) + ".txt", "rU", encoding="UTF8")
+        f_eng = open(list_path.format(attr=attr,lang='eng',idx=i), "rU", encoding="UTF8")
+        f_kor = open(list_path.format(attr=attr,lang='kor',idx=i), "rU", encoding="UTF8")
     except:
         #i=i+1
         return -1
 
-    k_path = "../../data/wiki/sample/result/"+attr+"/kor/"
-    e_path = "../../data/wiki/sample/result/"+attr+"/eng/"
 
     en=f_eng.readlines()
     ko=f_kor.readlines()
@@ -309,10 +312,12 @@ def run_3LCS(index, percent):
     b = using_LCS(index, "num_list",b_percent,isStrong)
     c = using_LCS(index, "NNP_list",c_percent,isStrong)
 
+    if(a==-1 or b==-1 or c==-1):
+        print("a b c error")
+        return
 
     k_lst = []
     e_lst = []
-
     for i in range(len(a)):
         k_lst.append(a[i][0])
         e_lst.append(a[i][1])
@@ -326,16 +331,15 @@ def run_3LCS(index, percent):
         if (c[i][0] not in k_lst) and (c[i][1] not in e_lst):
             k_lst.append(c[i][0])
             e_lst.append(c[i][1])
-
     try:
-        f_ko = open("../../data/wiki/sample/header/kor/"+str(index)+".txt","rU", encoding="UTF8")
-        f_en = open("../../data/wiki/sample/header/eng/"+str(index)+".txt","rU", encoding="UTF8")
+        f_ko = open(header_path.format(lang='kor',idx=index),"rU", encoding="UTF8")
+        f_en = open(header_path.format(lang='eng',idx=index),"rU", encoding="UTF8")
     except:
-        print("header open error")
+        print("header open eor")
         return -1
 
-    k_result = open("../../data/wiki/sample/result/kor/"+str(index)+".txt","w", encoding="UTF8")
-    e_result = open("../../data/wiki/sample/result/eng/"+str(index)+".txt","w", encoding="UTF8")
+    k_result = open(result_path.format(lang='kor',idx=index),"w", encoding="UTF8")
+    e_result = open(result_path.format(lang='eng',idx=index),"w", encoding="UTF8")
 
     k_contents = f_ko.readlines()
     e_contents = f_en.readlines()

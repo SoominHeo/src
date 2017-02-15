@@ -2,11 +2,11 @@ import make_dictionary
 import translate_k_to_e
 from konlpy.tag import Kkma
 kkma = Kkma()
-
+header_path = "../../data/wiki/header/{lang}/{idx}.txt"
 def extractNNP_KOR(i):
 	dic = make_dictionary.make_dictionary()
 	try:
-		read_page = open("../../data/wiki/sample/header/kor/"+str(i)+".txt","rU",encoding='UTF8')
+		read_page = open(header_path.format(lang='kor',idx=i),"rU",encoding='UTF8')
 	except:
 		return -1
 	result = [] # all noun list

@@ -13,17 +13,12 @@ i = start_idx
 while 1:
     if i > end_idx:
         break
-    try:
-        print (str(i)+".txt")
-        ck_link_list, e_link_list, percent = wiki.check_all_pair(dic, i)
-        a = wiki.make_file_for_LCS(ck_link_list, e_link_list, i)
-        if a == -1:
-            i = i + 1
-            continue
-        LCS.run_3LCS(i, percent)
+    print(i)
+    ck_link_list, e_link_list, percent = wiki.check_all_pair(dic, i)
+    a = wiki.make_file_for_LCS(ck_link_list, e_link_list, i)
+    if a == -1 or percent==-1:
         i = i + 1
-    except:
-        print("main error")
-        error_list.append(i)
-        i = i + 1
-print(error_list)
+        print("makefileforLCS error")
+        continue
+    LCS.run_3LCS(i, percent)
+    i = i + 1

@@ -8,7 +8,7 @@ unit을 적용시킬 수 있을 듯 함.
 '''
 import re
 import nltk
-
+headerpath_en = "../../data/wiki/header/eng/"
 def delete_symbol(line, symbol):
 
     flag = True
@@ -134,10 +134,9 @@ def getNumberList(element, number_list):
 
 def extract_num_ENG(index):
     result = []
-    url = "./../../data/wiki/sample/header/eng/"
     #en = open(url + str(index) + ".txt", 'r', encoding= 'utf8')
     try:
-        en = open(url + str(index) + ".txt", 'r', encoding='utf8')
+        en = open(headerpath_en + str(index) + ".txt", 'r', encoding='utf8')
         count_en_line = 0
         #write_en_File.write(file_name + "\n")
         for line in en:

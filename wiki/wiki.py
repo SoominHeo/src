@@ -27,7 +27,10 @@ import extract_num_ENG
 import extractNNP_KOR
 import extractNNP_ENG
 
-
+csv_path = "../../data/wiki/{csv}.csv"
+html_path = "../../data/wiki/{lang}_html/{idx}.html"
+header_path = "../../data/header/{lang}/{idx}.txt"
+list_path = "../../data/wiki/{attr}/{lang}/{idx}.txt"
 def remove_tags(data):
     p=re.compile(r'<.*?>')
     return p.sub('', data)
@@ -62,8 +65,8 @@ def save_csv(url,title,tt,csv):
     print(str(url)+",\t"+str(title)+",\t"+str(tt)+"\n")
     csv.write(str(url)+",\t"+str(title)+",\t"+str(tt)+"\n")
 
-def make_list_csv():
-    csv = open("../../data/wiki/urlindex.csv","w",encoding='UTF8')
+def make_list_csv():#680000개 전체 데이터 url
+    csv = open(csv_path.format(csv='urlindex'),"w",encoding='UTF8')
     nexturl = 'https://ko.wikipedia.org/w/index.php?title=%ED%8A%B9%EC%88%98:%EB%AA%A8%EB%93%A0%EB%AC%B8%EC%84%9C&from=%21';
 
     i=0
@@ -125,54 +128,10 @@ def make_list_csv():
             break;
     csv.close()
 
-def readcsv():
-    f = open("urlindex.csv","r",encoding='UTF8')
-    return f
-
-
-def script(list_audio,source):
-    global cnt
-    for x in list_audio:
-        s = str(x).split(' ')
-        for y in s:
-            if(y[0:5]=="href="):
-                try:
-                    englishURL = urlopen(y[6:len(y)-1])
-                    sourcesENG = BeautifulSoup(englishURL,"html.parser")
-                    kor_file = open("kor/kor_"+str(cnt)+".txt","w",encoding='UTF8')
-                    eng_file = open("eng/eng_"+str(cnt)+".txt","w",encoding='UTF8')
-                    kor_file.write(str(source))
-                    eng_file.write(str(sourcesENG))
-                    kor_file.close()
-                    eng_file.close()
-                    print(str(cnt)+"\n")
-                    cnt += 1
-                except:
-                    break;
-
-
-
-def cro():
-    f = readcsv();
-    while 1:
-        line = f.readline()
-        if not line: break
-        print(line)
-        s = line.split(',\t')
-        try:
-            address = urlopen(s[0])
-        except:
-            print("URL_OPEN_ERROR!")
-            continue
-        sources = BeautifulSoup(address,"html.parser")
-        list_audio = sources.findAll('a',attrs={'lang':'en'})
-        if(len(list_audio)==1):
-            script(list_audio,sources)
-
 
 def pair_dic(): #pair있는 인덱스 만들기
     f = readcsv();
-    p = open("../../data/wiki/pair470000.csv","w",encoding='UTF8')
+    p = open(csv_path.format(csv='pair470000'),"w",encoding='UTF8')
     while 1:
         line = f.readline()
         if not line: break
@@ -198,10 +157,10 @@ def pair_dic(): #pair있는 인덱스 만들기
                             break;
     p.close()
 
-def pair_cro():
-    p = open("./list/pair470000.csv","r",encoding='UTF8')
-    f = open("../../data/wiki/data.csv","w",encoding='UTF8')
-    log = open("log.txt","w",encoding='UTF8')
+def pair_cro():#noredirect 부분만 저장
+    p = open(csv_path.format(csv='pair470000'),"r",encoding='UTF8')
+    f = open(csv_path.format(csv='data'),"w",encoding='UTF8')
+    log = open(csv_path.format(csv='log'),"w",encoding='UTF8')
     filenumber = 0
     while 1:
         line = p.readline()
@@ -222,8 +181,8 @@ def pair_cro():
         print("response : ",sp[0])
         if(sp[0]==s[2]):
             print("SAME!")
-            kor = open("../../data/wiki/kor_html/"+str(filenumber)+".html","w",encoding='UTF8')
-            eng = open("../../data/wiki/eng_html/"+str(filenumber)+".html","w",encoding='UTF8')
+            kor = open(html_path.format(lang='kor',idx='filenumber'),"w",encoding='UTF8')
+            eng = open(html_path.format(lang='eng',idx='filenumber'),"w",encoding='UTF8')
             try:
                 address_eng = urlopen(s[1])
                 f.write(line)
@@ -242,11 +201,9 @@ def pair_cro():
     f.close()
 
 def check_all_pair(dic, i):
-
-    k = open("../../data/wiki/sample/random_sample1/kor/"+str(i)+".txt","r",encoding='UTF8')
+    k = open(html_path.format(lang='kor',idx=i),"r",encoding='UTF8')
     sources_k = BeautifulSoup(k,"html.parser")
-
-    e = open("../../data/wiki/sample/random_sample1/eng/"+str(i)+".txt","r",encoding='UTF8')
+    e = open(html_path.format(lang='eng',idx=i),"r",encoding='UTF8')
     sources_e = BeautifulSoup(e,"html.parser")
     
     #Metric 평가요소
@@ -267,27 +224,20 @@ def check_all_pair(dic, i):
     metric_result=metric.metric(t1,t2,t3,t4,t5,t6)
     #print (metric_result)
 
-
     ck = header.header(sources_k, sources_e,i)
-        
     if ck == -1:
-        return -1
+        return -1,-1,-1
     else:
         k_link_list, e_link_list = header_for_link.header_for_link(sources_k,sources_e,i)
-            
         if k_link_list==-1:
-            return -1
+            return -1,-1,-1
     ck_link_list = translate_k_to_e.translate_k_to_e(dic,k_link_list)
 
     return ck_link_list, e_link_list, metric_result
 
 def make_file_for_LCS(ck_link_list, e_link_list, i):
-    try:
-        f = open("../../data/wiki/sample/header/eng/" + str(i) + ".txt", "rU", encoding='UTF8')
-    except:
-        print ("no_file >> " + str(i) + ".txt")
+    if(ck_link_list==-1):
         return -1
-
     k_num_list = extract_num_KOR.extract_num_KOR(i)
     e_num_list = extract_num_ENG.extract_num_ENG(i)
 
@@ -302,13 +252,13 @@ def make_file_for_LCS(ck_link_list, e_link_list, i):
     print("e_num: " + str(e_num_list))
     print("e_NNP: " + str(e_NNP_list) + "\n")
     '''
-    write_file(ck_link_list, e_link_list, "list/link_list/", i)
-    write_file(k_NNP_list, e_NNP_list, "list/NNP_list/", i)
-    write_file(k_num_list, e_num_list, "list/num_list/", i)
+    write_file(ck_link_list, e_link_list, "result/link_list", i)
+    write_file(k_NNP_list, e_NNP_list, "result/NNP_list", i)
+    write_file(k_num_list, e_num_list, "result/num_list", i)
 
 def write_file(k_list, e_list, path, index):
-    k_file = open("../../data/wiki/sample/" + path + "kor/" + str(index) + ".txt", "w", encoding="UTF8")
-    e_file = open("../../data/wiki/sample/" + path + "eng/"+ str(index) + ".txt", "w", encoding="UTF8")
+    k_file = open(list_path.format(attr=path,lang='kor',idx=index), "w", encoding="UTF8")
+    e_file = open(list_path.format(attr=path,lang='eng',idx=index), "w", encoding="UTF8")
 
     for i in range (len(k_list)):
         for j in range (len(k_list[i])):

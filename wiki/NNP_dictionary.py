@@ -17,6 +17,9 @@ def count_rows_larger_than(num): 함수 extract_NNP_DIC_in_LINK_DIC에서 나중
 def extract_NNP_DIC_in_LINK_DIC(num): num번 미만으로 나온 단어들로만 dictionary를 만들고 반환.
 def make_index_kor_eng_list(): 예시가 이해가 더 잘 됨. ex) '전리수소영역'에서 '전리수소영역'이라는 단어는 빼고 돌려야되니까
 '''
+html_path = "../../data/wiki/{lang}_html/{idx}.html"
+header_path = "../../data/header/{lang}/{idx}.txt"
+csv_path = "../../data/wiki/data.csv"
 
 # 링크사전으로 DB 기반 만들기 (1회 사용)
 def insert_link_dictionary(table_name):
@@ -78,8 +81,8 @@ def special_character(key):
 def dictionary_to_article_check(con, dic, pair_list):
     index = pair_list[0]
     print(str(index) + ".txt")
-    k_file = open("../../data/wiki/sample/header/kor/" + str(index) + ".txt", "rU", encoding='UTF8')
-    e_file = open("../../data/wiki/sample/header/eng/" + str(index) + ".txt", "rU", encoding='UTF8')
+    k_file = open(header_path.format(lang='kor',idx=index), "rU", encoding='UTF8')
+    e_file = open(header_path.format(lang='eng',idx=index), "rU", encoding='UTF8')
 
     k_header_list = str(k_file.readlines())
     e_header_list = str(e_file.readlines())
@@ -140,7 +143,7 @@ def run(start, end):
     con.close()
 
 def make_index_kor_eng_list():
-    f = open("../../data/wiki/data.csv", "r", encoding='UTF8')
+    f = open(csv_path, "r", encoding='UTF8')
     lines = f.readlines()
     pair_list = []
     index = 0
@@ -156,10 +159,10 @@ def store_only_header():
     index = 0
     while 1:
         print (str(index)+".txt")
-        k = open("../../data/wiki/sample/random_sample1/kor/" + str(index) + ".txt", "r", encoding='UTF8')
+        k = open(html_path.format(lang='kor',idx=index), "r", encoding='UTF8')
         sources_k = BeautifulSoup(k, "html.parser")
 
-        e = open("../../data/wiki/sample/random_sample1/eng/" + str(index) + ".txt", "r", encoding='UTF8')
+        e = open(html_path_format(lang='eng',idx=index), "r", encoding='UTF8')
         sources_e = BeautifulSoup(e, "html.parser")
 
         ck = header.header(sources_k, sources_e, index)

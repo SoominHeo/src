@@ -7,8 +7,15 @@ import sys
 import copy
 import kor_sentence
 
+
 i=0
 number = str(i)
+
+'''
+    url for header
+'''
+header_path = "../../data/wiki/header/{lang}/{idx}.txt"
+
 
 def remove_tags(data):
     p=re.compile(r'<.*?>')
@@ -178,8 +185,8 @@ def header(sourcesKOR, sourcesENG,i):
         return -1   
 
     #추출할 header를 저장하기 위한 파일오픈
-    f_header_kor=open("../../data/wiki/sample/header/kor/"+str(i)+".txt","w",encoding='UTF8')
-    f_header_eng=open("../../data/wiki/sample/header/eng/"+str(i)+".txt","w",encoding='UTF8')
+    f_header_kor=open(header_path.format(lang='kor',idx=i),"w",encoding='UTF8')
+    f_header_eng=open(header_path.format(lang='eng',idx=i),"w",encoding='UTF8')
 
        
     ####  KOREA  HEADER  ####

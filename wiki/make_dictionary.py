@@ -1,7 +1,8 @@
 import re
+csv_path = "../../data/wiki/data.csv"
 def make_dictionary():
     dict = {}
-    f = open("../../data/wiki/data.csv", "r", encoding="UTF8")
+    f = open(csv_path, "r", encoding="UTF8")
     lines = f.readlines()
     a = 0
     for line in lines:

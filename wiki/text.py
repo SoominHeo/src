@@ -1,5 +1,6 @@
 import LCS
-
+header_path = "../../data/wiki/header/{lang}/{idx}.txt"
+result_path = "../../data/wiki/result/{lang}/{idx}.txt"
 def run_3LCS(index):
     a = [[5,6], [10,11], [11,12], [12,13]]
     b = [[4,6], [5,7], [6,8]]
@@ -26,13 +27,13 @@ def run_3LCS(index):
     print(e_lst)
 
     try:
-        f_ko = open("../../data/wiki/sample/header/kor/"+str(index)+".txt","rU", encoding="UTF8")
-        f_en = open("../../data/wiki/sample/header/eng/"+str(index)+".txt","rU", encoding="UTF8")
+        f_ko = open(header_path.format(lang='kor',idx=index),"rU", encoding="UTF8")
+        f_en = open(header_path.format(lang='eng',idx=index),,"rU", encoding="UTF8")
     except:
         return -1
 
-    k_result = open("../../data/wiki/sample/result/kor/"+str(index)+".txt","w", encoding="UTF8")
-    e_result = open("../../data/wiki/sample/result/eng/"+str(index)+".txt","w", encoding="UTF8")
+    k_result = open(result_path.format(lang='kor',idx=index),"w", encoding="UTF8")
+    e_result = open(result_path.format(lang='eng',idx=index),"w", encoding="UTF8")
 
     k_contents = f_ko.readlines()
     e_contents = f_en.readlines()

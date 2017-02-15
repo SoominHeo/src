@@ -4,7 +4,7 @@ from konlpy.tag import Kkma
 from konlpy.utils import pprint
 import codecs
 import time
-
+header_path = "../../data/wiki/header/{lang}/{idx}.txt"
 kkma = Kkma()
 POS = ["NR", "MDN"]
 #POS = ["NNP"]
@@ -77,7 +77,7 @@ def extract_num_KOR(num):
     n = str(num)
     num = num + 1
     try:
-        file = open("../../data/wiki/sample/header/kor/" + n + ".txt", "rt", encoding='UTF8')
+        file = open(header_path.format(lang='kor',idx=n), "rt", encoding='UTF8')
     except IOError as e:
         print ("There is no" + n + ".txt")
         return -1

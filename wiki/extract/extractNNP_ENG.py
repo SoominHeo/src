@@ -1,9 +1,10 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 from nltk.tag import pos_tag
+header_path = "../../data/wiki/header/{lang}/{idx}.txt"
 def extractNNP_ENG(i):
     try:
-        f = open("../../data/wiki/sample/header/eng/"+str(i)+".txt","rU",encoding='UTF8')
+        f = open(header_path.format(lang='eng',idx=i),"rU",encoding='UTF8')
     except:
         return -1
     e_list = []

@@ -144,17 +144,14 @@ def header_for_link(sourcesKOR, sourcesENG, i):
         if table_set_kor[j] == []:
             continue
         kkk.append(tmp_kor[table_set_kor[j][0]:table_set_kor[j][1] + 9])
-
     for j in range(len(kkk)):
         tmp_kor = tmp_kor.replace(str(kkk[j]), '')
-
     # 불필요한 table제거 (eng)
     eee = []
     for j in range(len(table_set_eng)):
         if table_set_eng[j] == []:
             continue
         eee.append(tmp_eng[table_set_eng[j][0]:table_set_eng[j][1] + 9])
-
     for j in range(len(eee)):
         tmp_eng = tmp_eng.replace(str(eee[j]), '')
 
@@ -169,7 +166,6 @@ def header_for_link(sourcesKOR, sourcesENG, i):
     if len(para_kor) == 0 or len(para_eng) == 0:
         i = i + 1
         return -1, -1
-
     ####  KOREA  HEADER  ####
     # header만 추출
     non_bmp_map = dict.fromkeys(range(0x10000, sys.maxunicode + 1), 0xfffd)
@@ -293,5 +289,4 @@ def header_for_link(sourcesKOR, sourcesENG, i):
             if kk >= 0:
                 tt = tt[kk + 1:]
             e_link_list[k].append(str(tt))
-    i = i + 1
     return (k_link_list, e_link_list)
