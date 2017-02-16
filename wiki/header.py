@@ -243,6 +243,7 @@ def header(sourcesKOR, sourcesENG, i, metric_result):
             eng_content_list=str(para_eng).translate(non_bmp_map).split("<h2>")
         else:
             eng_content_list=str(para_eng).translate(non_bmp_map).split("<p></p>")
+        header_eng=remove_comma(str(eng_content_list[0]).translate(non_bmp_map))
     header_eng=remove_bracket(header_eng)
     header_eng=remove_semantic(header_eng)
     #header_eng=remove_span(header_eng)
