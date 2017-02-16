@@ -21,7 +21,7 @@ def remove_comma(data):
     return result
 
 def remove_semantic(data):
-    p=re.compile(r'<semantic.*>.*?</semantic>')
+    p=re.compile(r'<semantics.*>.*?</semantics>',re.S)
     return p.sub('',data)
 
 def remove_bracket(data):
