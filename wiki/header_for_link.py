@@ -20,6 +20,10 @@ def remove_comma(data):
     result=data.replace("</p>, <p>"," ")
     return result
 
+def remove_semantic(data):
+    p=re.compile(r'<semantic.*>.*?</semantic>')
+    return p.sub('',data)
+
 def remove_bracket(data):
 
     ck=-1
@@ -188,6 +192,7 @@ def header_for_link(sourcesKOR, sourcesENG, i, metric_result ):
         kor_content_list=str(para_kor).translate(non_bmp_map).split("<p></p>")
         header_kor=remove_comma(str(kor_content_list[0]).translate(non_bmp_map))
     header_kor=remove_bracket(header_kor)
+    header_kor=remove_semantic(header_kor)
     #header_kor = remove_span(header_kor)
     # header_kor=remove_tags(header_kor)
 
@@ -255,6 +260,7 @@ def header_for_link(sourcesKOR, sourcesENG, i, metric_result ):
         eng_content_list=str(para_eng).translate(non_bmp_map).split("<p></p>")
         header_eng=remove_comma(str(eng_content_list[0]).translate(non_bmp_map))
     header_eng=remove_bracket(header_eng)
+    header_eng=remove_semantic(header_eng)
     #header_eng = remove_span(header_eng)
     # header_eng=remove_tags(header_eng)
     if header_eng[len(header_eng) - 2] == ',':
