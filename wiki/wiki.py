@@ -242,7 +242,7 @@ def make_file_for_LCS(ck_link_list, e_link_list, i):
     e_num_list = extract_num_ENG.extract_num_ENG(i)
 
     #k_NNP_list = []
-    k_NNP_list = extractNNP_KOR.extractNNP_KOR(i)
+    k_NNP_list = extractNNP_KOR.extractNNP_KOR(dic,i)
     e_NNP_list = extractNNP_ENG.extractNNP_ENG(i)
     '''
     print("k_link: " + str(ck_link_list))

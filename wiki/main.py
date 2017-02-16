@@ -15,7 +15,7 @@ while 1:
         break
     print(i)
     ck_link_list, e_link_list, percent = wiki.check_all_pair(dic, i)
-    a = wiki.make_file_for_LCS(ck_link_list, e_link_list, i)
+    a = wiki.make_file_for_LCS(ck_link_list, e_link_list, dic, i)
     if a == -1 or percent==-1:
         i = i + 1
         print("makefileforLCS error")
