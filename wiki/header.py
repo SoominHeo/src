@@ -7,7 +7,6 @@ import sys
 import copy
 import kor_sentence
 
-
 i=0
 number = str(i)
 
@@ -27,11 +26,22 @@ def remove_span(data):
 
 def remove_comma(data):
     result=data.replace("</p>, <p>"," ")
-    
-    for x in range(1,21):
-        result=result.replace("["+str(x)+"]","")
-        
     return result
+
+def remove_bracket(data):
+
+    ck=-1
+    st=0
+    while 1:
+        ck=data.find('#cite_note-',st)
+        if ck==-1:
+            break
+        else:
+            st=data.find('[',ck)
+            fi=data.find(']',st)
+            data=data.replace(data[st:fi+1],'')
+
+    return data
 
                     
 def eng_sentence(final_header_eng):
@@ -138,12 +148,11 @@ def check_table_index(sources):
     return table_set
                 
         
-def header(sourcesKOR, sourcesENG,i):
+def header(sourcesKOR, sourcesENG, i, metric_result):
     #print ("[header] "+str(i))
     #쓸때 없는 table 부분 삭제
     tmp_kor=str(sourcesKOR)
     tmp_eng=str(sourcesENG)
-    
     table_set_kor=check_table_index(sourcesKOR)
     table_set_eng=check_table_index(sourcesENG)
 
@@ -155,7 +164,6 @@ def header(sourcesKOR, sourcesENG,i):
             continue
         kkk.append(tmp_kor[table_set_kor[j][0]:table_set_kor[j][1]+9])
         
-
     for k in range(len(kkk)): 
         tmp_kor=tmp_kor.replace(str(kkk[k]),'')
 
@@ -166,7 +174,6 @@ def header(sourcesKOR, sourcesENG,i):
             continue
         eee.append(tmp_eng[table_set_eng[l][0]:table_set_eng[l][1]+9])
         
-
     for t in range(len(eee)): 
         tmp_eng=tmp_eng.replace(str(eee[t]),'')
         
@@ -174,12 +181,10 @@ def header(sourcesKOR, sourcesENG,i):
     sourcesKOR_tmp=BeautifulSoup(tmp_kor,"html.parser")
     sourcesENG_tmp=BeautifulSoup(tmp_eng,"html.parser")
 
-   
     #문단 부분만 추출
     para_kor = sourcesKOR_tmp.findAll('p')
     para_eng = sourcesENG_tmp.findAll('p')
 
-   
     #문단이 없으면 다음 문서로 넘어가기 
     if len(para_kor)==0 or len(para_eng)==0:
         return -1   
@@ -189,15 +194,18 @@ def header(sourcesKOR, sourcesENG,i):
     f_header_eng=open(header_path.format(lang='eng',idx=i),"w",encoding='UTF8')
 
        
-    ####  KOREA  HEADER  ####
-    #header만 추출 
-    #print("[kor]")
+    ###########  KOREA  ############
     non_bmp_map=dict.fromkeys(range(0x10000,sys.maxunicode+1),0xfffd)
-    kor_content_list=str(para_kor).translate(non_bmp_map).split("<p></p>")
-    #kor_content_list="<p>".join(kor_content_list).split("</table>\n<p>")
-    header_kor=remove_comma(str(kor_content_list[0]).translate(non_bmp_map))
+    #강한번역관계면 전체를, 아니면 헤더만 추출
+    if metric_result>=0.8:
+        header_kor=remove_comma(str(para_kor).translate(non_bmp_map))
+    else:
+        kor_content_list=str(para_kor).translate(non_bmp_map).split("<p></p>")
+        header_kor=remove_comma(str(kor_content_list[0]).translate(non_bmp_map))
+    header_kor=remove_bracket(header_kor)
     #header_kor=remove_span(header_kor)
     header_kor=remove_tags(header_kor)
+
     if header_kor[len(header_kor)-2]==',':
         header_kor=header_kor[1:len(header_kor)-2]
     else:
@@ -210,24 +218,27 @@ def header(sourcesKOR, sourcesENG,i):
                    f_header_kor.write(final_header_kor[m])
     f_header_kor.write("\n")
     
-    #print("----------------------------------")
 
-    ####  ENGLISH HEADER  ####
-    #header만 추출
-    #print("[eng]")
+
+
+    ############  ENGLISH  ###########
     non_bmp_map2=dict.fromkeys(range(0x10000,sys.maxunicode+1),0xfffd)
-    eng_content_list=str(para_eng).translate(non_bmp_map2).split("<p></p>")
-    #eng_content_list="<p>".join(eng_content_list).split("</table>\n<p>")
-    header_eng=remove_comma(str(eng_content_list[0]).translate(non_bmp_map2))
+    #강한번역관계면 전체를, 아니면 헤더만 추출
+    if metric_result>=0.8:
+        header_eng=remove_comma(str(para_eng).translate(non_bmp_map))
+    else:
+        eng_content_list=str(para_eng).translate(non_bmp_map).split("<p></p>")
+        header_eng=remove_comma(str(eng_content_list[0]).translate(non_bmp_map))
+    header_eng=remove_bracket(header_eng)
     #header_eng=remove_span(header_eng)
     header_eng=remove_tags(header_eng)
+    
     if header_eng[len(header_eng)-2]==',':
         header_eng=header_eng[1:len(header_eng)-2]
     else:
         header_eng=header_eng[1:len(header_eng)-1]
 
     #문장을 나누고 파일에 쓰기
-    
     final_header_eng=sent_tokenize(header_eng)
     final_header_eng=eng_sentence(final_header_eng)
     for x in range(len(final_header_eng)):
@@ -236,6 +247,8 @@ def header(sourcesKOR, sourcesENG,i):
                 f_header_eng.write("\n") 
     f_header_eng.write("\n")            
 
+
+    
     return 0
     
 

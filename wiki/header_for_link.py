@@ -18,12 +18,22 @@ def remove_span(data):
 
 def remove_comma(data):
     result=data.replace("</p>, <p>"," ")
-    
-    for x in range(1,21):
-        result=result.replace("["+str(x)+"]","")
-        
     return result
 
+def remove_bracket(data):
+
+    ck=-1
+    st=0
+    while 1:
+        ck=data.find('#cite_note-',st)
+        if ck==-1:
+            break
+        else:
+            st=data.find('[',ck)
+            fi=data.find(']',st)
+            data=data.replace(data[st:fi+1],'')
+
+    return data
 
 def eng_sentence(final_header_eng):
 
@@ -129,12 +139,11 @@ def check_table_index(sources):
     return table_set
 
 
-def header_for_link(sourcesKOR, sourcesENG, i):
+def header_for_link(sourcesKOR, sourcesENG, i, metric_result ):
     #print("[header_for_link] " + str(i))
     # 쓸때 없는 table 부분 삭제
     tmp_kor = str(sourcesKOR)
     tmp_eng = str(sourcesENG)
-
     table_set_kor = check_table_index(sourcesKOR)
     table_set_eng = check_table_index(sourcesENG)
 
@@ -144,14 +153,17 @@ def header_for_link(sourcesKOR, sourcesENG, i):
         if table_set_kor[j] == []:
             continue
         kkk.append(tmp_kor[table_set_kor[j][0]:table_set_kor[j][1] + 9])
+
     for j in range(len(kkk)):
         tmp_kor = tmp_kor.replace(str(kkk[j]), '')
+
     # 불필요한 table제거 (eng)
     eee = []
     for j in range(len(table_set_eng)):
         if table_set_eng[j] == []:
             continue
         eee.append(tmp_eng[table_set_eng[j][0]:table_set_eng[j][1] + 9])
+
     for j in range(len(eee)):
         tmp_eng = tmp_eng.replace(str(eee[j]), '')
 
@@ -166,20 +178,25 @@ def header_for_link(sourcesKOR, sourcesENG, i):
     if len(para_kor) == 0 or len(para_eng) == 0:
         i = i + 1
         return -1, -1
-    ####  KOREA  HEADER  ####
-    # header만 추출
-    non_bmp_map = dict.fromkeys(range(0x10000, sys.maxunicode + 1), 0xfffd)
-    kor_content_list = str(para_kor).translate(non_bmp_map).split("<p></p>")
-    header_kor = remove_comma(str(kor_content_list[0]).translate(non_bmp_map))
-    header_kor = remove_span(header_kor)
 
+    ###########  KOREA   ###########
+    non_bmp_map = dict.fromkeys(range(0x10000, sys.maxunicode + 1), 0xfffd)
+    #강한번역관계면 전체를, 아니면 헤더만 추출
+    if metric_result>=0.8:
+        header_kor=remove_comma(str(para_kor).translate(non_bmp_map))
+    else:
+        kor_content_list=str(para_kor).translate(non_bmp_map).split("<p></p>")
+        header_kor=remove_comma(str(kor_content_list[0]).translate(non_bmp_map))
+    header_kor=remove_bracket(header_kor)
+    #header_kor = remove_span(header_kor)
     # header_kor=remove_tags(header_kor)
+
     if header_kor[len(header_kor) - 2] == ',':
         header_kor = header_kor[1:len(header_kor) - 2]
     else:
         header_kor = header_kor[1:len(header_kor) - 1]
 
-    # 문장을 나누고 파일에 link만 쓰기
+    # 문장을 나누고 link만 추출
     header_kor = header_kor[:len(header_kor) - 4]
     final_header_kor = kor_sentence.kor_sentence(header_kor)
     tmp_kor_link = [[] for j in range(len(final_header_kor))]
@@ -205,7 +222,7 @@ def header_for_link(sourcesKOR, sourcesENG, i):
                     break
             break
 
-    # <a ~ </a>부분에서 단어만 뽑아서 파일에 쓰기
+    # <a ~ </a>부분에서 단어만 추출
     tmp = [[] for j in range(len(tmp_kor_link))]
     k_link_list = [[] for j in range(len(tmp_kor_link))]
     for k in range(len(tmp_kor_link)):
@@ -229,19 +246,23 @@ def header_for_link(sourcesKOR, sourcesENG, i):
                 tt = tt[kk + 1:]
             k_link_list[k].append(str(tt))
 
-    ####  ENGLISH HEADER  ####
-    # header만 추출
+    ###########  ENGLISH  ###########
     non_bmp_map2 = dict.fromkeys(range(0x10000, sys.maxunicode + 1), 0xfffd)
-    eng_content_list = str(para_eng).translate(non_bmp_map2).split("<p></p>")
-    header_eng = remove_comma(str(eng_content_list[0]).translate(non_bmp_map2))
-    header_eng = remove_span(header_eng)
+    #강한번역관계면 전체를, 아니면 헤더만 추출
+    if metric_result>=0.8:
+        header_eng=remove_comma(str(para_eng).translate(non_bmp_map))
+    else:
+        eng_content_list=str(para_eng).translate(non_bmp_map).split("<p></p>")
+        header_eng=remove_comma(str(eng_content_list[0]).translate(non_bmp_map))
+    header_eng=remove_bracket(header_eng)
+    #header_eng = remove_span(header_eng)
     # header_eng=remove_tags(header_eng)
     if header_eng[len(header_eng) - 2] == ',':
         header_eng = header_eng[1:len(header_eng) - 2]
     else:
         header_eng = header_eng[1:len(header_eng) - 1]
 
-    # 문장을 나누고 파일에 link만 쓰기
+    # 문장을 나누고 link만 추출
     final_header_eng = sent_tokenize(header_eng)
     final_header_eng = eng_sentence(final_header_eng)
     tmp_eng_link = [[] for j in range(len(final_header_eng))]
@@ -266,7 +287,8 @@ def header_for_link(sourcesKOR, sourcesENG, i):
                 else:
                     break
             break
-    # <a ~ </a>부분에서 단어만 뽑아서 파일에 쓰기
+        
+    # <a ~ </a>부분에서 단어만 추출
     tmp = [[] for j in range(len(tmp_eng_link))]
     e_link_list = [[] for j in range(len(tmp_eng_link))]
     for k in range(len(tmp_eng_link)):
