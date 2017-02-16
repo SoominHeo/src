@@ -220,7 +220,7 @@ def check_all_pair(dic, i):
     e_link_list = [[]]
     
     if(t5==-1):
-        return -1
+        return -1,-1,-1
     
     #Metric
     metric_result=metric.metric(t1,t2,t3,t4,t5,t6)
