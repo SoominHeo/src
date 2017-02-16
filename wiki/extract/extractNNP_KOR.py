@@ -18,7 +18,9 @@ def extractNNP_KOR(dic,i):
 			tmp = []
 			if(element[1] == 'NNP' or element[1] == 'NNG'): # only noun
 				tmp.append(element[0])
-			result.append(tmp)
+		result.append(tmp)
+	#for element in result:
+	#	print(result)
 	read_page.close()
 	result1 = translate_k_to_e.translate_k_to_e(dic, result)
 	return result1

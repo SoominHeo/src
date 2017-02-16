@@ -206,6 +206,8 @@ def check_all_pair(dic, i):
     e = open(html_path.format(lang='eng',idx=i),"r",encoding='UTF8')
     sources_e = BeautifulSoup(e,"html.parser")
     
+    k.close()
+    e.close()
     #Metric 평가요소
     t1=reference.reference(sources_k, sources_e)
     t2=tree_compare.tree_compare(sources_k,sources_e)
@@ -235,7 +237,7 @@ def check_all_pair(dic, i):
 
     return ck_link_list, e_link_list, metric_result
 
-def make_file_for_LCS(ck_link_list, e_link_list, i):
+def make_file_for_LCS(ck_link_list, e_link_list,dic ,i):
     if(ck_link_list==-1):
         return -1
     k_num_list = extract_num_KOR.extract_num_KOR(i)
