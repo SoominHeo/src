@@ -3,8 +3,8 @@ import translate_k_to_e
 from konlpy.tag import Kkma
 kkma = Kkma()
 header_path = "../../data/wiki/header/{lang}/{idx}.txt"
-def extractNNP_KOR(i):
-	dic = make_dictionary.make_dictionary()
+def extractNNP_KOR(dic,i):
+
 	try:
 		read_page = open(header_path.format(lang='kor',idx=i),"rU",encoding='UTF8')
 	except:
