@@ -238,7 +238,6 @@ def header(sourcesKOR, sourcesENG, i, metric_result):
         header_eng=remove_comma(str(eng_content_list[0]).translate(non_bmp_map))
     header_eng=remove_bracket(header_eng)
     header_eng=remove_semantic(header_eng)
-    print(header_eng)
     #header_eng=remove_span(header_eng)
     header_eng=remove_tags(header_eng)
     

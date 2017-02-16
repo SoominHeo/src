@@ -19,7 +19,6 @@ while 1:
     r = random_list[i]
     if i > end_idx:
         break
-    r = 96893 
     print(str(i)+"\t"+str(r))
     ck_link_list, e_link_list, percent = wiki.check_all_pair(dic, r)
     print(percent)
