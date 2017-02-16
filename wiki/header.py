@@ -205,7 +205,11 @@ def header(sourcesKOR, sourcesENG, i, metric_result):
     if metric_result>=0.8:
         header_kor=remove_comma(str(para_kor).translate(non_bmp_map))
     else:
-        kor_content_list=str(para_kor).translate(non_bmp_map).split("<p></p>")
+        kk=str(para_kor).translate(non_bmp_map).find("<p></p>")
+        if kk==-1:
+            kor_content_list=str(para_kor).translate(non_bmp_map).split("<h2>")
+        else:
+            kor_content_list=str(para_kor).translate(non_bmp_map).split("<p></p>")
         header_kor=remove_comma(str(kor_content_list[0]).translate(non_bmp_map))
     header_kor=remove_bracket(header_kor)
     header_kor=remove_semantic(header_kor)
@@ -234,8 +238,11 @@ def header(sourcesKOR, sourcesENG, i, metric_result):
     if metric_result>=0.8:
         header_eng=remove_comma(str(para_eng).translate(non_bmp_map))
     else:
-        eng_content_list=str(para_eng).translate(non_bmp_map).split("<p></p>")
-        header_eng=remove_comma(str(eng_content_list[0]).translate(non_bmp_map))
+        kk=str(para_eng).translate(non_bmp_map).find("<p></p>")
+        if kk==-1:
+            eng_content_list=str(para_eng).translate(non_bmp_map).split("<h2>")
+        else:
+            eng_content_list=str(para_eng).translate(non_bmp_map).split("<p></p>")
     header_eng=remove_bracket(header_eng)
     header_eng=remove_semantic(header_eng)
     #header_eng=remove_span(header_eng)
