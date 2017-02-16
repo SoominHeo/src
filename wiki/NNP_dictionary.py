@@ -171,7 +171,13 @@ def store_only_header():
             continue
         index = index + 1
 
-
+def make_NNPDIct():
+    NNP_dict = {}
+    test= sqlite3.connect("NNP.db")
+    cursor= test.cursor()
+    cursor.execute("SELECT * FROM NNP_DIC")
+    for row in cursor:
+        NNP_dict[row[0]] = row[1]
 #query_statement("CREATE TABLE NNP_DIC(kor text, eng text, count int)")
 #query_statement("DROP TABLE NNP_DIC")
 #run(0,1)
