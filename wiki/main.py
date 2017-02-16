@@ -6,8 +6,8 @@ import LCS
 #wiki.pair_dic()
 #wiki.pair_cro()
 dic = make_dictionary.make_dictionary()
-start_idx = 0
-end_idx = 9999
+start_idx = 0 
+end_idx = 250000 
 error_list = []
 i = start_idx
 while 1:

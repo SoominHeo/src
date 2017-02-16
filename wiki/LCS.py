@@ -273,9 +273,9 @@ def using_LCS(i, attr,percent,isStrong):
     for y in range(len(en)):
         if en[y][-1]=='\n':
             en[y]=en[y][:len(en[y])-1]
-
     length=LCS(ko, en, len(ko), len(en), percent)
     result=[]
+
     a = LCS_TraceBack(len(ko),len(en),result)
 
     #seq(i,a, k_path, e_path)

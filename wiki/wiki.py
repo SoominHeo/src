@@ -206,6 +206,8 @@ def check_all_pair(dic, i):
     e = open(html_path.format(lang='eng',idx=i),"r",encoding='UTF8')
     sources_e = BeautifulSoup(e,"html.parser")
     
+    k.close()
+    e.close()
     #Metric 평가요소
     t1=reference.reference(sources_k, sources_e)
     t2=tree_compare.tree_compare(sources_k,sources_e)
