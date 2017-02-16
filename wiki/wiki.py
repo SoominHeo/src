@@ -226,11 +226,11 @@ def check_all_pair(dic, i):
     metric_result=metric.metric(t1,t2,t3,t4,t5,t6)
     #print (metric_result)
 
-    ck = header.header(sources_k, sources_e,i)
+    ck = header.header(sources_k, sources_e, i, metric_result)
     if ck == -1:
         return -1,-1,-1
     else:
-        k_link_list, e_link_list = header_for_link.header_for_link(sources_k,sources_e,i)
+        k_link_list, e_link_list = header_for_link.header_for_link(sources_k, sources_e, i, metric_result)
         if k_link_list==-1:
             return -1,-1,-1
     ck_link_list = translate_k_to_e.translate_k_to_e(dic,k_link_list)
