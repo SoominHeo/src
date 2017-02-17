@@ -285,6 +285,7 @@ def header(sourcesKOR, sourcesENG, i, metric_result):
     final_header_eng=sent_tokenize(header_eng)
     final_header_eng=eng_sentence(final_header_eng)
     for x in range(len(final_header_eng)):
+                print(final_header_eng[x])
                 f_header_eng.write(final_header_eng[x])
                 f_header_eng.write("\n") 
     f_header_eng.write("\n")            
