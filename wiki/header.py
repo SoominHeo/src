@@ -33,8 +33,39 @@ def remove_semantic(data):
     return p.sub('',data)
 
 def remove_brachet(data):
-    p = re.compile("\([^)]*\)")
-    return p.sub('',data) 
+    st_list=[]
+    fi_list=[]
+    st=-1
+    fi=-1
+
+    # '('를 모두 찾아서 리스트에 인덱스값 저장
+    while 1:
+        st=data.find('(',st+1)
+        if st==-1:
+            break
+        st_list.append(st)
+
+    #')'을 모두 찾아서 리스트에 인덱스값 저장
+    while 1:
+        fi=data.find(')',fi+1)
+        if fi==-1:
+            break
+        fi_list.append(fi)
+
+    # '('와 ')'의 짝에 맞게 매칭시켜서 종속되는 괄호들의 인덱스값은 제거 
+    for i in range(len(st_list)-2):
+        if st_list[i+1]<fi_list[i]:
+            del st_list[i+1]
+            del fi_list[i]
+
+    #'(.......... )' 모두 제거
+    result=data
+    for j in range(len(st_list)):
+        tmp=data[st_list[j]:fi_list[j]+2]
+        result=result.replace(tmp,'')
+          
+    return result
+
 def remove_bracket(data):
 
     ck=-1
