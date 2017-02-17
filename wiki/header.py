@@ -32,7 +32,9 @@ def remove_semantic(data):
     p=re.compile(r'<semantics.*>.*?</semantics>',re.S)
     return p.sub('',data)
 
-
+def remove_brachet(data):
+    p = re.compile("\([^)]*\)")
+    return p.sub('',data) 
 def remove_bracket(data):
 
     ck=-1
@@ -245,8 +247,8 @@ def header(sourcesKOR, sourcesENG, i, metric_result):
         header_eng=header_eng[1:len(header_eng)-2]
     else:
         header_eng=header_eng[1:len(header_eng)-1]
-
     #문장을 나누고 파일에 쓰기
+    header_eng=remove_brachet(header_eng)
     final_header_eng=sent_tokenize(header_eng)
     final_header_eng=eng_sentence(final_header_eng)
     for x in range(len(final_header_eng)):

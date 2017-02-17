@@ -35,17 +35,20 @@ def nomalization(list):
             if list[i][j] == 'Z':
                 list[i] = " "
                 break
-
-    for i in range(len(list)):
-        for j in range(len(list[i])):
-            if list[i][j] == '-':
-                if list[i] == '-':
+    try:
+        for i in range(len(list)):
+            for j in range(len(list[i])):
+                if list[i][j] == '-':
+                    if list[i] == '-':
+                        break
+                    a = list[i].split('-')
+                    list[i] = a[0]
+                    list[i+1] = a[1]
                     break
-                a = list[i].split('-')
-                list[i] = a[0]
-                list[i+1] = a[1]
-                break
-
+    except:
+        print("extractnumKor error")
+        emptylist = []
+        return emptylist
     for i in range(len(list)-1):
         if len(list[i])>0 and len(list[i+1])>0 and list[i][0].isdigit() and list[i+1][0].isdigit() and list[i][0] in ['1','2','3','4','5','6','7','8','9','0']:
             if i > max:

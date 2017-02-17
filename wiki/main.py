@@ -15,18 +15,22 @@ for x in range(230000):
     random_list.append(x)
 
 random.shuffle(random_list)
+errorlogfile = open("log.txt","w",encoding='UTF8')
 while 1:
     r = random_list[i]
     if i > end_idx:
         break
-    r=220188
     print(str(i)+"\t"+str(r))
-    ck_link_list, e_link_list, percent = wiki.check_all_pair(dic, r)
-    print(percent)
-    a = wiki.make_file_for_LCS(ck_link_list, e_link_list, dic, r)
-    if a == -1 or percent==-1:
-        i = i + 1
-        print("makefileforLCS error")
-        continue
-    LCS.run_3LCS(r, percent)
-    i = i + 1
+    try:
+            ck_link_list, e_link_list, percent = wiki.check_all_pair(dic, r)
+            print(percent)
+            a = wiki.make_file_for_LCS(ck_link_list, e_link_list, dic, r)
+            if a == -1 or percent==-1:
+                i = i + 1
+                print("makefileforLCS error")
+                continue
+            LCS.run_3LCS(r, percent)
+            i = i + 1
+    except:
+            errorlogfile.write(str(r)+"\n")
+            i = i + 1
