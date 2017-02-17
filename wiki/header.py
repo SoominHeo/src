@@ -35,8 +35,12 @@ def remove_semantic(data):
 def remove_brachet(data):
     st_list=[]
     fi_list=[]
+    st2_list=[]
+    fi2_list=[]
     st=-1
     fi=-1
+    st2=-1
+    fi2=-1
 
     # '('를 모두 찾아서 리스트에 인덱스값 저장
     while 1:
@@ -44,6 +48,13 @@ def remove_brachet(data):
         if st==-1:
             break
         st_list.append(st)
+        
+    # '['를 모두 찾아서 리스트에 인덱스값 저장    
+    while 1:
+        st2=data.find('[' ,st2+1)
+        if st2==-1:
+            break
+        st2_list.append(st2)
 
     #')'을 모두 찾아서 리스트에 인덱스값 저장
     while 1:
@@ -51,17 +62,35 @@ def remove_brachet(data):
         if fi==-1:
             break
         fi_list.append(fi)
+    
+    #']'을 모두 찾아서 리스트에 인덱스값 저장
+    while 1: 
+        fi2=data.find(']' ,fi2+1)
+        if fi2==-1:
+            break
+        fi2_list.append(fi2)
+    
 
     # '('와 ')'의 짝에 맞게 매칭시켜서 종속되는 괄호들의 인덱스값은 제거 
     for i in range(len(st_list)-2):
         if st_list[i+1]<fi_list[i]:
             del st_list[i+1]
             del fi_list[i]
-
+            
+    # '['와 ']'의 짝에 맞게 매칭시켜서 종속되는 괄호들의 인덱스값은 제거 
+    for i in range(len(st2_list)-2):
+        if st2_list[i+1]<fi2_list[i]:
+            del st2_list[i+1]
+            del fi2_list[i]
+     
     #'(.......... )' 모두 제거
     result=data
     for j in range(len(st_list)):
         tmp=data[st_list[j]:fi_list[j]+2]
+        result=result.replace(tmp,'')
+     
+    for j in range(len(st2_list)):
+        tmp=data[st2_list[j]:fi2_list[j]+2]
         result=result.replace(tmp,'')
           
     return result
