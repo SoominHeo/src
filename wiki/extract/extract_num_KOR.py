@@ -1,10 +1,9 @@
 # This Python file uses the following encoding: utf-8
-import os, sys
+import header
+from bs4 import BeautifulSoup
 from konlpy.tag import Kkma
-from konlpy.utils import pprint
-import codecs
-import time
-header_path = "../../data/wiki/header/{lang}/{idx}.txt"
+import re
+
 kkma = Kkma()
 POS = ["NR", "MDN"]
 #POS = ["NNP"]
@@ -19,38 +18,41 @@ num_ = {
 }
 
 def nomalization(list):
-    #time.sleep(0.5)
     min = 0
     max = 0
+    new_list = [[] for i in range(len(list))]
 
     for i in range(len(list)):
         k = len(list[i])-1
         for j in range(k):
             if k<=j: break
-            #print (list[i], i, j, k)
             if list[i][j] == ',':
                 string = list[i][:j] + list[i][j+1:]
                 list[i] = str(string)
                 k = k - 1
-            if list[i][j] == 'Z':
-                list[i] = " "
-                break
-    try:
-        for i in range(len(list)):
-            for j in range(len(list[i])):
-                if list[i][j] == '-':
-                    if list[i] == '-':
-                        break
-                    a = list[i].split('-')
-                    list[i] = a[0]
-                    list[i+1] = a[1]
+                continue
+        find_all_list = re.findall('\d+', list[i])
+
+        if len(find_all_list) > 0:
+            for k in range(len(find_all_list)):
+                if k == 0:
+                    list[i + k] = find_all_list[k]
+                else:
+                    list.append(find_all_list[k])
+
+    for i in range(len(list)):
+        for j in range(len(list[i])):
+            if list[i][j] == '-':
+                if list[i] == '-':
                     break
-    except:
-        print("extractnumKor error")
-        emptylist = []
-        return emptylist
+                a = list[i].split('-')
+                list[i] = a[0]
+                list[i+1] = a[1]
+                break
+
+    #10억 같은 것을 다루는 애
     for i in range(len(list)-1):
-        if len(list[i])>0 and len(list[i+1])>0 and list[i][0].isdigit() and list[i+1][0].isdigit() and list[i][0] in ['1','2','3','4','5','6','7','8','9','0']:
+        if len(list[i])>0 and len(list[i+1])>0 and list[i][0].isdigit() and list[i+1][0:3]=="100" and list[i][0] in ['1','2','3','4','5','6','7','8','9','0']:
             if i > max:
                 min = i
             max = i
@@ -70,7 +72,6 @@ def nomalization(list):
                     list[max] = str(float(sum))
                 else:
                     list[max] = str(int(sum))
-    #print (list)
     return list
 
 total = 0
@@ -80,7 +81,7 @@ def extract_num_KOR(num):
     n = str(num)
     num = num + 1
     try:
-        file = open(header_path.format(lang='kor',idx=n), "rt", encoding='UTF8')
+        file = open("../../data/Wiki/sample/header/kor/" + n + ".txt", "rt", encoding='UTF8')
     except IOError as e:
         print ("There is no" + n + ".txt")
         return -1
@@ -101,7 +102,6 @@ def extract_num_KOR(num):
             kkma_list[i] = kkma.pos(first_list[i])
 
     i=0
-
     for i in range(line_num):
         for j in range(len(kkma_list[i])):
             list = [" "," "]
@@ -111,11 +111,9 @@ def extract_num_KOR(num):
 
     for i in range(line_num):
         for j in range(len(kkma_list[i])):
-
             if kkma_list[i][j][1] in POS:
                 if kkma_list[i][j][0] in ['백','천','만','십만','백만','천만','억','십억','백억','천억','조','여']:
                     kkma_list[i][j][0] = str(unit[kkma_list[i][j][0]])
-                    #print ("#",kkma_list[i][j][0])
                 if kkma_list[i][j][0] in ['하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '일', '이', '삼', '사', '오', '육',
                                   '칠', '팔', '구', '십', '한', '두', '세', '네', '댓', '수십', '수백', '수천', '수만', '수십만', '수백만', '수천만',
                                   '수억', '수십억', '수백억', '수천억', '세이', '석']:
@@ -133,7 +131,7 @@ def extract_num_KOR(num):
     k_num_list = [[] for i in range(line_num)]
 
     for i in range(line_num):
-        for j in range(len(kkma_list[i])):
-            if len(fin_list[i][j])>0 and fin_list[i][j][0].isdigit() and fin_list[i][j][0] in ['1','2','3','4','5','6','7','8','9','0']:
+        for j in range(len(fin_list[i])):
+            if len(fin_list[i][j])>0 and fin_list[i][j][0].isdigit():
                 k_num_list[i].append(str(fin_list[i][j]))
     return k_num_list
