@@ -86,11 +86,11 @@ def remove_brachet(data):
     #'(.......... )' 모두 제거
     result=data
     for j in range(len(st_list)):
-        tmp=data[st_list[j]:fi_list[j]+2]
+        tmp=data[st_list[j]:fi_list[j]+1]
         result=result.replace(tmp,'')
      
     for j in range(len(st2_list)):
-        tmp=data[st2_list[j]:fi2_list[j]+2]
+        tmp=data[st2_list[j]:fi2_list[j]+1]
         result=result.replace(tmp,'')
           
     return result
@@ -308,13 +308,10 @@ def header(sourcesKOR, sourcesENG, i, metric_result):
     else:
         header_eng=header_eng[1:len(header_eng)-1]
     #문장을 나누고 파일에 쓰기
-    print(header_eng)
     header_eng=remove_brachet(header_eng)
-    print(header_eng)
     final_header_eng=sent_tokenize(header_eng)
     final_header_eng=eng_sentence(final_header_eng)
     for x in range(len(final_header_eng)):
-                print(final_header_eng[x])
                 f_header_eng.write(final_header_eng[x])
                 f_header_eng.write("\n") 
     f_header_eng.write("\n")            
