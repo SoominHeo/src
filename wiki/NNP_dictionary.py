@@ -129,23 +129,23 @@ def extract_NNP_DIC_in_LINK_DIC(num):
     return dic
 
 def run(start, end):
-    randomList = [i for i in range(start,end)]
-    randomList = random.shuffle(randomList)
+    randomList = [num for num in range(start,end)]
+    random.shuffle(randomList)
     log = open("log.txt",'w',encoding='utf8')
     con = sqlite3.connect("NNP.db")
     cursor = con.cursor()
     pair_list = make_index_kor_eng_list()
     dic = make_dictionary.make_dictionary()
     # index = start
-    for index in randomList:
+    for index in range(3333):
         try:
             #if index == end+1: # 몇 개 돌리길 원하는지
             #    break
-            dictionary_to_article_check(con, dic, pair_list[index])
+            dictionary_to_article_check(con, dic, pair_list[randomList[index]])
             #index = index+ 1
         except:
             #index = index +1
-            log.write("index : {idx}\n".format(idx=index))
+            log.write("index : {idx}\n".format(idx=randomList[index]))
     con.commit()
     con.close()
 
@@ -208,7 +208,7 @@ def make_NNPDict():
 # step2.    그럼 html 파일에서 header만 뽑아 sample/header/eng와 sample/header/kor에 저장합니다. (html은 0.txt ~ 47xxxxx.txt로 저장해주세요)
 #store_only_header()
 #step3.     step2가 완성되면 run 함수를 돌립니다. 이 함수는 단어가 나타난 횟수를 증가시켜줍니다. 매~~우 오래 걸릴 예정입니다.
-run(120000,199000)
+run(0,60000)
 #step4.     앞의 작업이 끝나면 extract_NNP_DIC_in_LINK_DIC(num) 함수를 돌려서, 자주 나왔던 단어(예를들어 count-전체 글에서 단어가 나온 횟수-가 20보다 큰)가 몇 개 인지 확인하고
 #           고유명사 사전에서 걸러내야할 빈도수는 어느정도인지 일일이 좀 봐야할 것 같습니다. 이 함수 돌리면 친절하게 한글이 나올 것 입니다.
 #                       '빈도수가 20 이상인 row의 수는 300000개 이고,
