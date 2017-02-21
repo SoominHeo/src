@@ -27,10 +27,12 @@ import extract_num_ENG
 import extractNNP_KOR
 import extractNNP_ENG
 
+
 csv_path = "../../data/wiki/{csv}.csv"
 html_path = "../../data/wiki/{lang}_html/{idx}.html"
 header_path = "../../data/header/{lang}/{idx}.txt"
 list_path = "../../data/wiki/{attr}/{lang}/{idx}.txt"
+
 def remove_tags(data):
     p=re.compile(r'<.*?>')
     return p.sub('', data)
@@ -65,8 +67,10 @@ def save_csv(url,title,tt,csv):
     print(str(url)+",\t"+str(title)+",\t"+str(tt)+"\n")
     csv.write(str(url)+",\t"+str(title)+",\t"+str(tt)+"\n")
 
+
 def make_list_csv():#680000개 전체 데이터 url
     csv = open(csv_path.format(csv='urlindex'),"w",encoding='UTF8')
+
     nexturl = 'https://ko.wikipedia.org/w/index.php?title=%ED%8A%B9%EC%88%98:%EB%AA%A8%EB%93%A0%EB%AC%B8%EC%84%9C&from=%21';
 
     i=0
@@ -129,9 +133,11 @@ def make_list_csv():#680000개 전체 데이터 url
     csv.close()
 
 
+
 def pair_dic(): #pair있는 인덱스 만들기
     f = readcsv();
     p = open(csv_path.format(csv='pair470000'),"w",encoding='UTF8')
+
     while 1:
         line = f.readline()
         if not line: break
@@ -157,10 +163,12 @@ def pair_dic(): #pair있는 인덱스 만들기
                             break;
     p.close()
 
+
 def pair_cro():#noredirect 부분만 저장
     p = open(csv_path.format(csv='pair470000'),"r",encoding='UTF8')
     f = open(csv_path.format(csv='data'),"w",encoding='UTF8')
     log = open(csv_path.format(csv='log'),"w",encoding='UTF8')
+
     filenumber = 0
     while 1:
         line = p.readline()

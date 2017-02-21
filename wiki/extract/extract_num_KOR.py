@@ -2,8 +2,16 @@
 import header
 from bs4 import BeautifulSoup
 from konlpy.tag import Kkma
+<<<<<<< Updated upstream
 import re
 
+=======
+from konlpy.utils import pprint
+import codecs
+import time
+
+header_path = "../../data/wiki/header/{lang}/{idx}.txt"
+>>>>>>> Stashed changes
 kkma = Kkma()
 POS = ["NR", "MDN"]
 #POS = ["NNP"]
@@ -81,7 +89,12 @@ def extract_num_KOR(num):
     n = str(num)
     num = num + 1
     try:
+<<<<<<< Updated upstream
         file = open("../../data/Wiki/sample/header/kor/" + n + ".txt", "rt", encoding='UTF8')
+=======
+
+        file = open(header_path.format(lang='kor',idx=n), "rt", encoding='UTF8')
+>>>>>>> Stashed changes
     except IOError as e:
         print ("There is no" + n + ".txt")
         return -1

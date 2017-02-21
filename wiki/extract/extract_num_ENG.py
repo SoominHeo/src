@@ -8,6 +8,7 @@ unit을 적용시킬 수 있을 듯 함.
 '''
 import re
 import nltk
+
 headerpath_en = "../../data/wiki/header/eng/"
 def delete_symbol(line, symbol):
 
