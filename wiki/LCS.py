@@ -279,10 +279,7 @@ def using_LCS(i, attr,percent,isStrong):
     a = LCS_TraceBack(len(ko),len(en),result)
 
     #seq(i,a, k_path, e_path)
-    if isStrong:
-        return fill_line(a)
-    else:
-        return a
+    return a
 
 
 def fill_line(frame):
