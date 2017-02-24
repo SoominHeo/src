@@ -2,12 +2,12 @@ import lcslib
 
 count = 40
 
-original_url = "./../sample/{lang}/{idx}.txt"
-number_url = "./../data/NUM/{lang}/{idx}.txt"
-result_url = "./../data/LCS/{subtype}/{lang}/{distance_value}/{jaccard_value}/{idx}.txt"
+original_url = "./../../data/Herald/sample/{lang}/{idx}.txt"
+number_url = "./../../data/Herald/NUM/{lang}/{idx}.txt"
+result_url = "./../../data/Herald/LCS/{subtype}/{lang}/{distance_value}/{jaccard_value}/{idx}.txt"
 
-maintype = "word"
-subtype = "word_fill"
+maintype = "line"
+subtype = "line_fill"
 # noun_url = "./../data/NNP"
 
 #make dictionary
@@ -66,46 +66,47 @@ def LCS(idx,maintype,subtype,distance_value,jaccard_value):
 	result_eng_file.close()
 	return len(kor_text), human,machine,answer
 # print(total) # total articles size
-
-total_text = 0
-total = open("./../data/ANS/result/{subtype}/result.csv".format(subtype=subtype),'w',encoding='utf8')
-score = open("./../data/ANS/result/{subtype}/score.csv".format(subtype=subtype),'w',encoding='utf8')
-total.write("\n")
-score.write("\n")
-for distance_value in range(1,6):
-	total.write("{distance},".format(distance=distance_value))
-	score.write("{distance},".format(distance=distance_value))
-	total.write(",Human,Machine,Answer"*(count+1))
-	score.write(",Precison,Recall,Score"*(count+1))
-	total.write("\n")
-	score.write("\n")
-	for jaccard_value in range(3,10):
-		total_human= 0
-		total_machine= 0
-		total_answer =0
-		total.write(",{jaccard},".format(jaccard=jaccard_value))
-		score.write(",{jaccard},".format(jaccard=jaccard_value))
-		for idx in range(1,count+1):			
-			text,human,machine,answer = LCS(idx,maintype,subtype,distance_value,jaccard_value)
-			if machine ==0:
-				precision = 0
-			else :
-				precision = answer / machine
-			recall = answer / human
-			if(answer == 0):
-				f1_score = 0
-			else:
-				f1_score = precision * recall / (precision + recall)
-			total.write("{human},{machine},{answer},".format(human=human,machine=machine,answer=answer))
-			score.write("{precision},{recall},{score},".format(precision=precision,recall=recall,score=f1_score))
-			total_human += human
-			total_machine += machine
-			total_answer += answer
-			total_text += text
-		total.write("{human},{machine},{answer}\n".format(human=total_human,machine=total_machine,answer=total_answer))
-		score.write("{precision},{recall},{score}\n".format(precision=(total_answer / total_machine),recall=(total_answer/total_human),score= (total_answer / (total_human + total_machine))))
-	total.write("\n")
-	score.write("\n")
-print(total_text)
-total.close()
-score.close()
+def run(start, end):
+    total_text = 0
+    total = open("./../../data/Herald/ANS/result/{subtype}/result.csv".format(subtype=subtype),'w',encoding='utf8')
+    score = open("./../../data/Herald/ANS/result/{subtype}/score.csv".format(subtype=subtype),'w',encoding='utf8')
+    total.write("\n")
+    score.write("\n")
+    
+    for distance_value in range(start,end):
+            total.write("{distance},".format(distance=distance_value))
+            score.write("{distance},".format(distance=distance_value))
+            total.write(",Human,Machine,Answer"*(count+1))
+            score.write(",Precison,Recall,Score"*(count+1))
+            total.write("\n")
+            score.write("\n")
+            for jaccard_value in range(3,10):
+                    total_human= 0
+                    total_machine= 0
+                    total_answer =0
+                    total.write(",{jaccard},".format(jaccard=jaccard_value))
+                    score.write(",{jaccard},".format(jaccard=jaccard_value))
+                    for idx in range(1,count+1):			
+                            text,human,machine,answer = LCS(idx,maintype,subtype,distance_value,jaccard_value)
+                            if machine ==0:
+                                    precision = 0
+                            else :
+                                    precision = answer / machine
+                            recall = answer / human
+                            if(answer == 0):
+                                    f1_score = 0
+                            else:
+                                    f1_score = precision * recall / (precision + recall)
+                            total.write("{human},{machine},{answer},".format(human=human,machine=machine,answer=answer))
+                            score.write("{precision},{recall},{score},".format(precision=precision,recall=recall,score=f1_score))
+                            total_human += human
+                            total_machine += machine
+                            total_answer += answer
+                            total_text += text
+                    total.write("{human},{machine},{answer}\n".format(human=total_human,machine=total_machine,answer=total_answer))
+                    score.write("{precision},{recall},{score}\n".format(precision=(total_answer / total_machine),recall=(total_answer/total_human),score= (total_answer / (total_human + total_machine))))
+            total.write("\n")
+            score.write("\n")
+    print(total_text)
+    total.close()
+    score.close()

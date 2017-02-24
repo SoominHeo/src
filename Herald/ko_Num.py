@@ -69,83 +69,87 @@ def nomalization(list):
     #print (list)
     return list
 
-total = 0
-lines = 0
-
-#input_url = "C:/Users/HEOSOOMIN/Desktop/2016-2/project/copus/joongang_ko/joongang_ko_"
-#output_url = "C:/Users/HEOSOOMIN/Desktop/2016-2/project/copus/joongang_ko_num/"
-
-input_url = "./../sample/kor/"
-output_url = "./../data/NUM/kor/"
-#6177
-num = 10
-new_input_url = ""
-new_output_url = ""
-for num in range(1,count+1):
-#for art_num in range(20):
-    n = str(num)
-    #new_input_url = input_url + n + ".txt"
-    new_input_url = input_url + n + ".txt"
-    new_output_url = output_url + n + ".txt"
-    print (new_input_url)
-    #print (new_output_url)
-    num = num + 1
-    try:
-        file = open(new_input_url, "rt")
-    except IOError as e:
-        print ("There is no",new_input_url)
-        continue
-    write_ko_File = open(new_output_url, 'w', encoding = 'utf-8')
-
-    first_list = []
-    i = 0
-    for line in file:
-        first_list.append(line)
-        i += 1
-    line_num = len(first_list)
 
 
-    kkma_list = [ [] for j in range(line_num)]
-    i=0
-    for i in range(line_num):
-        if first_list[i] == "\n":
-            kkma_list[i] = [(" "," ")]
-        else:
-            kkma_list[i] = kkma.pos(first_list[i])
+def ko_Num(start, end):
 
-    i=0
+    total = 0
+    lines = 0
 
-    for i in range(line_num):
-        for j in range(len(kkma_list[i])):
-            list = [" "," "]
-            list[0] = kkma_list[i][j][0]
-            list[1] = kkma_list[i][j][1]
-            kkma_list[i][j] = list
+    #input_url = "C:/Users/HEOSOOMIN/Desktop/2016-2/project/copus/joongang_ko/joongang_ko_"
+    #output_url = "C:/Users/HEOSOOMIN/Desktop/2016-2/project/copus/joongang_ko_num/"
 
-    for i in range(line_num):
-        for j in range(len(kkma_list[i])):
+    input_url = "./../../data/Herald/sample/kor/"
+    output_url = "./../../data/Herald/NUM/kor/"
+    #6177
+    num = 10
+    new_input_url = ""
+    new_output_url = ""
+    for num in range(start,end+1):
+    #for art_num in range(20):
+        n = str(num)
+        #new_input_url = input_url + n + ".txt"
+        new_input_url = input_url + n + ".txt"
+        new_output_url = output_url + n + ".txt"
+        print (new_input_url)
+        #print (new_output_url)
+        num = num + 1
+        try:
+            file = open(new_input_url, "rt")
+        except IOError as e:
+            print ("There is no",new_input_url)
+            continue
+        write_ko_File = open(new_output_url, 'w', encoding = 'utf-8')
 
-            if kkma_list[i][j][1] in POS:
-                if kkma_list[i][j][0] in ['백','천','만','십만','백만','천만','억','십억','백억','천억','조','여']:
-                    kkma_list[i][j][0] = str(unit[kkma_list[i][j][0]])
-                    #print ("#",kkma_list[i][j][0])
-                if kkma_list[i][j][0] in ['하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '일', '이', '삼', '사', '오', '육',
-                                  '칠', '팔', '구', '십', '한', '두', '세', '네', '댓', '수십', '수백', '수천', '수만', '수십만', '수백만', '수천만',
-                                  '수억', '수십억', '수백억', '수천억', '세이', '석']:
-                    kkma_list[i][j][0] = str(num_[(kkma_list[i][j][0])])
+        first_list = []
+        i = 0
+        for line in file:
+            first_list.append(line)
+            i += 1
+        line_num = len(first_list)
 
-    num_list = [[] for i in range(line_num)]
-    for i in range(line_num):
-        for j in range(len(kkma_list[i])):
-            num_list[i].append(kkma_list[i][j][0])
 
-    fin_list = [[] for i in range(line_num)]
-    for i in range(line_num):
-        fin_list[i] = (nomalization(num_list[i]))
+        kkma_list = [ [] for j in range(line_num)]
+        i=0
+        for i in range(line_num):
+            if first_list[i] == "\n":
+                kkma_list[i] = [(" "," ")]
+            else:
+                kkma_list[i] = kkma.pos(first_list[i])
 
-    for i in range(line_num):
-        for j in range(len(kkma_list[i])):
-            if len(fin_list[i][j])>0 and fin_list[i][j][0].isdigit() and fin_list[i][j][0] in ['1','2','3','4','5','6','7','8','9','0']:
-                write_ko_File.write(str(fin_list[i][j]) + ", ")
-        write_ko_File.write("\n")
-    write_ko_File.close()
+        i=0
+
+        for i in range(line_num):
+            for j in range(len(kkma_list[i])):
+                list = [" "," "]
+                list[0] = kkma_list[i][j][0]
+                list[1] = kkma_list[i][j][1]
+                kkma_list[i][j] = list
+
+        for i in range(line_num):
+            for j in range(len(kkma_list[i])):
+
+                if kkma_list[i][j][1] in POS:
+                    if kkma_list[i][j][0] in ['백','천','만','십만','백만','천만','억','십억','백억','천억','조','여']:
+                        kkma_list[i][j][0] = str(unit[kkma_list[i][j][0]])
+                        #print ("#",kkma_list[i][j][0])
+                    if kkma_list[i][j][0] in ['하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '일', '이', '삼', '사', '오', '육',
+                                      '칠', '팔', '구', '십', '한', '두', '세', '네', '댓', '수십', '수백', '수천', '수만', '수십만', '수백만', '수천만',
+                                      '수억', '수십억', '수백억', '수천억', '세이', '석']:
+                        kkma_list[i][j][0] = str(num_[(kkma_list[i][j][0])])
+
+        num_list = [[] for i in range(line_num)]
+        for i in range(line_num):
+            for j in range(len(kkma_list[i])):
+                num_list[i].append(kkma_list[i][j][0])
+
+        fin_list = [[] for i in range(line_num)]
+        for i in range(line_num):
+            fin_list[i] = (nomalization(num_list[i]))
+
+        for i in range(line_num):
+            for j in range(len(kkma_list[i])):
+                if len(fin_list[i][j])>0 and fin_list[i][j][0].isdigit() and fin_list[i][j][0] in ['1','2','3','4','5','6','7','8','9','0']:
+                    write_ko_File.write(str(fin_list[i][j]) + ", ")
+            write_ko_File.write("\n")
+        write_ko_File.close()

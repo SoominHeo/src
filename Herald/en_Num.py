@@ -10,6 +10,8 @@ import re
 import nltk
 
 count = 40
+output_url = "../../data/Herald/NUM/eng/"
+input_url = "../../data/Herald/sample/eng/"
 def delete_symbol(line, symbol):
 
     flag = True
@@ -136,43 +138,43 @@ Unit = {
 }
 
 
+def en_Num(start, end):
+    for index in range(start, end+1):
+        try:
+            print(index)
+            write_en_File = open(output_url + str(index) + ".txt", 'w', encoding= 'utf-8')
+            # file_name = "er\\" + str(index) + ".eng.txt"
+            en = open(input_url + str(index) + ".txt", 'r',encoding='utf8')
 
-for index in range(1, count+1):
-    try:
-        print(index)
-        write_en_File = open(output_url + str(index) + ".txt", 'w', encoding= 'utf-8')
-        # file_name = "er\\" + str(index) + ".eng.txt"
-        en = open(input_url + str(index) + ".txt", 'r',encoding='utf8')
+            count_en_line = 0
+            #write_en_File.write(file_name + "\n")
 
-        count_en_line = 0
-        #write_en_File.write(file_name + "\n")
+            for line in en:
+                count_en_line += 1
+                getList = []
 
-        for line in en:
-            count_en_line += 1
-            getList = []
-
-            line = delete_symbol(line, '-')
-            line = delete_symbol(line, ':')
+                line = delete_symbol(line, '-')
+                line = delete_symbol(line, ':')
 
 
-            tokens = nltk.word_tokenize(line)
-            tagged = nltk.pos_tag(tokens)
-            
+                tokens = nltk.word_tokenize(line)
+                tagged = nltk.pos_tag(tokens)
+                
 
-            # write_en_File.write("[" + str(count_en_line) + "] ")
+                # write_en_File.write("[" + str(count_en_line) + "] ")
 
-            for element in tagged:
-                getNumberList(element,getList)
+                for element in tagged:
+                    getNumberList(element,getList)
 
-            nomalization(getList)
-            for element in getList:
-                if(element is not " "):
-                    write_en_File.write(str(element) +", ")
+                nomalization(getList)
+                for element in getList:
+                    if(element is not " "):
+                        write_en_File.write(str(element) +", ")
+                write_en_File.write("\n")
             write_en_File.write("\n")
-        write_en_File.write("\n")
 
 
-        en.close()
-        write_en_File.close()
-    except FileNotFoundError:
-        pass
+            en.close()
+            write_en_File.close()
+        except FileNotFoundError:
+            pass

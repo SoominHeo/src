@@ -10,7 +10,7 @@ def short(list1, list2):
 	return  list1 if len(list1) < len(list2) else list2
 
 def make_dict():
-	dictionary = open("./../data/Dict.csv",'r',encoding ='utf8')
+	dictionary = open("./../../data/Herald/Dict.csv",'r',encoding ='utf8')
 	dic = {}
 	for line in dictionary:
 		# seperate entry and value
@@ -308,8 +308,8 @@ def word_lcs(kor, eng):
 	return result
 
 def check_answer(result,idx,subtype,distance_value,jaccard_value):
-	answer_file = open("./../data/ANS/answer_{0}.csv".format(idx),'r',encoding='utf8')
-	check_file = open("./../data/ANS/result/{subtype}/{distance_value}/{jaccard_value}/{index}.txt".format(subtype=subtype,index=idx, distance_value = distance_value, jaccard_value =jaccard_value),'w',encoding='utf8')
+	answer_file = open("./../../data/Herald/ANS/answer_{0}.csv".format(idx),'r',encoding='utf8')
+	check_file = open("./../../data/Herald/ANS/result/{subtype}/{distance_value}/{jaccard_value}/{index}.txt".format(subtype=subtype,index=idx, distance_value = distance_value, jaccard_value =jaccard_value),'w',encoding='utf8')
 	check_file.write(str(idx) + "\n")
 	check_file.write("[한글,영어]\n")
 	answer = answer_file.readlines()
@@ -380,8 +380,8 @@ def make_directory(path):
 
 def check_directory(subtype, distance,value):
 	print(subtype)
-	ANS_path = "/../data/ANS/result/{subtype}/{distance}/{value}/"
-	LCS_path = "/../data/LCS/{subtype}/{lang}/{distance}/{value}/"
+	ANS_path = "./../../data/Herald/ANS/result/{subtype}/{distance}/{value}/"
+	LCS_path = "./../../data/Herald/LCS/{subtype}/{lang}/{distance}/{value}/"
 	#ANS/line/{value}/line_{}Fill/{lang}
 	make_directory(current_path+(ANS_path.format(value=value, distance = distance,subtype= subtype)))
 	#LCS/line/{value}{line_{}Fill/lang}
