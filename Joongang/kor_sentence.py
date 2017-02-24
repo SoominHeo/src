@@ -16,7 +16,7 @@ def sub_kor_sentence(temp, word, st, start, finish):
 
     return temp, st, start, finish
 
-def sub_div_korean_sentence(p):
+def kor_sentence(p):
     temp=""
     st=[]
     start = 0
