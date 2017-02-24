@@ -13,7 +13,7 @@ def div_english_sentence(content,filenumber):
     content=content.replace("＂\n","＂**next**")
     content=content.replace("＂\n","＂**next**")
     '''
-    f = open("./div/eng/"+str(filenumber)+".txt","w",encoding="UTF8")
+    f = open("../../data/Herald/sample/eng/"+str(filenumber)+".txt","w",encoding="UTF8")
     for x in content:
         flag=0
         x = str(x).replace(".” ",".”\n")
