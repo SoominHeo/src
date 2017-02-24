@@ -41,9 +41,9 @@ def div_english_sentence(content,filenumber):
 
 def div_eng(start, end):
     for i in range(start, end):
-        f = open("./jh/eng/"+str(i)+".txt","rU",encoding="UTF8")
+        f = open("../../data/Herald/sample/eng/"+str(i)+".txt","rU",encoding="UTF8")
         content = f.readlines()
         div_english_sentence(content,i) 
    
-div_eng(0,1840) 
+
 

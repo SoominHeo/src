@@ -45,12 +45,13 @@ def nomalization(list):
                 else:
                     list.append(find_all_list[k])
 
-    for i in range(len(list)):
+    for i in range(len(list)-1):
         for j in range(len(list[i])):
             if list[i][j] == '-':
                 if list[i] == '-':
                     break
                 a = list[i].split('-')
+                if(len(a)<2): break
                 list[i] = a[0]
                 list[i+1] = a[1]
                 break

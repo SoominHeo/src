@@ -31,7 +31,7 @@ def div_korean_sentence(bodies_split,filenumber):
 
 def div_kor(start, end):
     for i in range(start, end):
-        f = open("./jh/kor/"+str(i)+".txt","rU",encoding="UTF8")
+        f = open("../../data/Herald/sample/kor/"+str(i)+".txt","rU",encoding="UTF8")
         list = f.readlines()
         tmp = ""
         for x in list:
