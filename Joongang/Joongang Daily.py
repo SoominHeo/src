@@ -119,7 +119,7 @@ def div_korean_sentence(bodies_split,filenumber,csv2):
 
     tokens=[]
     for n in range(len(mun_split)):
-        temp=sub_div_korean_sentence(mun_split[n])
+        temp=kor_sentence.kor_sentence(mun_split[n])
         if temp!=[]:
             tokens.append(temp)
 
