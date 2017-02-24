@@ -11,6 +11,7 @@ import copy
 import number_ko
 import number_en
 import LCS
+import no_single_space
 def remove_br_tags(data):
     newstr = data.replace("<br/>","=br=")
     newstr = newstr.replace("<br>\n<br>","=br=")
@@ -417,8 +418,9 @@ def save_content(start,end):
     csv2.close()
 
 #get_html_csv()
-print("save_content")
-save_content(0,8217)
+#print("save_content")
+#save_content(0,8217)
+no_single_space.no_single_space(0,8217)
 '''
 print("number_ko")
 number_ko.number_ko(0,8217)
