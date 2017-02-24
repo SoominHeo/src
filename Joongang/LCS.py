@@ -263,37 +263,36 @@ def seq(i,a):
     f_total_kor.close()
     f_total_eng.close()
 
+def run(start, end):
+    i=start
+    while i<=end:
+        print(i)
+        try:
+            f_eng = open("../../data/Joongang/no_single_space_text/num/en/"+str(i)+".eng.txt","rU",)
+            f_kor = open("../../data/Joongang/no_single_space_text/num/ko/"+str(i)+".kor.txt","rU",)
+        except:
+            i=i+1
+            continue
+        en=f_eng.readlines()
+        ko=f_kor.readlines()
 
-i=1
+        for x in range(len(ko)):
+            if ko[x][-1]=='\n':
+                ko[x]=ko[x][:len(ko[x])-1]
 
-while i<=1:
-    print(i)
-    try:
-        f_eng = open("../../data/Joongang/no_single_space_text/num/en/"+str(i)+".eng.txt","rU",)
-        f_kor = open("../../data/Joongang/no_single_space_text/num/ko/"+str(i)+".kor.txt","rU",)
-    except:
+        for y in range(len(en)):
+            if en[y][-1]=='\n':
+                en[y]=en[y][:len(en[y])-1]
+
+
+        length=LCS(ko, en, len(ko), len(en))
+        print(length)
+        #print("LCS:",length)
+
+        result=[]
+
+        a = LCS_TraceBack(len(ko),len(en),result)
+        seq(i,a)
         i=i+1
-        continue
-    en=f_eng.readlines()
-    ko=f_kor.readlines()
-
-    for x in range(len(ko)):
-        if ko[x][-1]=='\n':
-            ko[x]=ko[x][:len(ko[x])-1]
-
-    for y in range(len(en)):
-        if en[y][-1]=='\n':
-            en[y]=en[y][:len(en[y])-1]
-
-
-    length=LCS(ko, en, len(ko), len(en))
-    print(length)
-    #print("LCS:",length)
-
-    result=[]
-
-    a = LCS_TraceBack(len(ko),len(en),result)
-    seq(i,a)
-    i=i+1
 
 

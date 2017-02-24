@@ -68,7 +68,7 @@ def nomalization(list):
     #print (list)
     return list
 
-def number_ko():
+def number_ko(start,end):
     total = 0
     lines = 0
 
@@ -81,7 +81,7 @@ def number_ko():
     num = 0
     new_input_url = ""
     new_output_url = ""
-    for art_num in range(8217-num):
+    for num in range(start,end):
     #for art_num in range(20):
         n = str(num)
         #new_input_url = input_url + n + ".txt"

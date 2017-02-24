@@ -35,6 +35,7 @@ list_path = "../../data/wiki/{attr}/{lang}/{idx}.txt"
 
 def remove_tags(data):
     p=re.compile(r'<.*?>')
+
     return p.sub('', data)
 
 def save_list(newlist,csv):

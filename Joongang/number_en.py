@@ -9,6 +9,10 @@ unit을 적용시킬 수 있을 듯 함.
 import re
 import nltk
 
+input_url = "./../sample/eng/"
+output_url = "./../data/NUM/eng/"
+
+count = 5800 
 def delete_symbol(line, symbol):
 
     flag = True
@@ -135,15 +139,13 @@ Unit = {
 }
 
 
-
-
-def number_en():
-    for index in range(0, 8217):
+def number_en(start, end):
+    for index in range(start, end):
         try:
-            write_en_File = open("../../data/Joongang/original_text/num/en/" + str(index) + ".txt", 'w', encoding= 'utf-8')
-            file_name = str(index) + ".txt"
-            en = open("../../data/Joongang/original_text/en/" + file_name, 'r', encoding='utf-8')
-            print (index)
+            print(index)
+            write_en_File = open(output_url + str(index) + ".txt", 'w', encoding= 'utf-8')
+            # file_name = "er\\" + str(index) + ".eng.txt"
+            en = open(input_url + str(index) + ".txt", 'r',encoding='utf8')
 
             count_en_line = 0
             #write_en_File.write(file_name + "\n")
@@ -158,8 +160,9 @@ def number_en():
 
                 tokens = nltk.word_tokenize(line)
                 tagged = nltk.pos_tag(tokens)
+                
 
-           
+                # write_en_File.write("[" + str(count_en_line) + "] ")
 
                 for element in tagged:
                     getNumberList(element,getList)
