@@ -6,7 +6,17 @@ from nltk import sent_tokenize
 import sys
 import copy
 
-def kor_sentence(p):
+def sub_kor_sentence(temp, word, st, start, finish):
+
+    temp=temp+word+"\n"
+    st.append(temp)
+    temp=""
+    start=0
+    finish=0
+
+    return temp, st, start, finish
+
+def sub_div_korean_sentence(p):
     temp=""
     st=[]
     start = 0
@@ -15,8 +25,12 @@ def kor_sentence(p):
     s_finish=0
     prev=""
 
-    for z in range(len(p)):
+    endword=['가','나','다','라','까','지','요','죠','\"','%']
+    endsign=['.','!','?']
 
+
+    for z in range(len(p)):
+        
               if z==0 and p[z]=="\"" or p[z]=="“":
                        temp=temp+p[z]
                        start=1
@@ -27,15 +41,7 @@ def kor_sentence(p):
                 
               elif z>0:
                        prev=p[z-1]
-
-
-              # next word
-              if z==len(p)-1:
-                       next_word=""
-              else:
-                       next_word=p[z+1]
-
-
+                       
               # double quotes beginning and ending
               if p[z]=="\"":
                       if start==1:
@@ -48,8 +54,7 @@ def kor_sentence(p):
                   
               elif p[z]=="”" and start==1:
                       finish=1
-
-
+                      
               # single quotes beginning and ending 
               if p[z]=="\'":
                       if s_start==1:
@@ -62,76 +67,24 @@ def kor_sentence(p):
               elif p[z]=="’" and s_start==1:
                       s_finish=1
 
-                      
-               # separate sentences
-              if p[z]=="." or p[z]=="!" or p[z]=="?":
-                      if prev=="가" or prev== "나" or prev== "다" or prev== "라" or prev== "까" or prev== "지" or prev== "요" or prev=="죠" or prev=="임" or prev=="음" or prev=="함" or prev=="오":
-                              if start==1 and finish==0:
+              # separate sentences
+              if p[z] in endsign:
+                      if prev in endword:
+                              if ( start==1 and finish==0 ) or ( s_start==1 and s_finish==0 ):
                                       temp=temp+p[z]
-
-                              elif start==1 and finish==1:
-                                      if next_word=="":
-                                              temp=temp+p[z]+"\n"
-                                              st.append(temp)
-                                              temp=""
-                                              start=0
-                                              finish=0
-
-                                      elif next_word!=" " and next_word!="\n":
-                                              temp=temp+p[z]
-
-                                      elif next_word==" " or next_word=="\n":
-                                              temp=temp+p[z]+"\n"
-                                              st.append(temp)
-                                              temp=""
-                                              start=0
-                                              finish=0
-
-                              
-                              #single case
-                              elif s_start==1 and s_finish==0:
-                                      temp=temp+p[z]
-                        
-                              elif s_start==1 and s_finish==1:
-                                      if next_word=="":
-                                              temp=temp+p[z]+"\n"
-                                              st.append(temp)
-                                              temp=""
-                                              s_start=0
-                                              s_finish=0
-
-                                      elif next_word!=" " and next_word!="\n":
-                                              temp=temp+p[z]
-                           
-                        
-                                      elif next_word==" " or next_word=="\n":
-                                              temp=temp+p[z]+"\n"
-                                              st.append(temp)
-                                              temp=""
-                                              s_start=0
-                                              s_finish=0
-
                               else:
-                                      temp=temp+p[z]+"\n"
-                                      st.append(temp)
-                                      temp=""
-                                      start=0
-                                      finish=0
-
+                                      temp, st, start, finish = sub_kor_sentence(temp, p[z], st, start, finish)
                       elif prev==")":
-                              if p[z-2]=="다" or p[z-2]=="나" or p[z-2]=="가" or p[z-2]=="라" or p[z-2]=="까" or p[z-2]=="지"or p[z-2]=="요"or p[z-2]=="죠" or p[z-2]=="임" or p[z-2]=="음" or p[z-2]=="함" or p[z-2]=="오":
-                                      temp=temp+p[z]+"\n"
-                                      st.append(temp)
-                                      temp=""
-                                      start=0
-                                      finish=0
-
+                              if p[z-2] in endword: 
+                                      temp, st, start, finish = sub_kor_sentence(temp, p[z], st, start, finish)
                       else:
                               temp=temp+p[z]
-
+                        
               else:
-                     temp=temp+p[z]                  
+                     temp=temp+p[z]   
 
+
+    #remove space in front of sentences
     for index in range(len(st)):
        ct=0
        for w in range(len(st[index])):
@@ -144,4 +97,4 @@ def kor_sentence(p):
        st[index]=st[index][ct:len(st[index])]
 
 
-    return st                 
+    return st
