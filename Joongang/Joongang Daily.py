@@ -11,6 +11,7 @@ import copy
 import number_ko
 import number_en
 import LCS
+import kor_sentence
 def remove_br_tags(data):
     newstr = data.replace("<br/>","=br=")
     newstr = newstr.replace("<br>\n<br>","=br=")
@@ -104,159 +105,8 @@ def div_english_sentence(bodies_split,filenumber,csv2):
     f.close()
 
 
-def sub_div_korean_sentence(p):
-    temp=""
-    st=[]
-    start = 0
-    finish = 0
-    s_start=0
-    s_finish=0
-    prev=""
 
-
-    for z in range(len(p)):
-        
-              if z==0 and p[z]=="\"" or p[z]=="“":
-                       temp=temp+p[z]
-                       start=1
-                       continue
-              elif z==0:
-                       temp=temp+p[z]
-                       continue
-                
-              elif z>0:
-                       prev=p[z-1]
-
-
-              # next word
-              if z==len(p)-1:
-                       next_word=""
-              else:
-                       next_word=p[z+1]
-
-
-              # double quotes beginning and ending
-              if p[z]=="\"":
-                      if start==1:
-                          finish=1
-                      else:
-                          start=1
-
-              elif p[z]=="“":
-                      start=1
-                  
-              elif p[z]=="”" and start==1:
-                      finish=1
-
-
-              # single quotes beginning and ending 
-              if p[z]=="\'":
-                      if s_start==1:
-                          s_finish=1
-                      else:
-                          s_start=1
-              elif p[z]=="‘":
-                      s_start=1
-
-              elif p[z]=="’" and s_start==1:
-                      s_finish=1
-
-
-                  
-              # separate sentences
-              if p[z]=="." or p[z]=="!" or p[z]=="?":
-                      if prev=="가" or prev== "나" or prev== "다" or prev== "라" or prev== "까" or prev== "지":
-                              if start==1 and finish==0:
-                                      temp=temp+p[z]
-                        
-                              elif start==1 and finish==1:
-                                      if next_word=="":
-                                              temp=temp+p[z]+"\n"
-                                              st.append(temp)
-                                              temp=""
-                                              start=0
-                                              finish=0
-                           
-
-                                      elif next_word!=" " and next_word!="\n":
-                                              temp=temp+p[z]
-                           
-                        
-                                      elif next_word==" " or next_word=="\n":
-                                              temp=temp+p[z]+"\n"
-                                              st.append(temp)
-                                              temp=""
-                                              start=0
-                                              finish=0
-
-
-                              #single case
-                              elif s_start==1 and s_finish==0:
-                                      temp=temp+p[z]
-                        
-                              elif s_start==1 and s_finish==1:
-                                      if next_word=="":
-                                              temp=temp+p[z]+"\n"
-                                              st.append(temp)
-                                              temp=""
-                                              s_start=0
-                                              s_finish=0
-                           
-
-                                      elif next_word!=" " and next_word!="\n":
-                                              temp=temp+p[z]
-                           
-                        
-                                      elif next_word==" " or next_word=="\n":
-                                              temp=temp+p[z]+"\n"
-                                              st.append(temp)
-                                              temp=""
-                                              s_start=0
-                                              s_finish=0
-            
-                              else:
-                                      temp=temp+p[z]+"\n"
-                                      st.append(temp)
-                                      temp=""
-                                      start=0
-                                      finish=0
-                      
-
-                      elif prev==")":
-                              if p[z-2]=="다" or p[z-2]=="나" or p[z-2]=="가" or p[z-2]=="라" or p[z-2]=="까" or p[z-2]=="지":
-                                      temp=temp+p[z]+"\n"
-                                      st.append(temp)
-                                      temp=""
-                                      start=0
-                                      finish=0
-
-                      else:
-                              temp=temp+p[z]
-                        
-                                
-              else:
-                     temp=temp+p[z]   
-
-
-
-
-    
-    #remove space in front of sentences
-    for index in range(len(st)):
-       ct=0
-       for w in range(len(st[index])):
-
-           if st[index][w]==" " or st[index][w]=="\n":
-               ct=ct+1
-           else:
-               break
-
-       st[index]=st[index][ct:len(st[index])]
-
-
-    return st
-
-    
+   
     
 def div_korean_sentence(bodies_split,filenumber,csv2):
     bodies_split[1]=bodies_split[1].replace(". \n",".**next**")
@@ -265,40 +115,26 @@ def div_korean_sentence(bodies_split,filenumber,csv2):
         
     mun_split=bodies_split[1].split("**next**")
 
-    a = len(mun_split)
-        
     f = open("../../data/Joongang/original_text/ko/"+str(filenumber)+".txt","w",encoding="UTF8")
-    for n in range(a): 
-        tokens=sub_div_korean_sentence(mun_split[n])
 
-        if tokens==[]:
-            continue
-        
-        if n!= a-1:
-            next_tokens=sub_div_korean_sentence(mun_split[n+1])
+    tokens=[]
+    for n in range(len(mun_split)):
+        temp=sub_div_korean_sentence(mun_split[n])
+        if temp!=[]:
+            tokens.append(temp)
 
-        b = len(tokens)
-        for m in range(b):
-            p = re.compile("[\n]*")
-            tokens[m] = p.sub('',tokens[m])
-                    
-            f.write(tokens[m])
-            
-            if n==a-1:
-                if m!=b-1:
-                     f.write("\n")
-
+    for j in range(len(tokens)):
+        for i in range(len(tokens[j])):
+            if j==len(tokens)-1 and i==len(tokens[j])-1:
+                f.write(tokens[j][i][:len(tokens[j][i])-1])
             else:
-                if next_tokens!=[] or m!=b-1:
-                     f.write("\n")
+                f.write(tokens[j][i])
                 
-                    
-        if n!=a-1:
-            if next_tokens!=[]:
-                f.write("\n")
-            
+        if j!=len(tokens)-1:
+            f.write("\n")
+
     
-    f.close()
+    f.close()    
     
 
 def store_html_csv(address, data, filenumber,csv,id):
