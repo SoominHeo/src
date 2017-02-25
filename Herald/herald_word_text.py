@@ -28,9 +28,6 @@ def make_file(file_num):
 		new_line = line
 		exception = re.compile("\s*did you know[?]?\s*$|\s*알고 있었나요[?]?\s*$")
 		check = exception.match(new_line.lower())
-		if check != None:
-			print(line)
-			continue
                 
 		for num in range(10):
 			new_line = new_line.replace(str(num), "")
@@ -60,10 +57,10 @@ def make_file(file_num):
 			index += 1
 			wf = open(eng_path + str(index) + ".txt", "w", encoding="UTF8")
 			wf.write(line)
-		print ("[" + str(index) + "] " + str(percent))
-		print (line)
 	f.close()
 
 def herald_word_text(start, end):
-    for i in range (start,end):
+    for i in range (start,end+1):
         make_file(i)
+    global index
+    return index

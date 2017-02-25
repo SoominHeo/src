@@ -22,6 +22,18 @@ num_ = {
     '수십':10, '수백':100, '수천':1000, '수만':10000, '수십만':100000, '수백만':1000000, '수천만':10000000, '수억':100000000, '수십억':1000000000, '수백억':10000000000, '수천억':100000000000
 }
 
+'''
+    for i in range(len(list)-1):
+        for j in range(len(list[i])):
+            if list[i][j] == '-':
+                if list[i] == '-':
+                    break
+                a = list[i].split('-')
+                if(len(a)<2): break
+                list[i] = a[0]
+                list[i+1] = a[1]
+                break
+'''
 def nomalization(list):
     min = 0
     max = 0
@@ -44,18 +56,6 @@ def nomalization(list):
                     list[i + k] = find_all_list[k]
                 else:
                     list.append(find_all_list[k])
-
-    for i in range(len(list)-1):
-        for j in range(len(list[i])):
-            if list[i][j] == '-':
-                if list[i] == '-':
-                    break
-                a = list[i].split('-')
-                if(len(a)<2): break
-                list[i] = a[0]
-                list[i+1] = a[1]
-                break
-
     #10억 같은 것을 다루는 애
     for i in range(len(list)-1):
         if len(list[i])>0 and len(list[i+1])>0 and list[i][0].isdigit() and list[i+1][0:3]=="100" and list[i][0] in ['1','2','3','4','5','6','7','8','9','0']:
@@ -64,6 +64,8 @@ def nomalization(list):
             max = i
             while (list[max+1][0].isdigit()):
                 max += 1
+                if max == len(list)-1:
+                    break
             if list[i-1] != " ":
                 list[i+1] = str(float(list[i]) * float(list[i+1]))
                 list[i] = " "
@@ -94,6 +96,7 @@ def ko_Num(start, end):
         first_list = []
         i = 0
         for line in file:
+            line.replace("-"," ")
             first_list.append(line)
             i += 1
         line_num = i
