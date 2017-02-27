@@ -50,10 +50,10 @@ def kor_sentence(p):
                           start=1
 
               elif p[z]=="“":
-                      start=1
-                  
-              elif p[z]=="”" and start==1:
-                      finish=1
+                      if start==1:
+                          finish=1
+                      else:
+                          start=1
                       
               # single quotes beginning and ending 
               if p[z]=="\'":

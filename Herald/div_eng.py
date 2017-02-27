@@ -35,7 +35,7 @@ def div_english_sentence(content,filenumber):
             tmp = str(tokens[m]).replace('@#$','?')
             tmp = str(tmp).replace('%^&*','.')
             f.write(tmp+"\n")
-
+        f.write('\n')
     f.close()
 
 

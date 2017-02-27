@@ -6,9 +6,9 @@ import div_kor
 import herald_word_text
 #count = herald_word_text.herald_word_text(0,5)
 #print(count)
-#div_eng.div_eng(0,count)
-#div_kor.div_kor(0,count)
+#div_eng.div_eng(0,1831)
+div_kor.div_kor(0,1831)
 #en_Num.en_Num(0,count)
 #ko_Num.ko_Num(1253,1831)
 #LCS.run(1831,1,5,3,9)
-LCS.run2(1,1,3,3)
+#LCS.run2(1,1,3,3)
