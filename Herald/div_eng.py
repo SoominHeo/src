@@ -13,12 +13,19 @@ def div_english_sentence(content,filenumber):
     content=content.replace("＂\n","＂**next**")
     content=content.replace("＂\n","＂**next**")
     '''
+<<<<<<< HEAD
     #f = open("../../data/Herald/sample/eng/"+str(filenumber)+".txt","w",encoding="UTF8")
     f = open("./result.txt","w",encoding="UTF8")
+=======
+    f = open("../../data/Herald/sample/eng/"+str(filenumber)+".txt","w",encoding="UTF8")
+    #f = open("./result.txt","w",encoding="UTF8")
+>>>>>>> c5190002ec2538457a6c47c1aa4772f56f93b905
     for x in content:
         flag=0
         x = str(x).replace(".” ",".”\n")
         x = str(x).replace(".\" ",".\"\n")
+        x = str(x).replace("U.S.","U.S")
+        x = str(x).replace("No.","No")
         for y in range(len(x)):
             
             
@@ -48,6 +55,7 @@ def div_english_sentence(content,filenumber):
 
 def div_eng(start, end):
     for i in range(start, end):
+<<<<<<< HEAD
         #f = open("../../data/Herald/resource/eng/"+str(i)+".txt","rU",encoding="UTF8")
         f = open("./test.txt","rU",encoding="UTF8")
         content = f.readlines()
@@ -55,3 +63,9 @@ def div_eng(start, end):
    
 div_eng(0,1)
 
+=======
+        f = open("../../data/Herald/resource/eng/"+str(i)+".txt","rU",encoding="UTF8")
+        #f = open("./test.txt","rU",encoding="UTF8")
+        content = f.readlines()
+        div_english_sentence(content,i) 
+>>>>>>> c5190002ec2538457a6c47c1aa4772f56f93b905
