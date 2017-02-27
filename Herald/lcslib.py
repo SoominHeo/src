@@ -380,8 +380,8 @@ def make_directory(path):
 
 def check_directory(subtype, distance,value):
 	print(subtype)
-	ANS_path = "./../../data/Herald/ANS/result/{subtype}/{distance}/{value}/"
-	LCS_path = "./../../data/Herald/LCS/{subtype}/{lang}/{distance}/{value}/"
+	ANS_path = "/../../data/Herald/ANS/result/{subtype}/{distance}/{value}/"
+	LCS_path = "/../../data/Herald/LCS/{subtype}/{lang}/{distance}/{value}/"
 	#ANS/line/{value}/line_{}Fill/{lang}
 	make_directory(current_path+(ANS_path.format(value=value, distance = distance,subtype= subtype)))
 	#LCS/line/{value}{line_{}Fill/lang}

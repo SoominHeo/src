@@ -10,5 +10,5 @@ import herald_word_text
 #div_kor.div_kor(0,count)
 #en_Num.en_Num(0,count)
 #ko_Num.ko_Num(1253,1831)
-#LCS.run(0,10)
-
+#LCS.run(1831,1,5,3,9)
+LCS.run2(1,1,3,3)

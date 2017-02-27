@@ -1,8 +1,6 @@
 import lcslib
 
-count = 40
-
-original_url = "./../../data/Herald/sample/{lang}/{idx}.txt"
+original_url = "./../../data/Herald/{lang}/{idx}.txt"
 number_url = "./../../data/Herald/NUM/{lang}/{idx}.txt"
 result_url = "./../../data/Herald/LCS/{subtype}/{lang}/{distance_value}/{jaccard_value}/{idx}.txt"
 
@@ -52,7 +50,7 @@ def LCS(idx,maintype,subtype,distance_value,jaccard_value):
 	if distance_value > 1 :
 		result = lcslib.fill_line(result,distance_value) # for filling the line
 
-	human,machine,answer = lcslib.check_answer(result,idx,subtype,distance_value,jaccard_value)
+	#human,machine,answer = lcslib.check_answer(result,idx,subtype,distance_value,jaccard_value)
 	#write result_file
 	for element in result:
 		result_kor_file.write(kor_text[element[0]-1]+'\n')
@@ -66,14 +64,14 @@ def LCS(idx,maintype,subtype,distance_value,jaccard_value):
 	result_eng_file.close()
 	return len(kor_text), human,machine,answer
 # print(total) # total articles size
-def run(start, end):
+def run(count,distance_start,distacne_end,jaccard_start,jaccard_end):
     total_text = 0
     total = open("./../../data/Herald/ANS/result/{subtype}/result.csv".format(subtype=subtype),'w',encoding='utf8')
     score = open("./../../data/Herald/ANS/result/{subtype}/score.csv".format(subtype=subtype),'w',encoding='utf8')
     total.write("\n")
     score.write("\n")
     
-    for distance_value in range(start,end):
+    for distance_value in range(distance_start,distance_end):
             total.write("{distance},".format(distance=distance_value))
             score.write("{distance},".format(distance=distance_value))
             total.write(",Human,Machine,Answer"*(count+1))
@@ -110,3 +108,11 @@ def run(start, end):
     print(total_text)
     total.close()
     score.close()
+def run2(distance_start,distance_end,jaccard_start,jaccard_end):
+    for distance_value in range(distance_start,distance_end+1):
+        for jaccard_value in range(jaccard_start,jaccard_end+1):
+            for idx in range(1832):
+                try:
+                    LCS(idx,maintype,subtype,distance_value,jaccard_value)
+                except:
+                    print("error!! idx:",idx)
