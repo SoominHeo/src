@@ -9,7 +9,7 @@ def div_korean_sentence(bodies_split,filenumber):
     mun_split=bodies_split.split("**next**")
 
     f = open("../../data/Herald/sample/kor/"+str(filenumber)+".txt","w",encoding="UTF8")
-    print(filenumber)
+
     tokens=[]
     for n in range(len(mun_split)):
         temp=kor_sentence.kor_sentence(mun_split[n])
@@ -20,10 +20,8 @@ def div_korean_sentence(bodies_split,filenumber):
         for i in range(len(tokens[j])):
             if j==len(tokens)-1 and i==len(tokens[j])-1:
                 f.write(tokens[j][i][:len(tokens[j][i])-1])
-                # print(tokens[j][i][:len(tokens[j][i])-1])
             else:
                 f.write(tokens[j][i])
-                # print(tokens[j][i])
                 
         if j!=len(tokens)-1:
             f.write("\n")
