@@ -14,13 +14,22 @@ def div_english_sentence(content,filenumber):
     content=content.replace("＂\n","＂**next**")
     '''
     f = open("../../data/Herald/sample/eng/"+str(filenumber)+".txt","w",encoding="UTF8")
+    #f = open("./result.txt","w",encoding="UTF8")
     for x in content:
         flag=0
         x = str(x).replace(".” ",".”\n")
         x = str(x).replace(".\" ",".\"\n")
+        x = str(x).replace("No.","No")
+        x = str(x).replace("a.k.a.","HHHH1")
+        p = re.compile("[A-Z]\.[ ]?")
+        findlist = p.findall(x)
+        if(findlist!=[]):
+            print(findlist)
+        s = 0
+        for i in findlist:
+            x = x.replace(i,"GGGG"+str(s))
+            s = s+1
         for y in range(len(x)):
-            
-            
             if(flag==1 and (x[y]=='.'or x[y]=='?') and y+1<len(x)):
                 if(x[y+1]!='”' and x[y+1]!='＂' and x[y+1]!=')'):
                     if(x[y]=='?'):
@@ -35,8 +44,12 @@ def div_english_sentence(content,filenumber):
                 flag=1
 
         tokens = sent_tokenize(x)
-        print(tokens)
         for m in range(len(tokens)):
+            s = 0
+            tokens[m] = str(tokens[m]).replace("HHHH1","a.k.a")
+            for i in findlist:
+                tokens[m] = str(tokens[m]).replace("GGGG"+str(s),i)
+                s = s+1
             tmp = str(tokens[m]).replace('@#$','?')
             tmp = str(tmp).replace('%^&*','.')
             f.write(tmp+"\n")
@@ -48,5 +61,8 @@ def div_english_sentence(content,filenumber):
 def div_eng(start, end):
     for i in range(start, end):
         f = open("../../data/Herald/resource/eng/"+str(i)+".txt","rU",encoding="UTF8")
+        #f = open("./test.txt","rU",encoding="UTF8")
         content = f.readlines()
         div_english_sentence(content,i) 
+   
+
