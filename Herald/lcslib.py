@@ -1,6 +1,7 @@
 import re
 import os
 import copy
+import NNP_dictionary
 current_path = os.getcwd()
 
 def long(list1, list2):
@@ -14,17 +15,16 @@ def make_dict():
 	#new_dictionary = open("./../../data/Herald/data2.csv",'w',encoding='utf8') 
 	#special_character_list = ['.', '^', '$', '*', '+', '?', '{', '}', '[', ']', '\\', '|', '(', ')']
 	lines = dictionary.readlines()
-	#bracket = re.compile(r'\(*?\)')
+	#bracket = re.compile(r'\(.*?\)')
 	#special_character=re.compile('\.|\^|\$|\*|\+|\?|\{|\}|\[|\]|\\|\||\(|\)')
 	dic={}
 	for idx, line in enumerate(lines):
-		#bracket.sub("",line)
+		#line =bracket.sub("",line)
 		#special_character.sub("",line)
 		splt = re.split(",\t|\n",line)
-		dic[splt[0]]= splt[1]
-		#new_dictionary.write("{kor}\t{eng}\n".format(kor=splt[2],eng=splt[3]))
+		dic[NNP_dictionary.special_character(splt[0])]= NNP_dictionary.special_character(splt[1])
+		#new_dictionary.write("{kor}\t{eng}\n".format(kor=NNP_dictionary.special_character(splt[2]),eng=NNP_dictionary.special_character(splt[3])))
 	sorted(dic,key=len ,reverse =True)
-	print(dic)
 	dictionary.close()
 	return dic
 #return translate NNP
@@ -33,14 +33,14 @@ def trans_list(text,dic):
 
 	for line in text:
 		tmp = []
-
+		print("line:{line}".format(line=line))
 		#if there is key in kor_text, append dic[key]
 		for key in dic.keys():
-			find_list = re.findall(key,line.replace("_"," "))
+			find_list = re.findall(key,line)
 			for element in find_list:
 				tmp.append(dic[element])
 		trans_set.append(tmp)
-
+	print ("kor:{trans}".format(trans=trans_set))
 	return trans_set 
 
 # return number list1
@@ -74,7 +74,7 @@ def noun_list(text,dic):
 				tmp.append(element)
 		noun_list.append(tmp)
 
-
+	print("eng:{noun}".format(noun=noun_list))
 	return noun_list
 
 # add two list
@@ -252,6 +252,7 @@ def line_lcs(kor,eng,jaccard_value):
 		for eng_idx in range(e_len):
 			k = kor[kor_idx]
 			e = eng[eng_idx]
+			#print("kor:{k}\neng:{e}\n===================".format(k=k,e=e))
 			if jaccard(k,e)>= jaccard_value:
 				LCStable[kor_idx+1][eng_idx+1]=LCStable[kor_idx][eng_idx]+1
 			else:

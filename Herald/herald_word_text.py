@@ -7,7 +7,6 @@ index = 0
 def make_file(file_num):
 	f = open(input_path+str(file_num) + ".txt", "r", encoding="UTF8")
 	line = f.readline()
-
 	count = len(re.findall("[A-Za-z]", str(line)))
 	percent = count/len(line)
 
@@ -15,7 +14,7 @@ def make_file(file_num):
 	isEng = True
 	wf = open(eng_path + str(index) + ".txt", "w", encoding="UTF8")
 
-	if line[:3] != "No.":
+	if line[:4] is not "No.":
 		wf.write(line)
 
 	while True:

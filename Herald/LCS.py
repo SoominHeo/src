@@ -12,9 +12,8 @@ subtype = "line_fill"
 #dic = lcslib.make_dict()
 # total =0
 # get original_text
-def LCS(idx,maintype,subtype,distance_value,jaccard_value):
+def LCS(idx,dic,maintype,subtype,distance_value,jaccard_value):
 	print(idx)
-
 	jaccard_value = float(jaccard_value) / 10.0 # for control line_lcs jaccard value
 	print("distance value : ",distance_value)
 	print("jaccard value :",jaccard_value)
@@ -49,8 +48,10 @@ def LCS(idx,maintype,subtype,distance_value,jaccard_value):
 
 	if distance_value > 1 :
 		result = lcslib.fill_line(result,distance_value) # for filling the line
-
-	#human,machine,answer = lcslib.check_answer(result,idx,subtype,distance_value,jaccard_value)
+	try:
+		human,machine,answer = lcslib.check_answer(result,idx,subtype,distance_value,jaccard_value)
+	except:
+		human,machine,answer = -1,-1,-1
 	#write result_file
 	for element in result:
 		result_kor_file.write(kor_text[element[0]-1]+'\n')
@@ -64,7 +65,7 @@ def LCS(idx,maintype,subtype,distance_value,jaccard_value):
 	result_eng_file.close()
 	return len(kor_text), human,machine,answer
 # print(total) # total articles size
-def run(count,distance_start,distacne_end,jaccard_start,jaccard_end):
+def run(count,dic,distance_start,distance_end,jaccard_start,jaccard_end):
     total_text = 0
     total = open("./../../data/Herald/ANS/result/{subtype}/result.csv".format(subtype=subtype),'w',encoding='utf8')
     score = open("./../../data/Herald/ANS/result/{subtype}/score.csv".format(subtype=subtype),'w',encoding='utf8')
@@ -85,7 +86,9 @@ def run(count,distance_start,distacne_end,jaccard_start,jaccard_end):
                     total.write(",{jaccard},".format(jaccard=jaccard_value))
                     score.write(",{jaccard},".format(jaccard=jaccard_value))
                     for idx in range(1,count+1):			
-                            text,human,machine,answer = LCS(idx,maintype,subtype,distance_value,jaccard_value)
+                            text,human,machine,answer = LCS(idx,dic,maintype,subtype,distance_value,jaccard_value)
+                            if text == -1 or human == -1 or machine == -1 or answer == -1:
+                                continue
                             if machine ==0:
                                     precision = 0
                             else :
