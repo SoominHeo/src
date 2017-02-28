@@ -44,12 +44,17 @@ def kor_sentence(p):
                        
               # double quotes beginning and ending
               if p[z]=="\"":
-                      if start==1:
+                      if start==1 and finish==1:
+                          finish=0
+                      elif start==1 and finish==0:
                           finish=1
                       else:
                           start=1
 
               elif p[z]=="“":
+                  if finish==1:
+                      finish=0
+                  else:
                       start=1
                   
               elif p[z]=="”" and start==1:
@@ -57,11 +62,17 @@ def kor_sentence(p):
                       
               # single quotes beginning and ending 
               if p[z]=="\'":
-                      if s_start==1:
+                      if s_start==1 and s_finish==1:
+                          s_finish=0
+                      elif s_start==1 and s_finish==0:
                           s_finish=1
                       else:
                           s_start=1
+                          
               elif p[z]=="‘":
+                  if s_finish==1:
+                      s_finish=0
+                  else:
                       s_start=1
 
               elif p[z]=="’" and s_start==1:
