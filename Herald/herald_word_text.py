@@ -11,15 +11,16 @@ def make_file(file_num):
 	count = len(re.findall("[A-Za-z]", str(line)))
 	percent = count/len(line)
 
+	global index
 	isEng = True
-	wf = open(eng_path + "0.txt", "w", encoding="UTF8")
+	wf = open(eng_path + str(index) + ".txt", "w", encoding="UTF8")
 
 	if line[:3] != "No.":
 		wf.write(line)
 
-	global index
 	while True:
 		line = f.readline()
+		line = re.sub(r'\[\d\]',"",line)
 		if not line: 
 			wf.close()
 			break

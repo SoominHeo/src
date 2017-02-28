@@ -9,7 +9,7 @@ subtype = "line_fill"
 # noun_url = "./../data/NNP"
 
 #make dictionary
-dic = lcslib.make_dict()
+#dic = lcslib.make_dict()
 # total =0
 # get original_text
 def LCS(idx,maintype,subtype,distance_value,jaccard_value):

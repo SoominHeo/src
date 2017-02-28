@@ -10,15 +10,21 @@ def short(list1, list2):
 	return  list1 if len(list1) < len(list2) else list2
 
 def make_dict():
-	dictionary = open("./../../data/Herald/Dict.csv",'r',encoding ='utf8')
-	dic = {}
-	for line in dictionary:
-		# seperate entry and value
-		entry = line.split(",")
-		
-		# put dictionary entry and value(delete '\n' symbol)
-		dic[entry[0]] = entry[1].replace("\n","")
-
+	dictionary = open("./../../data/Herald/data2.csv",'r',encoding ='utf8')
+	#new_dictionary = open("./../../data/Herald/data2.csv",'w',encoding='utf8') 
+	#special_character_list = ['.', '^', '$', '*', '+', '?', '{', '}', '[', ']', '\\', '|', '(', ')']
+	lines = dictionary.readlines()
+	#bracket = re.compile(r'\(*?\)')
+	#special_character=re.compile('\.|\^|\$|\*|\+|\?|\{|\}|\[|\]|\\|\||\(|\)')
+	dic={}
+	for idx, line in enumerate(lines):
+		#bracket.sub("",line)
+		#special_character.sub("",line)
+		splt = re.split(",\t|\n",line)
+		dic[splt[0]]= splt[1]
+		#new_dictionary.write("{kor}\t{eng}\n".format(kor=splt[2],eng=splt[3]))
+	sorted(dic,key=len ,reverse =True)
+	print(dic)
 	dictionary.close()
 	return dic
 #return translate NNP
@@ -30,7 +36,7 @@ def trans_list(text,dic):
 
 		#if there is key in kor_text, append dic[key]
 		for key in dic.keys():
-			find_list = re.findall(key,line)
+			find_list = re.findall(key,line.replace("_"," "))
 			for element in find_list:
 				tmp.append(dic[element])
 		trans_set.append(tmp)
@@ -269,7 +275,7 @@ def word_lcs(kor, eng):
 	length_kor = len(table)
 	length_eng = len(table[0])
 
-	# make LCS table
+	#make LCS table
 	for  x in range(length_kor):
 		for y in range(length_eng):
 			if x == 0 or y == 0:
