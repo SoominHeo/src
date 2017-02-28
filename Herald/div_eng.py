@@ -40,7 +40,7 @@ def div_english_sentence(content,filenumber):
                 x = x[:t+2]+"\n"+x[t+3:]
         for y in range(len(x)):
             if(flag==1 and (x[y]=='.'or x[y]=='?' or x[y]=='!') and y+1<len(x)):
-                if(x[y+1]!='”' and x[y+1]!='＂' and x[y+1]!=')'):
+                if(x[y+1]!='”' and x[y+1]!='＂' and x[y+1]!='"' and x[y+1]!=')'):
                     if(x[y]=='?'):
                         x = x[:y]+"@#$"+x[y+1:]
                         #x=str(x).replace('?',"@#$")
@@ -49,9 +49,9 @@ def div_english_sentence(content,filenumber):
                         #x=str(x).replace('.',"%^&*")
                     elif(x[y]=='!'):
                         x = x[:y]+"%&%&"+x[y+1:]
-            if(flag==1 and (x[y]=='”' or x[y]=='＂' or x[y]==')')):
+            if(flag==1 and (x[y]=='”' or x[y]=='＂' or x[y]=='"' or x[y]==')')):
                 flag=0
-            elif(flag==0 and (x[y]=='“' or x[y]=='＂' or x[y]=='(') ):
+            elif(flag==0 and (x[y]=='“' or x[y]=='＂' or x[y]=='(' or x[y]=='"') ):
                 flag=1
 
         tokens = sent_tokenize(x)
