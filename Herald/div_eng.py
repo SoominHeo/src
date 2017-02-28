@@ -13,8 +13,8 @@ def div_english_sentence(content,filenumber):
     content=content.replace("＂\n","＂**next**")
     content=content.replace("＂\n","＂**next**")
     '''
-    #f = open("../../data/Herald/sample/eng/"+str(filenumber)+".txt","w",encoding="UTF8")
-    f = open("./result.txt","w",encoding="UTF8")
+    f = open("../../data/Herald/sample/eng/"+str(filenumber)+".txt","w",encoding="UTF8")
+    #f = open("./result.txt","w",encoding="UTF8")
     for x in content:
         flag=0
         x = str(x).replace(".” ",".”\n")
@@ -40,7 +40,7 @@ def div_english_sentence(content,filenumber):
                 x = x[:t+2]+"\n"+x[t+3:]
         for y in range(len(x)):
             if(flag==1 and (x[y]=='.'or x[y]=='?' or x[y]=='!') and y+1<len(x)):
-                if(x[y+1]!='”' and x[y+1]!='＂' and x[y+1]!=')'):
+                if(x[y+1]!='”' and x[y+1]!='＂' and x[y+1]!='"' and x[y+1]!=')'):
                     if(x[y]=='?'):
                         x = x[:y]+"@#$"+x[y+1:]
                         #x=str(x).replace('?',"@#$")
@@ -49,9 +49,9 @@ def div_english_sentence(content,filenumber):
                         #x=str(x).replace('.',"%^&*")
                     elif(x[y]=='!'):
                         x = x[:y]+"%&%&"+x[y+1:]
-            if(flag==1 and (x[y]=='”' or x[y]=='＂' or x[y]==')')):
+            if(flag==1 and (x[y]=='”' or x[y]=='＂' or x[y]=='"' or x[y]==')')):
                 flag=0
-            elif(flag==0 and (x[y]=='“' or x[y]=='＂' or x[y]=='(') ):
+            elif(flag==0 and (x[y]=='“' or x[y]=='＂' or x[y]=='(' or x[y]=='"') ):
                 flag=1
 
         tokens = sent_tokenize(x)
@@ -72,9 +72,11 @@ def div_english_sentence(content,filenumber):
 
 def div_eng(start, end):
     for i in range(start, end):
-        #f = open("../../data/Herald/resource/eng/"+str(i)+".txt","rU",encoding="UTF8")
-        f = open("./3.txt","rU",encoding="UTF8")
+        f = open("../../data/Herald/resource/eng/"+str(i)+".txt","rU",encoding="UTF8")
+        #f = open("./3.txt","rU",encoding="UTF8")
         content = f.readlines()
         div_english_sentence(content,i) 
    
-div_eng(0,1)
+#div_eng(0,1)
+
+
