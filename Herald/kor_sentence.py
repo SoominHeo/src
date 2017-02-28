@@ -27,21 +27,21 @@ def kor_sentence(p):
 
     endword=['가','나','다','라','까','지','요','죠','\"','%']
     endsign=['.','!','?']
-
-
+    
     for z in range(len(p)):
         
-              if z==0 and p[z]=="\"" or p[z]=="“":
+              if z==0:
+                  if p[z]=="\"" or p[z]=="“":
                        temp=temp+p[z]
                        start=1
                        continue
-              elif z==0:
+                  else:
                        temp=temp+p[z]
                        continue
-                
+                       
               elif z>0:
                        prev=p[z-1]
-                       
+
               # double quotes beginning and ending
               if p[z]=="\"":
                       if start==1 and finish==1:
@@ -90,7 +90,7 @@ def kor_sentence(p):
                                       temp, st, start, finish = sub_kor_sentence(temp, p[z], st, start, finish)
                       else:
                               temp=temp+p[z]
-                        
+                      
               else:
                      temp=temp+p[z]   
 
