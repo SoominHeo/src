@@ -25,7 +25,7 @@ def kor_sentence(p):
     s_finish=0
     prev=""
 
-    endword=['가','나','다','라','까','지','요','죠','\"','%']
+    endword=['가','나','다','라','자','까','지','요','죠','\"','%']
     endsign=['.','!','?']
     
     for z in range(len(p)):
