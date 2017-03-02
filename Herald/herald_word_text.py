@@ -7,6 +7,7 @@ index = 0
 def make_file(file_num):
 	f = open(input_path+str(file_num) + ".txt", "r", encoding="UTF8")
 	line = f.readline()
+    line = line.replace("*", "")
 	count = len(re.findall("[A-Za-z]", str(line)))
 	percent = count/len(line)
 
@@ -19,6 +20,7 @@ def make_file(file_num):
 
 	while True:
 		line = f.readline()
+        line = line.replace("*", "")
 		line = re.sub(r'\[\d\]',"",line)
 		if not line: 
 			wf.close()
