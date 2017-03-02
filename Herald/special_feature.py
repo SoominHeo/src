@@ -6,7 +6,7 @@ eng_path="eng/eng/"
 
 def special_feature(filenumber):
 
-    feature=['!','?','\"','\'','@','#','$','%','&','“','”','’']
+    feature=['!','?','\"','\'','@','#','$','%','&','“','”','’','(',')','[',']','{','}','<','>']
     
     
     f_kor=open(kor_path+str(filenumber)+".txt","r",encoding="UTF8")
