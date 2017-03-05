@@ -51,6 +51,8 @@ def special_feature(filenumber):
                 else:
                     feature_table[i].append(0)
                     break
+    
+    return feature_table
 
     '''                
     print("["+str(filenumber)+" text ]")
