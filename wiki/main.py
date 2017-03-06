@@ -7,7 +7,7 @@ import random
 #wiki.pair_cro()
 dic = make_dictionary.make_dictionary()
 start_idx = 0 
-end_idx = 250000 
+end_idx = 230000 
 error_list = []
 i = start_idx
 random_list = []
@@ -20,7 +20,7 @@ while 1:
     r = random_list[i]
     if i > end_idx:
         break
-    r = 82746 
+    r = 82746
     print(str(i)+"\t"+str(r))
     try:
             ck_link_list, e_link_list, percent = wiki.check_all_pair(dic, r)

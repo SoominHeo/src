@@ -22,6 +22,8 @@ html_path = "../../data/wiki/{lang}_html/{idx}.html"
 header_path = "../../data/wiki/header/{lang}/{idx}.txt"
 csv_path = "../../data/wiki/data.csv"
 
+randomList = [num for num in range(0,60000)]
+random.shuffle(randomList)
 # 링크사전으로 DB 기반 만들기 (1회 사용)
 def insert_link_dictionary(table_name):
     con = sqlite3.connect("NNP.db")
@@ -129,23 +131,28 @@ def extract_NNP_DIC_in_LINK_DIC(num):
     return dic
 
 def run(start, end):
-    randomList = [num for num in range(start,end)]
-    random.shuffle(randomList)
     log = open("log.txt",'w',encoding='utf8')
     con = sqlite3.connect("NNP.db")
     cursor = con.cursor()
     pair_list = make_index_kor_eng_list()
     dic = make_dictionary.make_dictionary()
+    end = 3333
+    index = 0
     # index = start
-    for index in range(3333):
-        try:
-            #if index == end+1: # 몇 개 돌리길 원하는지
-            #    break
-            dictionary_to_article_check(con, dic, pair_list[randomList[index]])
-            #index = index+ 1
-        except:
-            #index = index +1
-            log.write("index : {idx}\n".format(idx=randomList[index]))
+    while True:
+        if index == end or index == 60000:
+            break
+        else:
+            try:
+                #if index == end+1: # 몇 개 돌리길 원하는지
+                #    break
+                dictionary_to_article_check(con, dic, pair_list[randomList[index]])
+                #index = index+ 1
+                index = index +1
+            except:
+                end += 1
+                index += 1
+                log.write("index : {idx}\n".format(idx=randomList[index]))
     con.commit()
     con.close()
 
@@ -163,16 +170,17 @@ def make_index_kor_eng_list():
     return pair_list
 
 def store_only_header():
-    index = 3000
+    index=0
     while 1:
-        print (str(index)+".txt")
-        k = open(html_path.format(lang='kor',idx=index), "r", encoding='UTF8')
+        ran_index=randomList[index]
+        print (str(ran_index)+".txt")
+        k = open(html_path.format(lang='kor',idx=ran_index), "r", encoding='UTF8')
         sources_k = BeautifulSoup(k, "html.parser")
 
-        e = open(html_path.format(lang='eng',idx=index), "r", encoding='UTF8')
+        e = open(html_path.format(lang='eng',idx=ran_index), "r", encoding='UTF8')
         sources_e = BeautifulSoup(e, "html.parser")
 
-        ck = header.header(sources_k, sources_e, index, 0)
+        ck = header.header(sources_k, sources_e, ran_index, 0)
         if ck == -1:
             index = index + 1
             continue
@@ -191,6 +199,8 @@ def make_NNPDict():
 #insert_link_dictionary("NNP_DIC")
 #query_statement("CREATE TABLE NNP_DIC(kor text, eng text, count int)")
 #query_statement("DROP TABLE NNP_DIC")
+#query_statement("CREATE TABLE NNP_DIC(kor text, eng text, count int)")
+#insert_link_dictionary("NNP_DIC")
 #run(0,1)
 #query_statement("SELECT * FROM NNP_DIC WHERE COUNT> 2") # n개 이상인 row만 print
 #NNP_DICTIONARY = extract_NNP_DIC_in_LINK_DIC(1) #여기서 반환하는
@@ -215,7 +225,8 @@ run(0,60000)
 #                       	고유명사사전은 빈도수가 20 미만인 것들로 만들고 반환합니다'
 #           이렇게요. 친절하죠? 판단 방법: 여기서 저는 빈도수가 20 미만인 것들은 매우 드문 경우(17만개 밖에 안남았으니)라고 판단해서 여기서 반환된 dictionary를 사용하려 합니다.
 '''             여기까지 딱 한번만 돌리는 거에요              '''
-dic = extract_NNP_DIC_in_LINK_DIC(20)
+#query_statement("SELECT * FROM NNP_DIC")
+#dic = extract_NNP_DIC_in_LINK_DIC(0)
 #step5.     step4에서 만들어진 사전이 우리가 최종적으로 얻고자 하는 고유명사사전이 됩니다. 물론... 빈도수로만 했기 때문에 정확한 dictionary는 될 수 없겠지만,
 #           우리가 고유명사사전을 만드려고 한 이유가 드물게 나오는 것들을 뽑아내는 것이므로, 취지에는 적합한 사전이 완성되었다 생각합니다.
 #           아 그리고 이 함수는 이제 NNP_list를 만드는데 사용이 되겠죠? ㅎㅎㅎ Good Luck... 오빠들 사랑해여 지윤아 사랑해 ㅠㅠ 하루이틀은 꼭 쉬세여 ㅎㅎ 라뷰

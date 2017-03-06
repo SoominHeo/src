@@ -171,8 +171,6 @@ def en_Num(start, end):
                     if(element is not " "):
                         write_en_File.write(str(element) +", ")
                 write_en_File.write("\n")
-            write_en_File.write("\n")
-
 
             en.close()
             write_en_File.close()

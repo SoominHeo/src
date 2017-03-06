@@ -21,7 +21,7 @@ def make_dict():
 	for idx, line in enumerate(lines):
 		#line =bracket.sub("",line)
 		#special_character.sub("",line)
-		splt = re.split(",\t|\n",line)
+		splt = re.split("\t|\n",line)
 		dic[NNP_dictionary.special_character(splt[0])]= NNP_dictionary.special_character(splt[1])
 		#new_dictionary.write("{kor}\t{eng}\n".format(kor=NNP_dictionary.special_character(splt[2]),eng=NNP_dictionary.special_character(splt[3])))
 	sorted(dic,key=len ,reverse =True)
@@ -33,14 +33,12 @@ def trans_list(text,dic):
 
 	for line in text:
 		tmp = []
-		print("line:{line}".format(line=line))
 		#if there is key in kor_text, append dic[key]
 		for key in dic.keys():
 			find_list = re.findall(key,line)
 			for element in find_list:
 				tmp.append(dic[element])
 		trans_set.append(tmp)
-	print ("kor:{trans}".format(trans=trans_set))
 	return trans_set 
 
 # return number list1
@@ -56,6 +54,7 @@ def number_list(file):
 				continue
 			tmp.append(element)
 		number_list.append(tmp)
+	print("number ",len(number_list))
 	return number_list		
 
 def noun_list(text,dic):
@@ -74,7 +73,6 @@ def noun_list(text,dic):
 				tmp.append(element)
 		noun_list.append(tmp)
 
-	print("eng:{noun}".format(noun=noun_list))
 	return noun_list
 
 # add two list
@@ -107,19 +105,24 @@ def common_set_table(list1,list2):
 
 def make_candidate(table,x,y):
 	candidate = []
+	print("len(x) ",len(table))
+	print("len(y) ",len(table[0]))
+	print("x ",x)
+	print("y ",y)
 	for tmp_x in range(x):
 		candidate += table[tmp_x][:y]
+	
+	if x > 1 and x <= len(table) and y < len(table[0]):
+		candidate += [table[x-1][y]]
+	
+	if y > 1 and y <= len(table) and x < len(table):
+		candidate += [table[x][y-1]]
+
 	return candidate
 
 def get_max_pair(table,x,y):
 	candidate = make_candidate(table,x,y)
 	index = candidate.index(max(candidate))
-	# print("***")
-	# print(candidate)
-	# for element in candidate:
-	# 	print (element)
-	# print (index)
-	# print (divmod(index,y))
 	# print (y)
 	return divmod(index,y)
 
@@ -222,6 +225,10 @@ def LCSS_TraceBack(m, n, LCStable,limit,distance_x,distance_y):
 
 def fill_line(frame,distance):
 	length = len(frame)
+	frame.append((0,0))
+	limitX = len(frame)
+	limitY = len(frame[limitX -1])
+	frame.append((limitX,limitY))
 	for idx in range(length-1):
 		ko_diff = frame[idx + 1][0] - frame[idx][0]
 		en_diff = frame[idx + 1][1] - frame[idx][1]
@@ -229,6 +236,8 @@ def fill_line(frame,distance):
 			for fill_idx in range(1,ko_diff):
 				frame.append(((frame[idx][0] + fill_idx), (frame[idx][1] + fill_idx)))
 	# print(result)
+	frame.remove((0,0))
+	frame.remove((limitX,limitY))
 	frame.sort()
 	return frame
 
@@ -268,13 +277,26 @@ def line_lcs(kor,eng,jaccard_value):
 
 def word_lcs(kor, eng):
 	#start idx = 1,1
+	print("kor: ",len(kor))
+	print("eng: ",len(eng))
+	#kor.reverse()
+	#eng.reverse()
+	if len(kor) == 0 or len(eng) == 0:
+		return None
 	lengths = [[0 for y in range(len(eng)+1)] for x in range(len(kor)+1)] 
 
 	table = common_set_table(kor, eng)
 	result = []
-
 	length_kor = len(table)
 	length_eng = len(table[0])
+
+	print("table")
+
+	for i in table:
+		print(i)
+
+	result.append((1,1))
+	result.append((length_kor,length_eng))
 
 	#make LCS table
 	for  x in range(length_kor):
@@ -290,29 +312,15 @@ def word_lcs(kor, eng):
 
 	#trace
 	#for make first candidate = whole lengths table
-	length_kor += 1
-	length_eng += 1
 	while(True):
 		(length_kor,length_eng) = get_max_pair(lengths,length_kor,length_eng)
-		# print(length_kor)
-		# print(length_eng)
-		# print("================")
-		if(length_kor == 0 or length_eng ==0):
+		if(length_kor <= 1 or length_eng <=1):
 			break;
+		#result.append((len(kor)-length_kor+1,len(eng)-length_eng+1))
 		result.append((length_kor,length_eng))
-
-		
-	#print(result)
-	#result = fill_line(result)
 	result.sort()
 
-	# for line in table:
-	# 	print(line)
-	# print("===================="*5)
-	# for idx, line in enumerate(lengths):
-	# 	print(idx," : ",line)
-	# print(result)
-	return result
+	return list(set(result))
 
 def check_answer(result,idx,subtype,distance_value,jaccard_value):
 	answer_file = open("./../../data/Herald/ANS/answer_{0}.csv".format(idx),'r',encoding='utf8')
@@ -337,11 +345,12 @@ def check_answer(result,idx,subtype,distance_value,jaccard_value):
 		line = line.replace(' ',"")
 		line = line.replace('\n',"")
  		# split eng and kor
-		line = line.split("\t")
+		line = line.split('\t')
  		
  		#ignore two-to-one and no-to-one
 		if(len(line[0]) != 0 and len(line[0].split(','))==1):
-			answer_list.append((int(line[1]),int(line[0])))
+			answer_list.append((int(line[1].split(',')[0]),int(line[0])))
+			print (answer_list)
 			answer_number += 1
 	# print(answer_list)
 	# print(result)
