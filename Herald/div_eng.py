@@ -4,6 +4,7 @@ import re
 from unicodedata import name
 from nltk import sent_tokenize
 def div_english_sentence(content,filenumber):
+    buffer = ""
     #div enlish sentence
     '''
     content=content.replace(". \n",".**next**")
@@ -64,9 +65,12 @@ def div_english_sentence(content,filenumber):
             tmp = str(tokens[m]).replace('@#$','?')
             tmp = str(tmp).replace('%^&*','.')
             tmp = str(tmp).replace('%&%&','!')
-            f.write(tmp+"\n")
-        f.write("\n")
-
+            buffer = buffer + tmp+"\n"
+    buffer = buffer.replace("\n\n","\n")
+    buffer = buffer.replace("\n\n","\n")
+    buffer = buffer.replace("\n\n","\n")
+    buffer = buffer.replace("\n\n","\n")
+    f.write(buffer)
     f.close()
 
 
