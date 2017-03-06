@@ -3,31 +3,42 @@ import re
 kor_path = "../../data/Herald/resource/kor/"
 eng_path = "../../data/Herald/resource/eng/"
 input_path = "../../data/Herald/"
+#kor_path = "jh/kor/"
+#eng_path = "jh/eng/"
+#input_path = ""
 index = 0
 def make_file(file_num):
-	f = open(input_path+str(file_num) + ".txt", "r", encoding="UTF8")
+	global index
+	f = open(input_path + str(file_num) + ".txt", "r", encoding="UTF8")
 	line = f.readline()
+	line = line.replace("*", "")
+
 	count = len(re.findall("[A-Za-z]", str(line)))
 	percent = count/len(line)
 
-	global index
 	isEng = True
 	wf = open(eng_path + str(index) + ".txt", "w", encoding="UTF8")
-
-	if line[:4] is not "No.":
+	number = re.match("[0-9]{3}", line)
+	if line[:3].lower() != "no." and number == None and line != "\n":
 		wf.write(line)
+
 
 	while True:
 		line = f.readline()
-		line = re.sub(r'\[\d\]',"",line)
 		if not line: 
 			wf.close()
 			break
-		if line[:3] == "No.": 
+		if line == '\n': continue
+		number = re.match("[0-9]{3}$", line)
+		if line[:3].lower() == "no." or number != None:
+			#print (line)
 			continue
 		new_line = line
 		exception = re.compile("\s*did you know[?]?\s*$|\s*알고 있었나요[?]?\s*$")
 		check = exception.match(new_line.lower())
+		if check != None:
+			#print(line)
+			continue
                 
 		for num in range(10):
 			new_line = new_line.replace(str(num), "")
@@ -38,7 +49,8 @@ def make_file(file_num):
 		count = len(re.findall("[A-Za-z.,\?\!\$\^\&\*\;\<\>\/]", str(new_line)))
 
 		percent = count/(len(new_line))
-
+		line = re.sub(r"\[[0-9]+\]", "", line)
+		line = line.replace("*", "")
 		if percent >= 0.5 and isEng == True: #영어 계속
 			wf.write(line)
 		elif percent < 0.5 and isEng == True: #영어 끝났고 한글이 새로 나옴 
@@ -57,10 +69,13 @@ def make_file(file_num):
 			index += 1
 			wf = open(eng_path + str(index) + ".txt", "w", encoding="UTF8")
 			wf.write(line)
+		#print ("[" + str(index) + "] " + str(percent))
+		#print (line)
 	f.close()
 
 def herald_word_text(start, end):
-    for i in range (start,end+1):
-        make_file(i)
-    global index
-    return index
+	for i in range(start, end+1):
+		make_file(i)
+	global index
+	return index
+
