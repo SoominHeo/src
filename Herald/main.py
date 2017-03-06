@@ -5,6 +5,7 @@ import ko_Num
 import div_eng
 import div_kor
 import herald_word_text
+import ngram
 import lcslib
 #count = herald_word_text.herald_word_text(0,0)
 #print(count)
@@ -15,7 +16,7 @@ import lcslib
 
 #lcslib.check_answer([],0,"word_fill",5,0.3)
 
-dic = lcslib.make_dict()
-LCS.run(13,13,dic,5,5,3,3)
+root = ngram.makeNgramTree("dic_revised",10000)
+LCS.run(13,13,root,5,5,3,3)
 #LCS2.run(0,1831,dic,5,5,3,9)
 #LCS.run2(1,5,3,3)

@@ -2,6 +2,7 @@ import re
 import os
 import copy
 import NNP_dictionary
+import ngram
 current_path = os.getcwd()
 
 def long(list1, list2):
@@ -11,7 +12,7 @@ def short(list1, list2):
 	return  list1 if len(list1) < len(list2) else list2
 
 def make_dict():
-	dictionary = open("./../../data/Herald/data2.csv",'r',encoding ='utf8')
+	dictionary = open("./../../data/Herald/dic_revised.csv",'r',encoding ='utf8')
 	#new_dictionary = open("./../../data/Herald/data2.csv",'w',encoding='utf8') 
 	#special_character_list = ['.', '^', '$', '*', '+', '?', '{', '}', '[', ']', '\\', '|', '(', ')']
 	lines = dictionary.readlines()
@@ -22,24 +23,53 @@ def make_dict():
 		#line =bracket.sub("",line)
 		#special_character.sub("",line)
 		splt = re.split("\t|\n",line)
-		dic[NNP_dictionary.special_character(splt[0])]= NNP_dictionary.special_character(splt[1])
 		#new_dictionary.write("{kor}\t{eng}\n".format(kor=NNP_dictionary.special_character(splt[2]),eng=NNP_dictionary.special_character(splt[3])))
 	sorted(dic,key=len ,reverse =True)
 	dictionary.close()
 	return dic
 #return translate NNP
-def trans_list(text,dic):
+def trans_list(text,root):
 	trans_set = []
 
 	for line in text:
 		tmp = []
-		#if there is key in kor_text, append dic[key]
-		for key in dic.keys():
-			find_list = re.findall(key,line)
-			for element in find_list:
-				tmp.append(dic[element])
+		word = line.split(" ")
+		flag = 0
+		for x in range(len(word)):
+			flag = 0
+			if word[x] == " ":
+				continue
+			word_length = len(word[x])
+			# find the word match
+			while word_length > 1 and flag == 0:
+				# find ngram search
+				result_list = ngram.search(root,word[x][:word_length])
+
+				#if match
+				if result_list != []:
+					for result in result_list:
+						value = result.split(" ")
+						arr = []
+						count = 0
+						for i in range(len(value)):
+							arr.append("0")
+						for next_word_index in range(len(value)):
+							if next_word_index == 0:
+								arr[next_word_index] == "1"
+								continue
+							if next_word_index + x < len(word) and word[x+next_word_index] == value[next_word_index] and arr[next_word_index-1] == "1":
+								arr[next_word_index]="1"
+								count = count +1
+							if count != 0 and count == len(value)-1 and arr[len(arr)-1] =="1":
+								val = ngram.findValue(root,result)
+								tmp.append(val)
+								for i in range(len(value)):
+									word[x+i]= " "
+								flag = 1
+								break
+				word_length= word_length - 1
 		trans_set.append(tmp)
-	return trans_set 
+	return trans_set
 
 # return number list1
 def number_list(file):
@@ -57,20 +87,19 @@ def number_list(file):
 	print("number ",len(number_list))
 	return number_list		
 
-def noun_list(text,dic):
+def noun_list(text,trans_set):
 	noun_list = []
-
+	count = 0
 	for line in text:
 		tmp = []
-		# if line == "\n\n":
-		# 	noun_list.append(tmp)
-		# 	continue
-
-		#if there is value in eng_text, append value
-		for value in dic.values():
-			find_list = re.findall(value,line)
-			for element in find_list:
-				tmp.append(element)
+		for value in trans_set[count]:
+			if line.lower().find(value.lower()) != -1:
+				print("line : ", line)
+				print("value : ", trans_set[count])
+				tmp.append(value)
+		count = count+1
+		if count == len(trans_set):
+			break
 		noun_list.append(tmp)
 
 	return noun_list
@@ -115,29 +144,15 @@ def get_max_pair(table,x,y):
 	candidate = candidate[:-1]
 	index = candidate.index(max(candidate))
 	new_x, new_y = divmod(index,y)
-	print("x ",x)
-	print("y ",y)
-	print("new_x ",new_x)
-	print("new_y ",new_y)
-	print("candidate ",candidate)
+
 	if new_x == x-1 and new_y==y:
-		print("x-1")
-		print("new_x ",new_x)
-		print("new_y ",new_y)
 		return new_x,new_y
 	elif new_x == x and new_y == y:
-		print("y-1")
-		print("new_x ",new_x)
-		print("new_y ",new_y)
 		return new_x,new_Y
 	elif new_x == x or new_y ==y:
 		candidate = make_candidate(table,x,y)
 		index = candidate.index(max(candidate))
 		new_x, new_y = divmod(index,y)
-		print("no")
-		print("candidate ",candidate)
-		print("new_x ",new_x)
-		print("new_y ",new_y)
 
 	# print (y)
 	return new_x,new_y

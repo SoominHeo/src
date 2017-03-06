@@ -6,14 +6,13 @@ result_url = "./../../data/Herald/LCS/{subtype}/{lang}/{distance_value}/{jaccard
 
 maintype = "word"
 subtype = "word_fill"
-index_list = [0,28,69,77,125,135,168,205,237,242,267,273,286,297,314,320,322,446,451,503,522,525,530,546,559,566,578,614,615,624,643,679,682,709,729,736,346,361,366,374,376,418,420,811,829,830,836,845,889,912,914,916,922,941,956,969,995,1020,1039,1045,1072,1161,1172,1182,1188,1204,1259,1287]
 # noun_url = "./../data/NNP"
 
 #make dictionary
 #dic = lcslib.make_dict()
 # total =0
 # get original_text
-def LCS(idx,dic,maintype,subtype,distance_value,jaccard_value):
+def LCS(idx,root,maintype,subtype,distance_value,jaccard_value):
 	print(idx)
 	jaccard_value = float(jaccard_value) / 10.0 # for control line_lcs jaccard value
 	print("distance value : ",distance_value)
@@ -25,7 +24,7 @@ def LCS(idx,dic,maintype,subtype,distance_value,jaccard_value):
 	eng_number = open(number_url.format(lang="eng",idx=idx),'r')
 	result_kor_file = open(result_url.format(subtype = subtype, lang = 'kor',distance_value = distance_value, jaccard_value = jaccard_value, idx=idx),'w',encoding='utf8')
 	result_eng_file = open(result_url.format(subtype = subtype, lang = 'eng',distance_value = distance_value, jaccard_value = jaccard_value, idx=idx),'w',encoding='utf8')
-
+	result = []
 	kor_text = kor_file.readlines()
 	eng_text = eng_file.readlines()
 	# total += len(kor_text)
@@ -36,11 +35,13 @@ def LCS(idx,dic,maintype,subtype,distance_value,jaccard_value):
 	# print("\neng")
 	# for line in eng_text:
 	# 	print(line)
-
-
+	if len(kor_text) == 0 or len(eng_text) == 0:
+		return -1,-1,-1,-1
+	
+	trans_set = lcslib.trans_list(kor_text,root)
 	# get noun and number feature list
-	kor_list = lcslib.add_list(lcslib.number_list(kor_number),lcslib.trans_list(kor_text,dic))
-	eng_list = lcslib.add_list(lcslib.number_list(eng_number),lcslib.noun_list(eng_text,dic))
+	kor_list = lcslib.add_list(lcslib.number_list(kor_number),trans_set)
+	eng_list = lcslib.add_list(lcslib.number_list(eng_number),lcslib.noun_list(eng_text,trans_set))
 	if maintype == 'word':
 		lcslib.common_set_table(kor_list,eng_list) # for word_lcs
 		result = lcslib.word_lcs(kor_list,eng_list)
@@ -69,14 +70,14 @@ def LCS(idx,dic,maintype,subtype,distance_value,jaccard_value):
 	result_eng_file.close()
 	return len(kor_text), human,machine,answer
 # print(total) # total articles size
-def run(start,end,dic,distance_start,distance_end,jaccard_start,jaccard_end):
+def run(start,end,root,distance_start,distance_end,jaccard_start,jaccard_end):
     total_text = 0
     total = open("./../../data/Herald/ANS/result/{subtype}/result.csv".format(subtype=subtype),'w',encoding='utf8')
     score = open("./../../data/Herald/ANS/result/{subtype}/score.csv".format(subtype=subtype),'w',encoding='utf8')
     total.write("\n")
     score.write("\n")
     
-    count = len(index_list)
+    count = end-start+1
     for distance_value in range(distance_start,distance_end+1):
             total.write("{distance},".format(distance=distance_value))
             score.write("{distance},".format(distance=distance_value))
@@ -94,7 +95,7 @@ def run(start,end,dic,distance_start,distance_end,jaccard_start,jaccard_end):
                     score.write(",{jaccard},".format(jaccard=jaccard_value))
                     #for idx in index_list:			
                     for idx in range(start,end+1):
-                            text,human,machine,answer = LCS(idx,dic,maintype,subtype,distance_value,jaccard_value)
+                            text,human,machine,answer = LCS(idx,root,maintype,subtype,distance_value,jaccard_value)
                             if text == -1 or human == -1 or machine == -1 or answer == -1:
                                 continue
                             if machine ==0:
@@ -122,11 +123,11 @@ def run(start,end,dic,distance_start,distance_end,jaccard_start,jaccard_end):
     print(total_text)
     total.close()
     score.close()
-def run2(dic,distance_start,distance_end,jaccard_start,jaccard_end):
+def run2(distance_start,distance_end,jaccard_start,jaccard_end):
     for distance_value in range(distance_start,distance_end+1):
         for jaccard_value in range(jaccard_start,jaccard_end+1):
             for idx in range(62,1832):
                 #try:
-                LCS(idx,dic,maintype,subtype,distance_value,jaccard_value)
+                LCS(idx,maintype,subtype,distance_value,jaccard_value)
                 #except:
                 #    print("error!! idx:",idx)
