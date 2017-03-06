@@ -16,6 +16,6 @@ import lcslib
 #lcslib.check_answer([],0,"word_fill",5,0.3)
 
 dic = lcslib.make_dict()
-LCS.run(10,1832,dic,5,5,3,3)
+LCS.run(13,13,dic,5,5,3,3)
 #LCS2.run(0,1831,dic,5,5,3,9)
 #LCS.run2(1,5,3,3)

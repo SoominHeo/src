@@ -105,27 +105,42 @@ def common_set_table(list1,list2):
 
 def make_candidate(table,x,y):
 	candidate = []
-	print("len(x) ",len(table))
-	print("len(y) ",len(table[0]))
-	print("x ",x)
-	print("y ",y)
 	for tmp_x in range(x):
 		candidate += table[tmp_x][:y]
 	
-	if x > 1 and x <= len(table) and y < len(table[0]):
-		candidate += [table[x-1][y]]
-	
-	if y > 1 and y <= len(table) and x < len(table):
-		candidate += [table[x][y-1]]
-
 	return candidate
 
 def get_max_pair(table,x,y):
 	candidate = make_candidate(table,x,y)
+	candidate = candidate[:-1]
 	index = candidate.index(max(candidate))
-	# print (y)
-	return divmod(index,y)
+	new_x, new_y = divmod(index,y)
+	print("x ",x)
+	print("y ",y)
+	print("new_x ",new_x)
+	print("new_y ",new_y)
+	print("candidate ",candidate)
+	if new_x == x-1 and new_y==y:
+		print("x-1")
+		print("new_x ",new_x)
+		print("new_y ",new_y)
+		return new_x,new_y
+	elif new_x == x and new_y == y:
+		print("y-1")
+		print("new_x ",new_x)
+		print("new_y ",new_y)
+		return new_x,new_Y
+	elif new_x == x or new_y ==y:
+		candidate = make_candidate(table,x,y)
+		index = candidate.index(max(candidate))
+		new_x, new_y = divmod(index,y)
+		print("no")
+		print("candidate ",candidate)
+		print("new_x ",new_x)
+		print("new_y ",new_y)
 
+	# print (y)
+	return new_x,new_y
 def jaccard(kor, eng):
     deno=0
     numer=0
@@ -290,10 +305,11 @@ def word_lcs(kor, eng):
 	length_kor = len(table)
 	length_eng = len(table[0])
 
+	print(length_kor)
+	print(length_eng)
+
 	print("table")
 
-	for i in table:
-		print(i)
 
 	result.append((1,1))
 	result.append((length_kor,length_eng))
@@ -308,12 +324,25 @@ def word_lcs(kor, eng):
 				for tmp_x in range(x):
 					candidate += lengths[tmp_x +1][:y +1]
 				lengths[x+1][y+1] += max(candidate) + table[x][y]
+	#for x in range(length_kor):
+	#	for y in range(length_eng):
+	#		if x == 0 or y == 0:
+	#			lengths[x][y] += table[x][y]
+	#		else:
+	#			candidate = []
+	#			for tmp_x in range(x):
+	#				candidate+=lengths[tmp_x][:y]
+	#			lengths[x][y] += max(candidate) + table[x][y]
 		
-
+	for i in lengths:
+		print(i)
 	#trace
 	#for make first candidate = whole lengths table
 	while(True):
+		length_kor += 1
+		length_eng += 1
 		(length_kor,length_eng) = get_max_pair(lengths,length_kor,length_eng)
+		print(length_kor,length_eng)
 		if(length_kor <= 1 or length_eng <=1):
 			break;
 		#result.append((len(kor)-length_kor+1,len(eng)-length_eng+1))

@@ -1,6 +1,6 @@
 import lcslib
 
-original_url = "./../../data/Herald/{lang}/{idx}.txt"
+original_url = "./../../data/Herald/sample/{lang}/{idx}.txt"
 number_url = "./../../data/Herald/NUM/{lang}/{idx}.txt"
 result_url = "./../../data/Herald/LCS/{subtype}/{lang}/{distance_value}/{jaccard_value}/{idx}.txt"
 
@@ -113,7 +113,10 @@ def run(start,end,dic,distance_start,distance_end,jaccard_start,jaccard_end):
                             total_answer += answer
                             total_text += text
                     total.write("{human},{machine},{answer}\n".format(human=total_human,machine=total_machine,answer=total_answer))
-                    score.write("{precision},{recall},{score}\n".format(precision=(total_answer / total_machine),recall=(total_answer/total_human),score= (total_answer / (total_human + total_machine))))
+                    if total_machine == 0 or total_human ==0:
+                        score.write("0,0,0\n")
+                    else:
+                        score.write("{precision},{recall},{score}\n".format(precision=(total_answer / total_machine),recall=(total_answer/total_human),score= (total_answer / (total_human + total_machine))))
             total.write("\n")
             score.write("\n")
     print(total_text)
