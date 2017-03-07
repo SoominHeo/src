@@ -49,7 +49,7 @@ def insert(root,key_entry,value_entry):
     #print(parent.value)
     
 
-def makeNgramTree(filename):
+def makeNgramTree(filename, limit):
     print("makeNgramTree")
     f = open(filename,"rU",encoding='UTF8')
     root = Ngram("root","root")
@@ -57,6 +57,8 @@ def makeNgramTree(filename):
     while 1:
         if(count%10000==0):
             print("count : ", count)
+        if(limit==count):
+            break
         line = f.readline()
         if not line:
             break;
@@ -76,7 +78,6 @@ def getChildren(parent):
     descendant = []
     if parent.children == []:
         return [parent.key]
-
     for child in parent.children:
         #print("child : ",child.key)
         tmp = getChildren(child)
@@ -88,12 +89,38 @@ def getChildren(parent):
     return descendant
 
 def search(parent, key):
+    list = []
     for x in parent.children:
         if(x.key == key):
-            print(getChildren(x))
-    
-root = makeNgramTree("dic_revised.csv")
+            list = getChildren(x)
+    s = sorted(list,key=len,reverse=True)
+    return s
+
+def findValue(parent, key):
+    i=0
+    num=0
+    sp = key.split(" ")
+    child_num = len(parent.children)
+    while 1:
+        ch = parent.children[num]
+        if(ch.key==sp[i]):
+            if(i+1 >= len(sp)):
+                return ch.value.replace("\n","")
+            parent = ch
+            child_num = len(parent.children)
+            num=0
+            i=i+1
+            continue
+        if(num+1>=child_num):
+            return "none"
+        num=num+1
+
+'''
+root = makeNgramTree("test.csv")
 print("make done")
-search(root,"코카콜라")
+print(search(root,"젤다의"))
+print(findValue(root,"코카콜라"))
+print(findValue(root,"젤다의 전설: 브레스 오브 더 와일드"))
+'''
 #search(root, "FM")
 #search(root, "느무르")
