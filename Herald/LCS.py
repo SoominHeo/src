@@ -58,7 +58,6 @@ def LCS(idx,root,maintype,subtype,distance_value,jaccard_value):
 		human,machine,answer = -1,-1,-1
 	#write resu	print("kor : ",len(kor_text))
 	for element in result:
-		print(element)
 		result_kor_file.write(kor_text[element[0]-1]+'\n')
 		result_eng_file.write(eng_text[element[1]-1]+'\n')
 	print(result_url.format(subtype = subtype, lang = 'kor',distance_value = distance_value, jaccard_value = jaccard_value, idx=idx))
@@ -120,7 +119,6 @@ def run(start,end,root,distance_start,distance_end,jaccard_start,jaccard_end):
                         score.write("{precision},{recall},{score}\n".format(precision=(total_answer / total_machine),recall=(total_answer/total_human),score= (total_answer / (total_human + total_machine))))
             total.write("\n")
             score.write("\n")
-    print(total_text)
     total.close()
     score.close()
 def run2(distance_start,distance_end,jaccard_start,jaccard_end):

@@ -84,7 +84,6 @@ def number_list(file):
 				continue
 			tmp.append(element)
 		number_list.append(tmp)
-	print("number ",len(number_list))
 	return number_list		
 
 def noun_list(text,trans_set):
@@ -94,8 +93,6 @@ def noun_list(text,trans_set):
 		tmp = []
 		for value in trans_set[count]:
 			if line.lower().find(value.lower()) != -1:
-				print("line : ", line)
-				print("value : ", trans_set[count])
 				tmp.append(value)
 		count = count+1
 		if count == len(trans_set):
@@ -114,7 +111,6 @@ def add_list(list1, list2):
 		longer[idx].extend(shorter[idx])
 
 	# for idx,element in enumerate(longer):
-	# 	print(idx," : ",element)
 	return longer
 
 def common_set_table(list1,list2):
@@ -127,9 +123,7 @@ def common_set_table(list1,list2):
 			tmp.append(len(list(set(list1[element_1]) & set(list2[element_2]))))
 		table.append(tmp)
 	# for idx,line in enumerate(list1):
-	# 	print(str(idx+1)+" : ",line)
 	# for idx,line in enumerate(list2):
-	# 	print(str(idx+1)+" : ",line)
 	return table
 
 def make_candidate(table,x,y):
@@ -144,17 +138,15 @@ def get_max_pair(table,x,y):
 	candidate = candidate[:-1]
 	index = candidate.index(max(candidate))
 	new_x, new_y = divmod(index,y)
-
 	if new_x == x-1 and new_y==y:
 		return new_x,new_y
 	elif new_x == x and new_y == y:
 		return new_x,new_Y
-	elif new_x == x or new_y ==y:
-		candidate = make_candidate(table,x,y)
+	elif new_x == x-1 or new_y ==y-1:
+		candidate = make_candidate(table,x-1,y-1)
 		index = candidate.index(max(candidate))
 		new_x, new_y = divmod(index,y)
 
-	# print (y)
 	return new_x,new_y
 def jaccard(kor, eng):
     deno=0
@@ -307,8 +299,6 @@ def line_lcs(kor,eng,jaccard_value):
 
 def word_lcs(kor, eng):
 	#start idx = 1,1
-	print("kor: ",len(kor))
-	print("eng: ",len(eng))
 	#kor.reverse()
 	#eng.reverse()
 	if len(kor) == 0 or len(eng) == 0:
@@ -320,10 +310,6 @@ def word_lcs(kor, eng):
 	length_kor = len(table)
 	length_eng = len(table[0])
 
-	print(length_kor)
-	print(length_eng)
-
-	print("table")
 
 
 	result.append((1,1))
@@ -349,15 +335,12 @@ def word_lcs(kor, eng):
 	#				candidate+=lengths[tmp_x][:y]
 	#			lengths[x][y] += max(candidate) + table[x][y]
 		
-	for i in lengths:
-		print(i)
 	#trace
 	#for make first candidate = whole lengths table
 	while(True):
 		length_kor += 1
 		length_eng += 1
 		(length_kor,length_eng) = get_max_pair(lengths,length_kor,length_eng)
-		print(length_kor,length_eng)
 		if(length_kor <= 1 or length_eng <=1):
 			break;
 		#result.append((len(kor)-length_kor+1,len(eng)-length_eng+1))
@@ -378,7 +361,6 @@ def check_answer(result,idx,subtype,distance_value,jaccard_value):
 	right = 0
 	wrong = 0
 	score = 0
-	print(idx)
 	#erase " symbol and , symbol
 	for line in answer:
  		
@@ -394,9 +376,7 @@ def check_answer(result,idx,subtype,distance_value,jaccard_value):
  		#ignore two-to-one and no-to-one
 		if(len(line[0]) != 0 and len(line[0].split(','))==1):
 			answer_list.append((int(line[1].split(',')[0]),int(line[0])))
-			print (answer_list)
 			answer_number += 1
-	# print(answer_list)
 	# print(result)
 	# print(len(set(result) & set(answer_list)))
 	# print(len(set(result) - set(answer_list)))
@@ -439,7 +419,6 @@ def make_directory(path):
 		os.makedirs(path)
 
 def check_directory(subtype, distance,value):
-	print(subtype)
 	ANS_path = "/../../data/Herald/ANS/result/{subtype}/{distance}/{value}/"
 	LCS_path = "/../../data/Herald/LCS/{subtype}/{lang}/{distance}/{value}/"
 	#ANS/line/{value}/line_{}Fill/{lang}
