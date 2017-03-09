@@ -43,8 +43,10 @@ def insert(root,key_entry,value_entry):
             child = Ngram(key_entry_split[idx],"none")
             child.toChild(parent)
             parent = child
-
-    parent.value = value_entry
+    nullchild = Ngram("","")
+    nullchild.toChild(parent)
+    value_entry = value_entry.replace("\t","")
+    parent.value = value_entry.replace("\n","")
     #print(parent.key)
     #print(parent.value)
     
@@ -63,7 +65,7 @@ def makeNgramTree(filename, limit):
         if not line:
             break;
         #print(line)
-        sp = line.split(", ")
+        sp = line.split(",\t")
         key_entry = sp[0]
         value_entry = sp[1]
         insert(root,key_entry, value_entry)
@@ -93,6 +95,8 @@ def search(parent, key):
     for x in parent.children:
         if(x.key == key):
             list = getChildren(x)
+    for x in range(len(list)):
+        list[x]=list[x][:-1]
     s = sorted(list,key=len,reverse=True)
     return s
 
@@ -115,12 +119,112 @@ def findValue(parent, key):
             return "none"
         num=num+1
 
-'''
-root = makeNgramTree("test.csv")
-print("make done")
-print(search(root,"젤다의"))
-print(findValue(root,"코카콜라"))
-print(findValue(root,"젤다의 전설: 브레스 오브 더 와일드"))
-'''
+def writeTree(parent, f, depth):
+    if(parent.children==[]):
+        f.write("#\n")
+    else:
+        f.write(parent.key+"\t"+parent.value+"\t"+str(depth)+"\n")
+        for x in parent.children:
+            writeTree(x,f,depth+1)
+
+def readTree(parent, f):
+    stacklist = []
+    tmp = []
+    tmp.append(parent)
+    tmp.append(0)
+    stacklist.append(tmp)
+    while 1:
+        line = f.readline()
+        if not line: break
+        line = line.replace("\n","")
+        sp = line.split("\t")
+        key = ""
+        value = ""
+        level = 0
+        if(len(sp)==3):
+            key = sp[0]
+            value = sp[1]
+            level = int(sp[2])
+            #print("stacklist : ", stacklist)
+            if(level==0): continue
+            if(stacklist[-1][1] > level):
+                while (level-1) != (stacklist[-1][1]):
+                    tmp_child = stacklist.pop()[0]
+                    tmp_list = stacklist.pop()
+                    tmp_parent = tmp_list[0]
+                    tmp_level = tmp_list[1]
+                    tmp = []
+                    tmp_child.toChild(tmp_parent)
+                    tmp.append(tmp_parent)
+                    tmp.append(tmp_level)
+                    stacklist.append(tmp)
+                tmp_node = Ngram(key,value)
+                tmp = []
+                tmp.append(tmp_node)
+                tmp.append(level)
+                stacklist.append(tmp)
+            elif(stacklist[-1][1] == level):
+                tmp_child=stacklist.pop()[0]
+                tmp_list = stacklist.pop()
+                tmp_parent = tmp_list[0]
+                tmp_level = tmp_list[1]
+                tmp = []
+                tmp_child.toChild(tmp_parent)
+                tmp.append(tmp_parent)
+                tmp.append(tmp_level)
+                stacklist.append(tmp)
+                tmp_node = Ngram(key,value)
+                tmp = []
+                tmp.append(tmp_node)
+                tmp.append(level)
+                stacklist.append(tmp)
+            elif(stacklist[-1][1]<level):
+                tmp_node = Ngram(key,value)
+                tmp = []
+                tmp.append(tmp_node)
+                tmp.append(level)
+                stacklist.append(tmp)
+        if(len(sp)==1 and sp[0]=="#"):
+            tmp_list = stacklist.pop()
+            tmp_parent = tmp_list[0]
+            tmp_level = tmp_list[1]
+            nullchild = Ngram("","")
+            nullchild.toChild(tmp_parent)
+            tmp = []
+            tmp.append(tmp_parent)
+            tmp.append(tmp_level)
+            stacklist.append(tmp)
+    while len(stacklist)>1:
+        tmp_child = stacklist.pop()[0]
+        tmp_list = stacklist.pop()
+        tmp_parent = tmp_list[0]
+        tmp_level = tmp_list[1]
+        tmp_child.toChild(tmp_parent)
+        tmp = []
+        tmp.append(tmp_parent)
+        tmp.append(tmp_level)
+        stacklist.append(tmp)
+    return stacklist.pop()[0]
+def storeDictionary(fromfile, tofile, limit):
+    file = open(tofile,"w",encoding="utf8")
+    root = makeNgramTree(fromfile,limit)
+    writeTree(root,file,0)
+    file.close()
+#storeDictionary()
+def getRoot(fromfile):
+    file2 = open(fromfile,"r",encoding="utf8")
+    tmp_root = Ngram("root","root")
+    tmp_root = readTree(tmp_root,file2)
+    return tmp_root
+#file2.close()
+#testfile = open("test.csv","w",encoding="utf8")
+#writeTree(tmp_root,testfile,0)
+#testfile.close()
+#print("make done")
+#print(search(tmp_root,"니호늄"))
+#print(findValue(tmp_root,"니호늄"))
+
+#print(search(tmp_root,"닛산"))
+#print(findValue(tmp_root,"닛산 GT-R"))
 #search(root, "FM")
 #search(root, "느무르")

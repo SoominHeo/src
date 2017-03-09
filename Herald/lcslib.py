@@ -1,8 +1,8 @@
 import re
 import os
 import copy
-import NNP_dictionary
 import ngram
+import special_feature
 current_path = os.getcwd()
 
 def long(list1, list2):
@@ -33,6 +33,8 @@ def trans_list(text,root):
 
 	for line in text:
 		tmp = []
+		print(line)
+		line = line.replace("\n","")
 		word = line.split(" ")
 		flag = 0
 		for x in range(len(word)):
@@ -42,32 +44,44 @@ def trans_list(text,root):
 			word_length = len(word[x])
 			# find the word match
 			while word_length > 1 and flag == 0:
+				#print("word[x] : ", word[x][:word_length])
 				# find ngram search
 				result_list = ngram.search(root,word[x][:word_length])
-
 				#if match
 				if result_list != []:
 					for result in result_list:
 						value = result.split(" ")
+						#print("===============")
+						#print("value : ", value)
 						arr = []
 						count = 0
 						for i in range(len(value)):
 							arr.append("0")
+						arr[0]="1"
 						for next_word_index in range(len(value)):
-							if next_word_index == 0:
-								arr[next_word_index] == "1"
-								continue
-							if next_word_index + x < len(word) and word[x+next_word_index] == value[next_word_index] and arr[next_word_index-1] == "1":
+							#print("next_word_index : ",next_word_index)
+							#print("x : ", x)
+							#print("len(value) : ", len(value))
+							#print("word : ",word)
+							#print("arr : ", arr)
+							#print("value[next_word_index] : ", value[next_word_index])
+							if next_word_index + x < len(word) and (word[x+next_word_index] == value[next_word_index] or next_word_index == 0 and word[x][:word_length] == value[next_word_index]) and ( next_word_index >= 1 and arr[next_word_index-1] == "1" or next_word_index==0 and arr[0]=="1"):
+								#print("match : ",value[next_word_index])
 								arr[next_word_index]="1"
 								count = count +1
-							if count != 0 and count == len(value)-1 and arr[len(arr)-1] =="1":
+							#print("len(value) : ", len(value))
+							#print("count : ", count)
+							if count != 0 and (count!=1 and count == len(value) or len(value)==1 and count ==1) and arr[len(arr)-1] =="1":
+								#print("insert : ",value[next_word_index])
 								val = ngram.findValue(root,result)
-								tmp.append(val)
+								synoni=val.split(" & ")
+								tmp+=synoni
 								for i in range(len(value)):
 									word[x+i]= " "
 								flag = 1
 								break
 				word_length= word_length - 1
+		print("Dictionary : ",tmp)
 		trans_set.append(tmp)
 	return trans_set
 
@@ -135,17 +149,17 @@ def make_candidate(table,x,y):
 
 def get_max_pair(table,x,y):
 	candidate = make_candidate(table,x,y)
-	candidate = candidate[:-1]
+	#candidate = candidate[:-1]
 	index = candidate.index(max(candidate))
 	new_x, new_y = divmod(index,y)
-	if new_x == x-1 and new_y==y:
-		return new_x,new_y
-	elif new_x == x and new_y == y:
-		return new_x,new_Y
-	elif new_x == x-1 or new_y ==y-1:
-		candidate = make_candidate(table,x-1,y-1)
-		index = candidate.index(max(candidate))
-		new_x, new_y = divmod(index,y)
+	#if new_x == x-1 and new_y==y:
+	#	return new_x,new_y
+	#elif new_x == x and new_y == y-1:
+	#	return new_x,new_Y
+	#elif new_x == x-1 or new_y ==y-1:
+	#	candidate = make_candidate(table,x-1,y-1)
+	#	index = candidate.index(max(candidate))
+	#	new_x, new_y = divmod(index,y-1)
 
 	return new_x,new_y
 def jaccard(kor, eng):
@@ -297,7 +311,7 @@ def line_lcs(kor,eng,jaccard_value):
 	#result = LCSS_TraceBack(len(kor),len(eng),LCStable,5,0,0)
 	return result
 
-def word_lcs(kor, eng):
+def word_lcs(kor, eng,special):
 	#start idx = 1,1
 	#kor.reverse()
 	#eng.reverse()
@@ -306,11 +320,18 @@ def word_lcs(kor, eng):
 	lengths = [[0 for y in range(len(eng)+1)] for x in range(len(kor)+1)] 
 
 	table = common_set_table(kor, eng)
+	longest = [] 
+	for row in table:
+		longest += row
+	longest = max(longest)
+	
 	result = []
 	length_kor = len(table)
 	length_eng = len(table[0])
+	print("table\n",table)
 
-
+	for element in special:
+		table[element[0]-1][element[1]-1] += longest
 
 	result.append((1,1))
 	result.append((length_kor,length_eng))
@@ -334,23 +355,29 @@ def word_lcs(kor, eng):
 	#			for tmp_x in range(x):
 	#				candidate+=lengths[tmp_x][:y]
 	#			lengths[x][y] += max(candidate) + table[x][y]
-		
+	
 	#trace
 	#for make first candidate = whole lengths table
 	while(True):
-		length_kor += 1
-		length_eng += 1
+		#length_kor += 1
+		#length_eng += 1
 		(length_kor,length_eng) = get_max_pair(lengths,length_kor,length_eng)
 		if(length_kor <= 1 or length_eng <=1):
 			break;
 		#result.append((len(kor)-length_kor+1,len(eng)-length_eng+1))
 		result.append((length_kor,length_eng))
 	result.sort()
-
-	return list(set(result))
+	print(result)
+	return result
 
 def check_answer(result,idx,subtype,distance_value,jaccard_value):
-	answer_file = open("./../../data/Herald/ANS/answer_{0}.csv".format(idx),'r',encoding='utf8')
+	try:
+		answer_file = open("./../../data/Herald/ANS/{0}.csv".format(idx),'r',encoding='euc-kr',errors='ignore')
+	except:
+		try:
+			answer_file = open("./../../data/Herald/ANS/{0}.csv".format(idx),'r',encoding='utf8',errors='ignore')
+		except:
+			return 0,0,0
 	check_file = open("./../../data/Herald/ANS/result/{subtype}/{distance_value}/{jaccard_value}/{index}.txt".format(subtype=subtype,index=idx, distance_value = distance_value, jaccard_value =jaccard_value),'w',encoding='utf8')
 	check_file.write(str(idx) + "\n")
 	check_file.write("[한글,영어]\n")
@@ -377,7 +404,7 @@ def check_answer(result,idx,subtype,distance_value,jaccard_value):
 		if(len(line[0]) != 0 and len(line[0].split(','))==1):
 			answer_list.append((int(line[1].split(',')[0]),int(line[0])))
 			answer_number += 1
-	# print(result)
+	print(result)
 	# print(len(set(result) & set(answer_list)))
 	# print(len(set(result) - set(answer_list)))
 

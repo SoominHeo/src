@@ -1,4 +1,5 @@
 import lcslib
+import special_feature
 
 original_url = "./../../data/Herald/sample/{lang}/{idx}.txt"
 number_url = "./../../data/Herald/NUM/{lang}/{idx}.txt"
@@ -37,14 +38,13 @@ def LCS(idx,root,maintype,subtype,distance_value,jaccard_value):
 	# 	print(line)
 	if len(kor_text) == 0 or len(eng_text) == 0:
 		return -1,-1,-1,-1
-	
+	special = special_feature.special_feature(kor_text, eng_text)	
 	trans_set = lcslib.trans_list(kor_text,root)
 	# get noun and number feature list
 	kor_list = lcslib.add_list(lcslib.number_list(kor_number),trans_set)
 	eng_list = lcslib.add_list(lcslib.number_list(eng_number),lcslib.noun_list(eng_text,trans_set))
 	if maintype == 'word':
-		lcslib.common_set_table(kor_list,eng_list) # for word_lcs
-		result = lcslib.word_lcs(kor_list,eng_list)
+		result = lcslib.word_lcs(kor_list,eng_list,special)
 	if maintype == 'line':
 		result = lcslib.line_lcs(kor_list,eng_list,jaccard_value)
 
@@ -52,10 +52,8 @@ def LCS(idx,root,maintype,subtype,distance_value,jaccard_value):
 		result = lcslib.fill_line(result,distance_value) # for filling the line
 	if result == None:
 		return len(kor_text),-1,-1,-1
-	try:
-		human,machine,answer = lcslib.check_answer(result,idx,subtype,distance_value,jaccard_value)
-	except:
-		human,machine,answer = -1,-1,-1
+	human,machine,answer = lcslib.check_answer(result,idx,subtype,distance_value,jaccard_value)
+	human,machine,answer = -1,-1,-1
 	#write resu	print("kor : ",len(kor_text))
 	for element in result:
 		result_kor_file.write(kor_text[element[0]-1]+'\n')
@@ -77,7 +75,7 @@ def run(start,end,root,distance_start,distance_end,jaccard_start,jaccard_end):
     score.write("\n")
     
     count = end-start+1
-    for distance_value in range(distance_start,distance_end+1):
+    for distance_value in [1,5]:
             total.write("{distance},".format(distance=distance_value))
             score.write("{distance},".format(distance=distance_value))
             total.write(",Human,Machine,Answer"*(count+1))
@@ -85,8 +83,6 @@ def run(start,end,root,distance_start,distance_end,jaccard_start,jaccard_end):
             total.write("\n")
             score.write("\n")
             for jaccard_value in range(jaccard_start,jaccard_end+1):
-                    if distance_value == 1 and jaccard_value == 3:
-                        start = 62
                     total_human= 0
                     total_machine= 0
                     total_answer =0
@@ -116,6 +112,7 @@ def run(start,end,root,distance_start,distance_end,jaccard_start,jaccard_end):
                     if total_machine == 0 or total_human ==0:
                         score.write("0,0,0\n")
                     else:
+                        print("{precision},{recall},{score}\n".format(precision=(total_answer / total_machine),recall=(total_answer/total_human),score= (total_answer / (total_human + total_machine))))
                         score.write("{precision},{recall},{score}\n".format(precision=(total_answer / total_machine),recall=(total_answer/total_human),score= (total_answer / (total_human + total_machine))))
             total.write("\n")
             score.write("\n")
