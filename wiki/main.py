@@ -2,6 +2,7 @@ import make_dictionary
 import wiki
 import LCS
 import random
+import ngram
 #wiki.make_list_csv()
 #wiki.pair_dic()
 #wiki.pair_cro()
@@ -16,21 +17,21 @@ for x in range(230000):
 
 random.shuffle(random_list)
 errorlogfile = open("log.txt","w",encoding='UTF8')
+root = ngram.getRoot("dictionary.csv")
 while 1:
     r = random_list[i]
     if i > end_idx:
         break
-    r = 82746
-    print(str(i)+"\t"+str(r))
-    try:
-            ck_link_list, e_link_list, percent = wiki.check_all_pair(dic, r)
-            a = wiki.make_file_for_LCS(ck_link_list, e_link_list, dic, r)
-            if a == -1 or percent==-1:
-                i = i + 1
-                print("makefileforLCS error")
-                continue
-            LCS.run_3LCS(r, percent)
-            i = i + 1
-    except:
-            errorlogfile.write(str(r)+"\n")
-            i = i + 1
+
+    #print(str(i)+"\t"+str(r))
+
+    ck_link_list, e_link_list, percent = wiki.check_all_pair(dic, r)
+    a = wiki.make_file_for_LCS(ck_link_list, e_link_list, root, r)
+    print(" a : ",a)
+    print(" percent : ", percent)
+    if a == -1 or percent==-1:
+        i = i + 1
+        print("makefileforLCS error")
+        continue
+    LCS.run_3LCS(r, percent)
+    i = i + 1
