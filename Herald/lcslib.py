@@ -33,7 +33,7 @@ def trans_list(text,root):
 
 	for line in text:
 		tmp = []
-		print(line)
+		#print(line)
 		line = line.replace("\n","")
 		word = line.split(" ")
 		flag = 0
@@ -74,15 +74,22 @@ def trans_list(text,root):
 							if count != 0 and (count!=1 and count == len(value) or len(value)==1 and count ==1) and arr[len(arr)-1] =="1":
 								#print("insert : ",value[next_word_index])
 								val = ngram.findValue(root,result)
+								if val == 'none':
+									continue
+								val = val.lower()
 								synoni=val.split(" & ")
 								tmp+=synoni
+								tmp = list(set(tmp))
 								for i in range(len(value)):
 									word[x+i]= " "
 								flag = 1
 								break
 				word_length= word_length - 1
-		print("Dictionary : ",tmp)
+		#print("Dictionary : ",tmp)
 		trans_set.append(tmp)
+	#print("trans_set")
+	#for i in trans_set:
+	#	print(i)
 	return trans_set
 
 # return number list1
@@ -97,20 +104,41 @@ def number_list(file):
 			if(element == "\n"):
 				continue
 			tmp.append(element)
+		tmp += tmp
 		number_list.append(tmp)
 	return number_list		
 
 def noun_list(text,trans_set):
+	vowel=['a','e','o','i','u','y']         
 	noun_list = []
 	count = 0
 	for line in text:
 		tmp = []
-		for value in trans_set[count]:
-			if line.lower().find(value.lower()) != -1:
-				tmp.append(value)
-		count = count+1
-		if count == len(trans_set):
-			break
+		for value in trans_set:
+			for element in value:
+				element = " " + element
+				elements=copy.deepcopy(element)
+
+				## 복수형 처리 ## 
+				# ch, sh, s, z, x로 단어가 끝나는 경우 -->'es'추가  
+				if elements[len(elements)-2:]=='ch' or elements[len(elements)-2:]=='sh' or elements[len(elements)-1]=='s' or elements[len(elements)-1]=='x' or elements[len(elements)-1]=='z':
+					elements=elements+'es'
+                # y로 단어가 끝나고 y앞에 자음이 있는경우 y-->'ies'변환         
+				elif (elements[len(elements)-2] not in vowel) and (elements[len(elements)-1]=='y'):
+					elements = elements[:-1]+"i"
+					elements=elements+'es'
+                # 그 이외         
+				else:
+					elements=elements+'s'
+                                        
+				line = " " + line
+				if line.lower().find(elements.lower())!=-1:
+					if element[1:].lower() not in tmp:
+						tmp.append(element[1:].lower())
+                                                
+				elif line.lower().find(element.lower()) != -1:
+					if element[1:].lower() not in tmp:
+						tmp.append(element[1:].lower())
 		noun_list.append(tmp)
 
 	return noun_list
@@ -124,20 +152,25 @@ def add_list(list1, list2):
 	for idx in range(len(shorter)):
 		longer[idx].extend(shorter[idx])
 
+	#for i,row in enumerate(longer):
+		#print(i,row)
 	# for idx,element in enumerate(longer):
 	return longer
 
 def common_set_table(list1,list2):
 	table = []
-
+	#print("kor")
+	#for idx,row in enumerate(list1):
+	#	print(idx+1,row)
+	#print("\neng")
+	#for idx,element in enumerate(list2):
+	#	print(idx+1,element)
+	
 	for element_1 in range(len(list1)):
 		tmp = []
 		for element_2 in range(len(list2)):
-			#append len(intersection)
 			tmp.append(len(list(set(list1[element_1]) & set(list2[element_2]))))
 		table.append(tmp)
-	# for idx,line in enumerate(list1):
-	# for idx,line in enumerate(list2):
 	return table
 
 def make_candidate(table,x,y):
@@ -146,20 +179,27 @@ def make_candidate(table,x,y):
 		candidate += table[tmp_x][:y]
 	
 	return candidate
-
-def get_max_pair(table,x,y):
+def get_max_pair(table,kor,eng,x,y):
 	candidate = make_candidate(table,x,y)
 	#candidate = candidate[:-1]
 	index = candidate.index(max(candidate))
 	new_x, new_y = divmod(index,y)
-	#if new_x == x-1 and new_y==y:
-	#	return new_x,new_y
-	#elif new_x == x and new_y == y-1:
-	#	return new_x,new_Y
-	#elif new_x == x-1 or new_y ==y-1:
-	#	candidate = make_candidate(table,x-1,y-1)
-	#	index = candidate.index(max(candidate))
-	#	new_x, new_y = divmod(index,y-1)
+	#print("value ",max(candidate))
+	#print("index ",index)
+	#print("x ",x)
+	#print("y ",y)
+	#print(new_x,new_y)
+
+	#have to limit 
+	#if new_x == x-2 and new_y==y-1:
+	#	if (set(kor[new_x]) & set(eng[new_y-1])) & (set(kor[new_x-1]) & set(eng[new_y-1])) == set():
+	#	    return new_x,new_y
+	#elif new_x == x-1 and new_y == y-2:
+	#	if (set(kor[new_x-1]) & set(eng[new_y])) & (set(kor[new_x-1]) & set(eng[new_y-1])) == set():
+	#	    return new_x,new_y
+	#candidate = make_candidate(table,x-1,y-1)
+	#3index = candidate.index(max(candidate))
+	#new_x, new_y = divmod(index,y-1)
 
 	return new_x,new_y
 def jaccard(kor, eng):
@@ -256,24 +296,17 @@ def LCSS_TraceBack(m, n, LCStable,limit,distance_x,distance_y):
             result = LCSS_TraceBack(m, n-1, LCStable,limit,distance_x ,distance_y+1)
         else:
             result = LCSS_TraceBack(m-1, n, LCStable,limit,distance_x+1,distance_y) # en
-    #result.sort()
+    result.sort()
     return result
 
 def fill_line(frame,distance):
 	length = len(frame)
-	frame.append((0,0))
-	limitX = len(frame)
-	limitY = len(frame[limitX -1])
-	frame.append((limitX,limitY))
 	for idx in range(length-1):
 		ko_diff = frame[idx + 1][0] - frame[idx][0]
 		en_diff = frame[idx + 1][1] - frame[idx][1]
 		if(ko_diff == en_diff and en_diff <= distance):
 			for fill_idx in range(1,ko_diff):
 				frame.append(((frame[idx][0] + fill_idx), (frame[idx][1] + fill_idx)))
-	# print(result)
-	frame.remove((0,0))
-	frame.remove((limitX,limitY))
 	frame.sort()
 	return frame
 
@@ -315,6 +348,7 @@ def word_lcs(kor, eng,special):
 	#start idx = 1,1
 	#kor.reverse()
 	#eng.reverse()
+	longest = 0
 	if len(kor) == 0 or len(eng) == 0:
 		return None
 	lengths = [[0 for y in range(len(eng)+1)] for x in range(len(kor)+1)] 
@@ -328,56 +362,57 @@ def word_lcs(kor, eng,special):
 	result = []
 	length_kor = len(table)
 	length_eng = len(table[0])
-	print("table\n",table)
+
+	#print("table")
+	#for i,row in enumerate(table):
+	#	print(i,row)
 
 	for element in special:
-		table[element[0]-1][element[1]-1] += longest
+		#print(element)
+		table[element[0]][element[1]] += longest
 
 	result.append((1,1))
 	result.append((length_kor,length_eng))
 
-	#make LCS table
+	#make LCS table 1:1
 	for  x in range(length_kor):
 		for y in range(length_eng):
 			if x == 0 or y == 0:
-				lengths[x+1][y+1] += table[x][y]
+				lengths[x+1][y+1] = table[x][y]
 			else:	
 				candidate = []
 				for tmp_x in range(x):
-					candidate += lengths[tmp_x +1][:y +1]
+					candidate += lengths[tmp_x+1][:y+1]
+				#candidate.append(lengths[x][y])
+				#candidate.append(lengths[x+1][y])
+				#candidate.append(lengths[x][y+1])
 				lengths[x+1][y+1] += max(candidate) + table[x][y]
-	#for x in range(length_kor):
-	#	for y in range(length_eng):
-	#		if x == 0 or y == 0:
-	#			lengths[x][y] += table[x][y]
-	#		else:
-	#			candidate = []
-	#			for tmp_x in range(x):
-	#				candidate+=lengths[tmp_x][:y]
-	#			lengths[x][y] += max(candidate) + table[x][y]
+				#if x == 1 and y ==1:
+					#print("test")
+					#print(table[x][y])
+					#print(max(candidate))
+					#print(candidate)
 	
+	#print("lengths ")
+	#for idx,row in enumerate(lengths):
+	#	print(idx,row)
+
 	#trace
 	#for make first candidate = whole lengths table
 	while(True):
 		#length_kor += 1
 		#length_eng += 1
-		(length_kor,length_eng) = get_max_pair(lengths,length_kor,length_eng)
+		(length_kor,length_eng) = get_max_pair(lengths,kor,eng,length_kor,length_eng)
 		if(length_kor <= 1 or length_eng <=1):
 			break;
 		#result.append((len(kor)-length_kor+1,len(eng)-length_eng+1))
 		result.append((length_kor,length_eng))
 	result.sort()
-	print(result)
+	print("result ",result)
 	return result
 
 def check_answer(result,idx,subtype,distance_value,jaccard_value):
-	try:
-		answer_file = open("./../../data/Herald/ANS/{0}.csv".format(idx),'r',encoding='euc-kr',errors='ignore')
-	except:
-		try:
-			answer_file = open("./../../data/Herald/ANS/{0}.csv".format(idx),'r',encoding='utf8',errors='ignore')
-		except:
-			return 0,0,0
+	answer_file = open("./../../data/Herald/ANS/{idx}.csv".format(idx=idx),'r',encoding='utf8',errors='ignore')
 	check_file = open("./../../data/Herald/ANS/result/{subtype}/{distance_value}/{jaccard_value}/{index}.txt".format(subtype=subtype,index=idx, distance_value = distance_value, jaccard_value =jaccard_value),'w',encoding='utf8')
 	check_file.write(str(idx) + "\n")
 	check_file.write("[한글,영어]\n")
@@ -400,11 +435,13 @@ def check_answer(result,idx,subtype,distance_value,jaccard_value):
  		# split eng and kor
 		line = line.split('\t')
  		
- 		#ignore two-to-one and no-to-one
-		if(len(line[0]) != 0 and len(line[0].split(','))==1):
-			answer_list.append((int(line[1].split(',')[0]),int(line[0])))
+		#if len(line[0]) != 0 and len(line[0].split(','))== 1 :
+		if(len(line[0]) != 0 and len(line)>= 2):
+			for eANS in line[0].split(','):
+				answer_list.append((int(line[1].split(',')[0]),int(eANS))) 
+		#	answer_list.append((int(line[1].split(',')[0]),int(line[0])))
 			answer_number += 1
-	print(result)
+	#print(result)
 	# print(len(set(result) & set(answer_list)))
 	# print(len(set(result) - set(answer_list)))
 
@@ -425,6 +462,7 @@ def check_answer(result,idx,subtype,distance_value,jaccard_value):
 			score = 0
 		else:
 			score = precision * recall / (precision + recall)
+			score = score * 2
 
 
 	#write result to file

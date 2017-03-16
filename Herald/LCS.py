@@ -4,6 +4,7 @@ import special_feature
 original_url = "./../../data/Herald/sample/{lang}/{idx}.txt"
 number_url = "./../../data/Herald/NUM/{lang}/{idx}.txt"
 result_url = "./../../data/Herald/LCS/{subtype}/{lang}/{distance_value}/{jaccard_value}/{idx}.txt"
+test_url = "./../../data/Herald/feature/{idx}.txt"
 
 maintype = "word"
 subtype = "word_fill"
@@ -11,7 +12,7 @@ subtype = "word_fill"
 
 #make dictionary
 #dic = lcslib.make_dict()
-# total =0
+# total =1
 # get original_text
 def LCS(idx,root,maintype,subtype,distance_value,jaccard_value):
 	print(idx)
@@ -25,6 +26,7 @@ def LCS(idx,root,maintype,subtype,distance_value,jaccard_value):
 	eng_number = open(number_url.format(lang="eng",idx=idx),'r')
 	result_kor_file = open(result_url.format(subtype = subtype, lang = 'kor',distance_value = distance_value, jaccard_value = jaccard_value, idx=idx),'w',encoding='utf8')
 	result_eng_file = open(result_url.format(subtype = subtype, lang = 'eng',distance_value = distance_value, jaccard_value = jaccard_value, idx=idx),'w',encoding='utf8')
+	resultFile = open(test_url.format(idx=idx),'w',encoding='utf8')
 	result = []
 	kor_text = kor_file.readlines()
 	eng_text = eng_file.readlines()
@@ -47,14 +49,34 @@ def LCS(idx,root,maintype,subtype,distance_value,jaccard_value):
 		result = lcslib.word_lcs(kor_list,eng_list,special)
 	if maintype == 'line':
 		result = lcslib.line_lcs(kor_list,eng_list,jaccard_value)
+	
 
 	if distance_value > 1 :
 		result = lcslib.fill_line(result,distance_value) # for filling the line
 	if result == None:
 		return len(kor_text),-1,-1,-1
 	human,machine,answer = lcslib.check_answer(result,idx,subtype,distance_value,jaccard_value)
-	human,machine,answer = -1,-1,-1
 	#write resu	print("kor : ",len(kor_text))
+        
+
+	if len(kor_text) - len(eng_text) >= 0 :
+		longer = len(kor_text)
+		shorter = len(eng_text)
+	else:
+		longer = len(eng_text)
+		shorter = len(kor_text)
+	
+	for testIdx in range(shorter):
+		text = kor_text[testIdx].replace('\n','')+ "\n" + eng_text[testIdx].replace('\n','') +"\n\n"
+		feature = str(kor_list[testIdx]) + "\n" + str(eng_list[testIdx]) + "\n\n\n"
+		resultFile.write(text)
+		resultFile.write(feature)
+                
+	resultFile.write("Special feature\n")
+	resultFile.write(str(special))
+
+
+
 	for element in result:
 		result_kor_file.write(kor_text[element[0]-1]+'\n')
 		result_eng_file.write(eng_text[element[1]-1]+'\n')
@@ -65,6 +87,7 @@ def LCS(idx,root,maintype,subtype,distance_value,jaccard_value):
 	eng_number.close()
 	result_kor_file.close()
 	result_eng_file.close()
+	resultFile.close()
 	return len(kor_text), human,machine,answer
 # print(total) # total articles size
 def run(start,end,root,distance_start,distance_end,jaccard_start,jaccard_end):
@@ -75,7 +98,7 @@ def run(start,end,root,distance_start,distance_end,jaccard_start,jaccard_end):
     score.write("\n")
     
     count = end-start+1
-    for distance_value in [1,5]:
+    for distance_value in range(distance_start,distance_end+1):
             total.write("{distance},".format(distance=distance_value))
             score.write("{distance},".format(distance=distance_value))
             total.write(",Human,Machine,Answer"*(count+1))
@@ -112,8 +135,8 @@ def run(start,end,root,distance_start,distance_end,jaccard_start,jaccard_end):
                     if total_machine == 0 or total_human ==0:
                         score.write("0,0,0\n")
                     else:
-                        print("{precision},{recall},{score}\n".format(precision=(total_answer / total_machine),recall=(total_answer/total_human),score= (total_answer / (total_human + total_machine))))
-                        score.write("{precision},{recall},{score}\n".format(precision=(total_answer / total_machine),recall=(total_answer/total_human),score= (total_answer / (total_human + total_machine))))
+                        print("{precision},{recall},{score}\n".format(precision=(total_answer / total_machine),recall=(total_answer/total_human),score= 2* (total_answer / (total_human + total_machine))))
+                        score.write("{precision},{recall},{score}\n".format(precision=(total_answer / total_machine),recall=(total_answer/total_human),score= 2* (total_answer / (total_human + total_machine))))
             total.write("\n")
             score.write("\n")
     total.close()
