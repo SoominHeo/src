@@ -1,298 +1,154 @@
-from unicodedata import name
-import copy
-import re
-from unicodedata import name
-from nltk import sent_tokenize, word_tokenize, pos_tag
-import copy
-import time
-import datetime
-import codecs
+import lcslib
+import special_feature
 
-cnt=0
-LCStable=[]
+original_url = "./../../data/Joongang/no_single_space_text/{lang}/{idx}.txt"
+number_url = "./../../data/Joongang/NUM/{lang}/{idx}.txt"
+result_url = "./../../data/Joongang/LCS/{subtype}/{lang}/{distance_value}/{jaccard_value}/{idx}.txt"
+test_url = "./../../data/Joongang/feature/{idx}.txt"
 
-def jaccard(kor, eng):
-    deno=0
-    numer=0
-    aver=0
+maintype = "word"
+subtype = "word_fill"
+# noun_url = "./../data/NNP"
 
-    tmp_d=[]
-    tmp_k=[]
-    
+#make dictionary
+#dic = lcslib.make_dict()
+# total =1
+# get original_text
+def LCS(idx,root,maintype,subtype,distance_value,jaccard_value):
+	print(idx)
+	jaccard_value = float(jaccard_value) / 10.0 # for control line_lcs jaccard value
+	print("distance value : ",distance_value)
+	print("jaccard value :",jaccard_value)
+	lcslib.check_directory(subtype,distance_value,jaccard_value) # make directory
+	kor_file = open(original_url.format(lang ="kor",idx = idx),'r',encoding='utf8')
+	eng_file = open(original_url.format(lang ="eng",idx = idx),'r',encoding='utf8')
+	kor_number = open(number_url.format(lang="kor",idx=idx),'r')
+	eng_number = open(number_url.format(lang="eng",idx=idx),'r')
+	result_kor_file = open(result_url.format(subtype = subtype, lang = 'kor',distance_value = distance_value, jaccard_value = jaccard_value, idx=idx),'w',encoding='utf8')
+	result_eng_file = open(result_url.format(subtype = subtype, lang = 'eng',distance_value = distance_value, jaccard_value = jaccard_value, idx=idx),'w',encoding='utf8')
+	resultFile = open(test_url.format(idx=idx),'w',encoding='utf8')
+	result = []
+	kor_text = kor_file.readlines()
+	eng_text = eng_file.readlines()
 
-    if kor=='\n' or eng=='\n':
-        return 0.0
+	# total += len(kor_text)
+	# print("kor")
+	# for line in kor_text:
+	# 	print(line)
 
-    for kk in range(len(kor)):
-        if kor[kk]:
-            if kor[kk] not in tmp_k:
-                tmp_k.append(kor[kk])
-        else:
-            continue
-    
-    
-    tmp_d=copy.deepcopy(tmp_k)
-    for ee in range(len(eng)):
-        if eng[ee]:
-            if eng[ee] not in tmp_k:
-                tmp_d.append(eng[ee])
-        else:
-            continue
+	# print("\neng")
+	# for line in eng_text:
+	# 	print(line)
+	if len(kor_text) == 0 or len(eng_text) == 0:
+		return -1,-1,-1,-1
+	special = special_feature.special_feature(kor_text, eng_text)	
+	trans_set = lcslib.trans_list(kor_text,root)
+	# get noun and number feature list
+	kor_list = lcslib.add_list(lcslib.number_list(kor_number),trans_set)
+	eng_list = lcslib.add_list(lcslib.number_list(eng_number),lcslib.noun_list(eng_text,trans_set))
+	if maintype == 'word':
+		result = lcslib.word_lcs(kor_list,eng_list,special)
+	if maintype == 'line':
+		result = lcslib.line_lcs(kor_list,eng_list,jaccard_value)
+	
 
+	if distance_value > 1 :
+		result = lcslib.fill_line(result,distance_value) # for filling the line
+	#if result == None:
+	#	return len(kor_text),-1,-1,-1
+	# human,machine,answer = lcslib.check_answer(result,idx,subtype,distance_value,jaccard_value)
+	#write resu	print("kor : ",len(kor_text))
+	# human,machine,answer = -1,-1,-1 
 
-    deno=len(tmp_d)
-
-    
-    for x in tmp_k:
-        if x=='':
-            continue
-        
-        for y in eng:
-            if y=='':
-                continue
-            
-            elif x==y:
-                numer=numer+1
-                break
+	
+    #if len(kor_text) - len(eng_text) >= 0 :
+	#	longer = len(kor_text)
+	#	shorter = len(eng_text)
+	#else:
+		#longer = len(eng_text)
+		#shorter = len(kor_text)
+	
+	#for testIdx in range(shorter):
+		#text = kor_text[testIdx].replace('\n','')+ "\n" + eng_text[testIdx].replace('\n','') +"\n\n"
+		#feature = str(kor_list[testIdx]) + "\n" + str(eng_list[testIdx]) + "\n\n\n"
+		#resultFile.write(text)
+		#resultFile.write(feature)
                 
-    if deno==0:
-        return 0.0
-    else:
-      
-        aver=numer/deno
-        
-        return aver
+	#resultFile.write("Special feature\n")
+	#resultFile.write(str(special))
 
 
-def LCS(k_art, e_art, k_len, e_len):
+	print("kor ",len(kor_text))
+	print("eng ",len(eng_text))
+	for element in result:
+		print(element)
+		result_kor_file.write(kor_text[element[0]-1]+'\n')
+		result_eng_file.write(eng_text[element[1]-1]+'\n')
+	print(result_url.format(subtype = subtype, lang = 'kor',distance_value = distance_value, jaccard_value = jaccard_value, idx=idx))
+	kor_file.close()
+	eng_file.close()
+	kor_number.close()
+	eng_number.close()
+	result_kor_file.close()
+	result_eng_file.close()
+	resultFile.close()
 
-    m=0
-    n=0
-
-
-    for m in range(k_len+1):
-        LCStable.append([])
-        LCStable[m].append(0)
-        for n in range(e_len):
-            if m==0:
-                LCStable[m].append(0)
-            else:
-                LCStable[m].append(-1)
-                
-
-    for mm in range(k_len):
-        for nn in range(e_len):
-            k = k_art[mm].split(', ')
-            e = e_art[nn].split(', ')
-            if jaccard(k,e)>=0.8:
-                print("0.8")
-                LCStable[mm+1][nn+1]=LCStable[mm][nn]+1
-            else:
-                if LCStable[mm+1][nn]>=LCStable[mm][nn+1]:
-                    LCStable[mm+1][nn+1]=LCStable[mm+1][nn]
-                else:
-                    LCStable[mm+1][nn+1]=LCStable[mm][nn+1]
-
-
-
+# print(total) # total articles size
+def run(start,end,root,distance_start,distance_end,jaccard_start,jaccard_end):
+    total_text = 0
+    # total = open("./../../data/Joongang/ANS/result/{subtype}/result.csv".format(subtype=subtype),'w',encoding='utf8')
+    # score = open("./../../data/Joongang/ANS/result/{subtype}/score.csv".format(subtype=subtype),'w',encoding='utf8')
+    #total.write("\n")
+    #score.write("\n")
     
-
-    return LCStable[k_len][e_len]
-
-def LCS_TraceBack(m, n, lcs):
-    new_list =[]
-    
-    if m==0 or n==0:
-        return lcs
-    
-    if (LCStable[m][n] > LCStable[m][n-1]) and (LCStable[m][n] > LCStable[m-1][n]) and (LCStable[m][n] > LCStable[m-1][n-1]):
-        new_list.append(m)
-        new_list.append(n)
-        lcs.insert(0,new_list)
-        result = LCS_TraceBack(m-1, n-1, lcs)
-    
-    elif (LCStable[m][n] > LCStable[m-1][n]) and (LCStable[m][n] == LCStable[m][n-1]):
-        result = LCS_TraceBack(m, n-1,  lcs)
-    
-    else:
-        result = LCS_TraceBack(m-1, n,  lcs)
-
-    return result
-
-
-def seq(i,a):
-    global cnt
-    kor = []
-    eng = []
-    p_kor=[]
-    p_eng=[]
-    for x in range(len(a)-1):
-        if(a[x+1][0]-a[x][0] == a[x+1][1]-a[x][1] and (a[x+1][1]-a[x][1])<=5):
-            kor.append([a[x][0],a[x+1][0]])
-            eng.append([a[x][1],a[x+1][1]])
-        else:
-            p_kor.append([a[x][0],a[x+1][0]])
-            p_eng.append([a[x][1],a[x+1][1]])
-
-    x=0
-    while 1:
-        if x>=len(kor)-1:
-            break
-        else:
-            if(kor[x+1][0]==kor[x][1]):
-                kor[x+1][0]=kor[x][0]
-                kor.pop(x)
-            else:
-                x=x+1
-
-    x=0
-    while 1:
-        if x>=len(eng)-1:
-            break
-        else:
-            if(eng[x+1][0]==eng[x][1]):
-                eng[x+1][0]=eng[x][0]
-                eng.pop(x)
-            else:
-                x=x+1
-    
-    f_ko = open("../../data/Joongang/no_single_space_text/ko/"+str(i)+".kor.txt","rU")
-    f_en = open("../../data/Joongang/no_single_space_text/en/"+str(i)+".eng.txt","rU")
-    f_total_kor = open("../../data/Joongang/total/ko/"+str(i)+".kor.txt","w")
-    f_total_eng = open("../../data/Joongang/total/en/"+str(i)+".eng.txt","w")
-    i_ko=0
-    k=0
-    
-    while 1:
-        if(k==len(kor)):
-            break;
-        if(len(kor)==0):
-            break;
-        
-        if(i_ko==kor[k][0]-1):
-            while 1:
-                f_total_kor.write(f_ko.readline())
-                cnt=cnt+1
-                if(i_ko==kor[k][1]-1):
-                    f_total_kor.write("\n")
-                    break;
-                i_ko=i_ko+1
-            k=k+1
-            
-            if(k==len(kor)):
-                break;
-        f_ko.readline()
-        i_ko=i_ko+1
-
-    f_ko.close()
-    f_ko = open("../../data/Joongang/no_single_space_text/ko/"+str(i)+".kor.txt","rU")
-    i_ko=0
-    k=0
-    f_total_kor.write("\n")
-    
-    while 1:
-        
-        if(k==len(p_kor)):
-            break;
-        if(len(p_kor)==0):
-            break;
-        if(i_ko==p_kor[k][0]-1):
-            tmp =f_ko.readline()
-            f_total_kor.write(tmp)
-            f_total_kor.write("\n")
-            cnt=cnt+1
-        elif(i_ko==p_kor[k][1]-1):
-            tmp =f_ko.readline()
-            f_total_kor.write(tmp)
-            f_total_kor.write("\n")
-            cnt=cnt+1
-            k=k+1
-        else:
-            f_ko.readline()
-
-        i_ko=i_ko+1
-            
-    i_en=0
-    e=0
-    while 1:
-        
-        if(e==len(eng)):
-            break;
-        if(len(eng)==0):
-            break;
-        
-        if(i_en==eng[e][0]-1):
-            while 1:
-                f_total_eng.write(f_en.readline())
-                if(i_en==eng[e][1]-1):
-                    f_total_eng.write("\n")
-                    break;
-                i_en=i_en+1
-            e=e+1
-            if(e==len(eng)):
-                break;
-        f_en.readline()
-        i_en=i_en+1
-    f_en.close()
-    f_en = open("../../data/Joongang/no_single_space_text/en/"+str(i)+".eng.txt","rU")
-    i_en=0
-    e=0
-    f_total_eng.write("\n")
-    while 1:
-        #print(i_en)
-        if(e==len(p_eng)):
-            break;
-        if(len(p_eng)==0):
-            break;
-        if(i_en==p_eng[e][0]-1):
-            tmp =f_en.readline()
-            f_total_eng.write(tmp)
-            f_total_eng.write("\n")
-        elif(i_en==p_eng[e][1]-1):
-            tmp =f_en.readline()
-            f_total_eng.write(tmp)
-            f_total_eng.write("\n")
-            e=e+1
-        else:
-            f_en.readline()
-        i_en=i_en+1
-
-
-    f_ko.close()
-    f_en.close()
-    f_total_kor.close()
-    f_total_eng.close()
-
-def run(start, end):
-    i=start
-    while i<=end:
-        print(i)
-        try:
-            f_eng = open("../../data/Joongang/no_single_space_text/num/en/"+str(i)+".eng.txt","rU",)
-            f_kor = open("../../data/Joongang/no_single_space_text/num/ko/"+str(i)+".kor.txt","rU",)
-        except:
-            i=i+1
-            continue
-        en=f_eng.readlines()
-        ko=f_kor.readlines()
-
-        for x in range(len(ko)):
-            if ko[x][-1]=='\n':
-                ko[x]=ko[x][:len(ko[x])-1]
-
-        for y in range(len(en)):
-            if en[y][-1]=='\n':
-                en[y]=en[y][:len(en[y])-1]
-
-
-        length=LCS(ko, en, len(ko), len(en))
-        print(length)
-        #print("LCS:",length)
-
-        result=[]
-
-        a = LCS_TraceBack(len(ko),len(en),result)
-        seq(i,a)
-        i=i+1
-
-
+    count = end-start+1
+    for distance_value in range(distance_start,distance_end+1):
+            # total.write("{distance},".format(distance=distance_value))
+            # score.write("{distance},".format(distance=distance_value))
+            # total.write(",Human,Machine,Answer"*(count+1))
+            # score.write(",Precison,Recall,Score"*(count+1))
+            # total.write("\n")
+            # score.write("\n")
+            for jaccard_value in range(jaccard_start,jaccard_end+1):
+                    total_human= 0
+                    total_machine= 0
+                    total_answer =0
+                    # total.write(",{jaccard},".format(jaccard=jaccard_value))
+                    # score.write(",{jaccard},".format(jaccard=jaccard_value))
+                    for idx in range(start,end+1):
+                            LCS(idx,root,maintype,subtype,distance_value,jaccard_value)
+                            # if text == -1 or human == -1 or machine == -1 or answer == -1:
+                            #     continue
+                            # if machine ==0:
+                            #         precision = 0
+                            # else :
+                            #         precision = answer / machine
+                            # recall = answer / human
+                            # if(answer == 0):
+                            #         f1_score = 0
+                            # else:
+                            #         f1_score = precision * recall / (precision + recall)
+                            # total.write("{human},{machine},{answer},".format(human=human,machine=machine,answer=answer))
+                            # score.write("{precision},{recall},{score},".format(precision=precision,recall=recall,score=f1_score))
+                            # total_human += human
+                            # total_machine += machine
+                            # total_answer += answer
+                            # total_text += text
+    #                 total.write("{human},{machine},{answer}\n".format(human=total_human,machine=total_machine,answer=total_answer))
+    #                 if total_machine == 0 or total_human ==0:
+    #                     score.write("0,0,0\n")
+    #                 else:
+    #                     print("{precision},{recall},{score}\n".format(precision=(total_answer / total_machine),recall=(total_answer/total_human),score= 2* (total_answer / (total_human + total_machine))))
+    #                     score.write("{precision},{recall},{score}\n".format(precision=(total_answer / total_machine),recall=(total_answer/total_human),score= 2* (total_answer / (total_human + total_machine))))
+    #         total.write("\n")
+    #         score.write("\n")
+    # total.close()
+    # score.close()
+def run2(distance_start,distance_end,jaccard_start,jaccard_end):
+    for distance_value in range(distance_start,distance_end+1):
+        for jaccard_value in range(jaccard_start,jaccard_end+1):
+            for idx in range(62,1832):
+                #try:
+                LCS(idx,maintype,subtype,distance_value,jaccard_value)
+                #except:
+                #    print("error!! idx:",idx)

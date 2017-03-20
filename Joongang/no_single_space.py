@@ -4,10 +4,10 @@ def no_single_space(start, end):
     for i in range(start, end):
         try:
             print(i)
-            f_kor = open("../../data/Joongang/original_text/ko/"+str(i)+".txt","r",encoding="UTF8")
-            f_eng = open("../../data/Joongang/original_text/en/"+str(i)+".txt","r",encoding="UTF8")
-            f_no_kor = open("../../data/Joongang/no_single_space_text/ko/"+str(i)+".txt","w",encoding="UTF8")
-            f_no_eng = open("../../data/Joongang/no_single_space_text/en/"+str(i)+".txt","w",encoding="UTF8")
+            f_kor = open("../../data/Joongang/original_text/kor/"+str(i)+".txt","r",encoding="UTF8")
+            f_eng = open("../../data/Joongang/original_text/eng/"+str(i)+".txt","r",encoding="UTF8")
+            f_no_kor = open("../../data/Joongang/no_single_space_text/kor/"+str(i)+".txt","w",encoding="UTF8")
+            f_no_eng = open("../../data/Joongang/no_single_space_text/eng/"+str(i)+".txt","w",encoding="UTF8")
 
 
             kor=f_kor.readlines()
