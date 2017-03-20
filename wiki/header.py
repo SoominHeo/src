@@ -281,6 +281,7 @@ def header(sourcesKOR, sourcesENG, i, metric_result):
         header_kor=header_kor[1:len(header_kor)-1]
 
     #문장을 나누고 파일에 쓰기 
+    header_kor=remove_brachet(header_kor)
     final_header_kor=kor_sentence.kor_sentence(header_kor)
     for m in range(len(final_header_kor)):
                    #print(final_header_kor[m])
