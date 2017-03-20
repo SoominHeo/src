@@ -16,6 +16,55 @@ LCStable=[]
 header_path = "../../data/wiki/header/{lang}/{idx}.txt"
 result_path = "../../data/wiki/result/{lang}/{idx}.txt"
 list_path = "../../data/wiki/result/{attr}/{lang}/{idx}.txt"
+
+def word_lcs(kor, eng,special):
+    longest = 0
+    if len(kor) == 0 or len(eng) == 0:
+        return None
+    lengths = [[0 for y in range(len(eng)+1)] for x in range(len(kor)+1)] 
+
+    table = common_set_table(kor, eng)
+    longest = [] 
+    for row in table:
+        longest += row
+    longest = max(longest)
+    
+    result = []
+    length_kor = len(table)
+    length_eng = len(table[0])
+
+    for element in special:
+        #print(element)
+        table[element[0]][element[1]] += longest
+
+    result.append((1,1))
+    result.append((length_kor,length_eng))
+
+    #make LCS table 1:1
+    for  x in range(length_kor):
+        for y in range(length_eng):
+            if x == 0 or y == 0:
+                lengths[x+1][y+1] = table[x][y]
+            else:   
+                candidate = []
+                for tmp_x in range(x):
+                    candidate += lengths[tmp_x+1][:y+1]
+
+                lengths[x+1][y+1] += max(candidate) + table[x][y]
+
+    #trace
+    #for make first candidate = whole lengths table
+    while(True):
+
+        (length_kor,length_eng) = get_max_pair(lengths,kor,eng,length_kor,length_eng)
+        if(length_kor <= 1 or length_eng <=1):
+            break;
+
+        result.append((length_kor,length_eng))
+    result.sort()
+    print("result ",result)
+    return result
+
 def jaccard(kor, eng):
     deno=0
     numer=0
