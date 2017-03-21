@@ -230,34 +230,31 @@ def check_all_pair(dic, i):
     
     if(t5==-1):
         return -1,-1,-1
-
+    
     #Metric
     metric_result=metric.metric(t1,t2,t3,t4,t5,t6)
     #print (metric_result)
 
     ck = header.header(sources_k, sources_e, i, metric_result)
     if ck == -1:
-    
         return -1,-1,-1
     else:
         k_link_list, e_link_list = header_for_link.header_for_link(sources_k, sources_e, i, metric_result)
         if k_link_list==-1:
-    
             return -1,-1,-1
-
     ck_link_list = translate_k_to_e.translate_k_to_e(dic,k_link_list)
 
     return ck_link_list, e_link_list, metric_result
 
-def make_file_for_LCS(ck_link_list, e_link_list,root ,i):
+def make_file_for_LCS(ck_link_list, e_link_list,dic ,i):
     if(ck_link_list==-1):
         return -1
     k_num_list = extract_num_KOR.extract_num_KOR(i)
     e_num_list = extract_num_ENG.extract_num_ENG(i)
 
     #k_NNP_list = []
-    k_NNP_list = extractNNP_KOR.extractNNP_KOR(root,i)
-    e_NNP_list = extractNNP_ENG.extractNNP_ENG(k_NNP_list,i)
+    k_NNP_list = extractNNP_KOR.extractNNP_KOR(dic,i)
+    e_NNP_list = extractNNP_ENG.extractNNP_ENG(i)
     '''
     print("k_link: " + str(ck_link_list))
     print("k_num: " + str(k_num_list))

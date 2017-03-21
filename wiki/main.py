@@ -1,36 +1,33 @@
-import make_dictionary
-import wiki
 import LCS
-import random
-#wiki.make_list_csv()
-#wiki.pair_dic()
-#wiki.pair_cro()
-dic = make_dictionary.make_dictionary()
-start_idx = 0 
-end_idx = 250000 
-error_list = []
-i = start_idx
-random_list = []
-for x in range(230000):
-    random_list.append(x)
+import en_Num
+import ko_Num
+import wiki
+import ngram
+import lcslib
+#count = herald_word_text.herald_word_text(0,6)
+#print(count)
+#div_eng.div_eng(0,1800)
+#div_kor.div_kor(0,1800)
+# en_Num.en_Num(0,1798)
+# ko_Num.ko_Num(0,1798)
 
-random.shuffle(random_list)
-errorlogfile = open("log.txt","w",encoding='UTF8')
+start_idx = 1;
+end_idx = 1;
+root = ngram.getRoot("dictionary.csv")
+errorLogFile = open("log.txt",'w',encoding='utf8')
 while 1:
-    r = random_list[i]
-    if i > end_idx:
-        break
-    r = 82746 
-    print(str(i)+"\t"+str(r))
-    try:
-            ck_link_list, e_link_list, percent = wiki.check_all_pair(dic, r)
-            a = wiki.make_file_for_LCS(ck_link_list, e_link_list, dic, r)
-            if a == -1 or percent==-1:
-                i = i + 1
-                print("makefileforLCS error")
-                continue
-            LCS.run_3LCS(r, percent)
-            i = i + 1
-    except:
-            errorlogfile.write(str(r)+"\n")
-            i = i + 1
+	idx = start_idx;
+	if idx > end_idx:
+		break
+	kLink, eLink, percent = wiki.check_all_pair(root,idx)
+	check = wiki.make_file_for_LCS(kLink,eLink,root,r)
+	if check == -1 or percent == -1:
+		i += 1
+		print("makefileforLCS error")
+		continue
+	
+	en_Num.en_Num(idx,idx)
+	ko_Num.ko_Num(idx,idx)
+	LCS.run(idx,idx,root,5,5,3,3)
+#LCS2.run(0,1831,dic,5,5,3,9)
+#LCS.run2(1,5,3,3)
