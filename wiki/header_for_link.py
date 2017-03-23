@@ -142,6 +142,102 @@ def check_table_index(sources):
         i=i+ct
     return table_set
 
+def WeakTranslation(sourcesKOR_tmp,sourcesENG_tmp):
+
+    start_k=str(sourcesKOR_tmp).find('<p>')
+    start_e=str(sourcesENG_tmp).find('<p>')
+    
+    #문단이 없으면 다음 문서로 넘어가기 
+    if start_k==-1 or start_e==-1:
+        return -1, -1
+
+    finish_k=str(sourcesKOR_tmp).find('<h2>')
+    finish_e=str(sourcesENG_tmp).find('<h2>')
+    if finish_k==-1 or finish_e==-1:
+        finish_k=0
+        finish_e=0
+
+    ########## KOREA ############  
+    tmp_k=str(sourcesKOR_tmp)[start_k:finish_k]
+    tt=0
+    while 1:
+
+        idx=tmp_k.find('</p>',tt+1)
+        if idx==-1:
+            break
+        else:
+            tt=idx
+            
+    tmp_k=tmp_k[:tt]
+    header_kor=remove_tags(tmp_k)
+    header_kor=remove_comma(header_kor)
+    header_kor=remove_bracket(header_kor)
+    header_kor=remove_semantic(header_kor)
+    header_kor = header_kor[:len(header_kor) - 4]
+    final_header_kor = kor_sentence.kor_sentence(header_kor)
+    
+
+    ########## ENGLISH ############
+    tmp_e=str(sourcesENG_tmp)[start_e:finish_e]
+    tt=0
+    while 1:
+
+        idx=tmp_e.find('</p>',tt+1) 
+        if idx==-1:
+            break
+        else:
+            tt=idx
+
+    tmp_e=tmp_e[:tt]
+    header_eng=remove_tags(tmp_e)
+    header_eng=remove_comma(header_eng)
+    header_eng=remove_bracket(header_eng)
+    header_eng=remove_semantic(header_eng)
+    final_header_eng = sent_tokenize(header_eng)
+    final_header_eng = eng_sentence(final_header_eng)
+   
+
+    return final_header_kor, final_header_eng
+
+    
+def StrongTranslation(sourcesKOR_tmp, sourcesENG_tmp):
+
+    #문단 부분만 추출
+    para_kor = sourcesKOR_tmp.findAll('p')
+    para_eng = sourcesENG_tmp.findAll('p')
+
+    #문단이 없으면 다음 문서로 넘어가기 
+    if len(para_kor)==0 or len(para_eng)==0:
+        return -1, -1 
+
+    ############# KOREA ############
+    non_bmp_map=dict.fromkeys(range(0x10000,sys.maxunicode+1),0xfffd)
+    header_kor=remove_comma(str(para_kor).translate(non_bmp_map))
+    header_kor=remove_bracket(header_kor)
+    header_kor=remove_semantic(header_kor)
+    header_kor=remove_tags(header_kor)
+    if header_kor[len(header_kor)-2]==',':
+        header_kor=header_kor[1:len(header_kor)-2]
+    else:
+        header_kor=header_kor[1:len(header_kor)-1]
+    #header_kor=remove_brachet(header_kor)
+    final_header_kor=kor_sentence.kor_sentence(header_kor)
+
+    ############# ENGLISH ############
+    non_bmp_map2=dict.fromkeys(range(0x10000,sys.maxunicode+1),0xfffd)
+    header_eng=remove_comma(str(para_eng).translate(non_bmp_map))
+    header_eng=remove_bracket(header_eng)
+    header_eng=remove_semantic(header_eng)
+    header_eng=remove_tags(header_eng)
+    if header_eng[len(header_eng)-2]==',':
+        header_eng=header_eng[1:len(header_eng)-2]
+    else:
+        header_eng=header_eng[1:len(header_eng)-1]
+    #header_eng=remove_brachet(header_eng)
+    final_header_eng=sent_tokenize(header_eng)
+    final_header_eng=eng_sentence(final_header_eng)
+
+    return final_header_kor, final_header_eng
 
 def header_for_link(sourcesKOR, sourcesENG, i, metric_result ):
     #print("[header_for_link] " + str(i))
@@ -178,32 +274,19 @@ def header_for_link(sourcesKOR, sourcesENG, i, metric_result ):
     para_kor = sourcesKOR_tmp.findAll('p')
     para_eng = sourcesENG_tmp.findAll('p')
 
-    # 문단이 없으면 다음 문서로 넘어가기
-    if len(para_kor) == 0 or len(para_eng) == 0:
-        i = i + 1
+    
+    #강한번역, 약한번역에 따른 처리 
+    if metric_result>=0.8:
+        final_header_kor, final_header_eng = StrongTranslation(sourcesKOR_tmp, sourcesENG_tmp)
+        
+    else:
+        final_header_kor, final_header_eng = WeakTranslation(sourcesKOR_tmp, sourcesENG_tmp)
+    
+
+    if final_header_kor==-1 or final_header_eng==-1:
         return -1, -1
 
     ###########  KOREA   ###########
-    non_bmp_map = dict.fromkeys(range(0x10000, sys.maxunicode + 1), 0xfffd)
-    #강한번역관계면 전체를, 아니면 헤더만 추출
-    if metric_result>=0.8:
-        header_kor=remove_comma(str(para_kor).translate(non_bmp_map))
-    else:
-        kor_content_list=str(para_kor).translate(non_bmp_map).split("<p></p>")
-        header_kor=remove_comma(str(kor_content_list[0]).translate(non_bmp_map))
-    header_kor=remove_bracket(header_kor)
-    header_kor=remove_semantic(header_kor)
-    #header_kor = remove_span(header_kor)
-    # header_kor=remove_tags(header_kor)
-
-    if header_kor[len(header_kor) - 2] == ',':
-        header_kor = header_kor[1:len(header_kor) - 2]
-    else:
-        header_kor = header_kor[1:len(header_kor) - 1]
-
-    # 문장을 나누고 link만 추출
-    header_kor = header_kor[:len(header_kor) - 4]
-    final_header_kor = kor_sentence.kor_sentence(header_kor)
     tmp_kor_link = [[] for j in range(len(final_header_kor))]
 
     # <a ~ </a>부분 잘라내기
@@ -251,28 +334,9 @@ def header_for_link(sourcesKOR, sourcesENG, i, metric_result ):
                 tt = tt[kk + 1:]
             k_link_list[k].append(str(tt))
 
+            
     ###########  ENGLISH  ###########
-    non_bmp_map2 = dict.fromkeys(range(0x10000, sys.maxunicode + 1), 0xfffd)
-    #강한번역관계면 전체를, 아니면 헤더만 추출
-    if metric_result>=0.8:
-        header_eng=remove_comma(str(para_eng).translate(non_bmp_map))
-    else:
-        eng_content_list=str(para_eng).translate(non_bmp_map).split("<p></p>")
-        header_eng=remove_comma(str(eng_content_list[0]).translate(non_bmp_map))
-    header_eng=remove_bracket(header_eng)
-    header_eng=remove_semantic(header_eng)
-    #header_eng = remove_span(header_eng)
-    # header_eng=remove_tags(header_eng)
-    if header_eng[len(header_eng) - 2] == ',':
-        header_eng = header_eng[1:len(header_eng) - 2]
-    else:
-        header_eng = header_eng[1:len(header_eng) - 1]
-
-    # 문장을 나누고 link만 추출
-    final_header_eng = sent_tokenize(header_eng)
-    final_header_eng = eng_sentence(final_header_eng)
     tmp_eng_link = [[] for j in range(len(final_header_eng))]
-
     # <a ~ </a>부분 잘라내기
     for m in range(len(final_header_eng)):
         start = 0
@@ -317,4 +381,8 @@ def header_for_link(sourcesKOR, sourcesENG, i, metric_result ):
             if kk >= 0:
                 tt = tt[kk + 1:]
             e_link_list[k].append(str(tt))
+            
     return (k_link_list, e_link_list)
+
+
+
