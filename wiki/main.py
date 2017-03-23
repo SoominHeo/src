@@ -15,7 +15,7 @@ import make_dictionary
 dic = make_dictionary.make_dictionary()
 start_idx = 0;
 end_idx = 400;
-root = ngram.getRoot("dictionary.csv")
+root = ngram.getRoot("../../dictionary.csv")
 errorLogFile = open("log.txt",'w',encoding='utf8')
 idx = start_idx;
 while 1:
