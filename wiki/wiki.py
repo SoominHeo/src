@@ -29,7 +29,7 @@ import extractNNP_ENG
 import ngram
 import lcslib
 csv_path = "../../data/wiki/{csv}.csv"
-html_path = "../../data/wiki/html/{lang}/{idx}.txt"
+html_path = "../../data/wiki/html/{lang}/{idx}.html"
 header_path = "../../data/header/{lang}/{idx}.txt"
 list_path = "../../data/wiki/{attr}/{lang}/{idx}.txt"
 
