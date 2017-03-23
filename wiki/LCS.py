@@ -2,9 +2,9 @@ import lcslib
 import special_feature
 
 original_url = "./../../data/wiki/header/{lang}/{idx}.txt"
-number_url = "./../../data/wiki/result/NUM/{lang}/{idx}.txt"
+number_url = "./../../data/wiki/NUM/{lang}/{idx}.txt"
 result_url = "./../../data/wiki/LCS/{subtype}/{lang}/{distance_value}/{jaccard_value}/{idx}.txt"
-test_url = "./../../data/wiki/feature/{idx}.txt"
+
 
 maintype = "word"
 subtype = "word_fill"
@@ -14,11 +14,11 @@ subtype = "word_fill"
 #dic = lcslib.make_dict()
 # total =1
 # get original_text
-def LCS(idx,root,maintype,subtype,distance_value,jaccard_value):
-	print(idx)
+def LCS(idx,root,maintype,subtype,distance_value,jaccard_value,kLink,eLink):
+	#print(idx)
 	jaccard_value = float(jaccard_value) / 10.0 # for control line_lcs jaccard value
-	print("distance value : ",distance_value)
-	print("jaccard value :",jaccard_value)
+	#print("distance value : ",distance_value)
+	#print("jaccard value :",jaccard_value)
 	lcslib.check_directory(subtype,distance_value,jaccard_value) # make directory
 	kor_file = open(original_url.format(lang ="kor",idx = idx),'r',encoding='utf8')
 	eng_file = open(original_url.format(lang ="eng",idx = idx),'r',encoding='utf8')
@@ -26,12 +26,12 @@ def LCS(idx,root,maintype,subtype,distance_value,jaccard_value):
 	eng_number = open(number_url.format(lang="eng",idx=idx),'r')
 	result_kor_file = open(result_url.format(subtype = subtype, lang = 'kor',distance_value = distance_value, jaccard_value = jaccard_value, idx=idx),'w',encoding='utf8')
 	result_eng_file = open(result_url.format(subtype = subtype, lang = 'eng',distance_value = distance_value, jaccard_value = jaccard_value, idx=idx),'w',encoding='utf8')
-	resultFile = open(test_url.format(idx=idx),'w',encoding='utf8')
+
 	result = []
 	kor_text = kor_file.readlines()
 	eng_text = eng_file.readlines()
 
-	print(kor_file)
+	#print(kor_file)
 	# total += len(kor_text)
 	# print("kor")
 	# for line in kor_text:
@@ -42,16 +42,18 @@ def LCS(idx,root,maintype,subtype,distance_value,jaccard_value):
 	# 	print(line)
 	if len(kor_text) == 0 or len(eng_text) == 0:
 		return -1,-1,-1,-1
-	special = special_feature.special_feature(kor_text, eng_text)	
+	special = special_feature.special_feature(kor_text, eng_text)
 	trans_set = lcslib.trans_list(kor_text,root)
 	# get noun and number feature list
 	kor_list = lcslib.add_list(lcslib.number_list(kor_number),trans_set)
+	kor_list = lcslib.add_list(kor_list,kLink)
 	eng_list = lcslib.add_list(lcslib.number_list(eng_number),lcslib.noun_list(eng_text,trans_set))
+	eng_list = lcslib.add_list(eng_list,eLink)
 	if maintype == 'word':
 		result = lcslib.word_lcs(kor_list,eng_list,special)
 	if maintype == 'line':
 		result = lcslib.line_lcs(kor_list,eng_list,jaccard_value)
-	
+
 
 	if distance_value > 1 :
 		result = lcslib.fill_line(result,distance_value) # for filling the line
@@ -59,7 +61,7 @@ def LCS(idx,root,maintype,subtype,distance_value,jaccard_value):
 		return len(kor_text),-1,-1,-1
 	# human,machine,answer = lcslib.check_answer(result,idx,subtype,distance_value,jaccard_value)
 	#write resu	print("kor : ",len(kor_text))
-        
+
 
 	# if len(kor_text) - len(eng_text) >= 0 :
 	# 	longer = len(kor_text)
@@ -67,39 +69,35 @@ def LCS(idx,root,maintype,subtype,distance_value,jaccard_value):
 	# else:
 	# 	longer = len(eng_text)
 	# 	shorter = len(kor_text)
-	
+
 	# for testIdx in range(shorter):
 	# 	text = kor_text[testIdx].replace('\n','')+ "\n" + eng_text[testIdx].replace('\n','') +"\n\n"
 	# 	feature = str(kor_list[testIdx]) + "\n" + str(eng_list[testIdx]) + "\n\n\n"
-	# 	resultFile.write(text)
-	# 	resultFile.write(feature)
-                
-	# resultFile.write("Special feature\n")
-	# resultFile.write(str(special))
+
 
 
 
 	for element in result:
 		result_kor_file.write(kor_text[element[0]-1]+'\n')
 		result_eng_file.write(eng_text[element[1]-1]+'\n')
-	print(result_url.format(subtype = subtype, lang = 'kor',distance_value = distance_value, jaccard_value = jaccard_value, idx=idx))
+	#print(result_url.format(subtype = subtype, lang = 'kor',distance_value = distance_value, jaccard_value = jaccard_value, idx=idx))
 	kor_file.close()
 	eng_file.close()
 	kor_number.close()
 	eng_number.close()
 	result_kor_file.close()
 	result_eng_file.close()
-	resultFile.close()
+
 	human,machine,answer = 0,0,0
 	return len(kor_text), human,machine,answer
 # print(total) # total articles size
-def run(start,end,root,distance_start,distance_end,jaccard_start,jaccard_end):
+def run(start,end,root,distance_start,distance_end,jaccard_start,jaccard_end,kLink,eLink):
     total_text = 0
     # total = open("./../../data/wiki/ANS/result/{subtype}/result.csv".format(subtype=subtype),'w',encoding='utf8')
     # score = open("./../../data/wiki/ANS/result/{subtype}/score.csv".format(subtype=subtype),'w',encoding='utf8')
     # total.write("\n")
     # score.write("\n")
-    
+
     count = end-start+1
     for distance_value in range(distance_start,distance_end+1):
             # total.write("{distance},".format(distance=distance_value))
@@ -114,9 +112,9 @@ def run(start,end,root,distance_start,distance_end,jaccard_start,jaccard_end):
                     total_answer =0
                     # total.write(",{jaccard},".format(jaccard=jaccard_value))
                     # score.write(",{jaccard},".format(jaccard=jaccard_value))
-                    #for idx in index_list:			
+                    #for idx in index_list:
                     for idx in range(start,end+1):
-                            text,human,machine,answer = LCS(idx,root,maintype,subtype,distance_value,jaccard_value)
+                            text,human,machine,answer = LCS(idx,root,maintype,subtype,distance_value,jaccard_value,kLink,eLink)
                             # if text == -1 or human == -1 or machine == -1 or answer == -1:
                             #     continue
                             # if machine ==0:

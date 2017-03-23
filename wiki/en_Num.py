@@ -44,7 +44,7 @@ Unit = {
 
 
 count = 40
-output_url = "../../data/wiki/result/NUM/eng/"
+output_url = "../../data/wiki/NUM/eng/"
 input_url = "../../data/wiki/header/eng/"
 def delete_symbol(line, symbol):
 
@@ -141,7 +141,7 @@ def getNumberList(element, number_list):
 def en_Num(start, end):
     for index in range(start, end+1):
         try:
-            print(index)
+
             write_en_File = open(output_url + str(index) + ".txt", 'w', encoding= 'utf-8')
             # file_name = "er\\" + str(index) + ".eng.txt"
             en = open(input_url + str(index) + ".txt", 'r',encoding='utf8')
@@ -159,7 +159,7 @@ def en_Num(start, end):
 
                 tokens = nltk.word_tokenize(line)
                 tagged = nltk.pos_tag(tokens)
-                
+
 
                 # write_en_File.write("[" + str(count_en_line) + "] ")
 

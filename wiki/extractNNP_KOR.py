@@ -12,7 +12,7 @@ def extractNNP_KOR(root,i):
 
     for line in read_page:
         tmp = []
-        print(line)
+
         line = line.replace("\n","")
         word = line.split(" ")
         flag = 0
@@ -49,7 +49,7 @@ def extractNNP_KOR(root,i):
                                 flag = 1
                                 break
                 word_length= word_length - 1
-        print(tmp)
+        
         trans_set.append(tmp)
     read_page.close()
     #print(trans_set)

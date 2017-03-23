@@ -1,3 +1,4 @@
+
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import re
@@ -44,20 +45,20 @@ def eng_sentence(final_header_eng):
     start=-1
     finish=-1
     cnt=0
-    
+
 
     # '('로 시작해서 ')'까지 찾아서 제거
-    
+
     x=0
     while 1:
         if x==len(final_header_eng):
             break
-            
+
         start=final_header_eng[x].find('(')
         if start==-1:
             x=x+1
             continue
-        
+
         finish=final_header_eng[x].find(')',start)
         if finish==-1:
             tmp=final_header_eng[x][start:len(final_header_eng[x])+1]
@@ -66,10 +67,10 @@ def eng_sentence(final_header_eng):
 
         final_header_eng[x]=final_header_eng[x].replace(tmp,'')
         start=final_header_eng[x].find('(')
-            
+
         if start==-1:
             x=x+1
-                
+
         finish=-1
 
     # ~~~')'까지 찾아서 제거
@@ -78,13 +79,13 @@ def eng_sentence(final_header_eng):
         finish=final_header_eng[x].find(')')
         if finish==-1:
             continue
-        
+
         tmp=final_header_eng[x][:finish+1]
         final_header_eng[x]=final_header_eng[x].replace(tmp,'')
         finish=-1
 
     # 공백이거나 '.'만 있는 라인제거
-    
+
     for x in range(len(final_header_eng)):
 
         if final_header_eng[cnt]=='' or final_header_eng[cnt]=='.':
@@ -94,13 +95,13 @@ def eng_sentence(final_header_eng):
 
         if len(final_header_eng)-1==cnt:
             break
-            
-    
+
+
 
     return final_header_eng
 
 def check_table_index(sources):
-    
+
     #쓸때 없는 table 위치 찾기(kor)
     table_st=[]
     table_fi=[]
@@ -120,16 +121,16 @@ def check_table_index(sources):
         else:
             break
 
-    #table 쌍 맞춰서 리스트에 집어넣음 
+    #table 쌍 맞춰서 리스트에 집어넣음
     table_set=[[] for i in range(len(table_fi))]
     i=0
     j=0
     while 1:
-        
+
         if i>=len(table_fi):
             break
         ct=0
-        while 1:  
+        while 1:
             if  j>=len(table_st) or table_fi[i]<table_st[j]:
                 table_set[i].append(table_st[i])
                 table_set[i].append(table_fi[j-1])
@@ -138,7 +139,7 @@ def check_table_index(sources):
             else:
                 j=j+1
                 ct=ct+1
-                
+
         i=i+ct
     return table_set
 
@@ -146,8 +147,8 @@ def WeakTranslation(sourcesKOR_tmp,sourcesENG_tmp):
 
     start_k=str(sourcesKOR_tmp).find('<p>')
     start_e=str(sourcesENG_tmp).find('<p>')
-    
-    #문단이 없으면 다음 문서로 넘어가기 
+
+    #문단이 없으면 다음 문서로 넘어가기
     if start_k==-1 or start_e==-1:
         return -1, -1
 
@@ -157,7 +158,7 @@ def WeakTranslation(sourcesKOR_tmp,sourcesENG_tmp):
         finish_k=0
         finish_e=0
 
-    ########## KOREA ############  
+    ########## KOREA ############
     tmp_k=str(sourcesKOR_tmp)[start_k:finish_k]
     tt=0
     while 1:
@@ -167,7 +168,7 @@ def WeakTranslation(sourcesKOR_tmp,sourcesENG_tmp):
             break
         else:
             tt=idx
-            
+
     tmp_k=tmp_k[:tt]
     header_kor=remove_tags(tmp_k)
     header_kor=remove_comma(header_kor)
@@ -175,14 +176,14 @@ def WeakTranslation(sourcesKOR_tmp,sourcesENG_tmp):
     header_kor=remove_semantic(header_kor)
     header_kor = header_kor[:len(header_kor) - 4]
     final_header_kor = kor_sentence.kor_sentence(header_kor)
-    
+
 
     ########## ENGLISH ############
     tmp_e=str(sourcesENG_tmp)[start_e:finish_e]
     tt=0
     while 1:
 
-        idx=tmp_e.find('</p>',tt+1) 
+        idx=tmp_e.find('</p>',tt+1)
         if idx==-1:
             break
         else:
@@ -195,20 +196,20 @@ def WeakTranslation(sourcesKOR_tmp,sourcesENG_tmp):
     header_eng=remove_semantic(header_eng)
     final_header_eng = sent_tokenize(header_eng)
     final_header_eng = eng_sentence(final_header_eng)
-   
+
 
     return final_header_kor, final_header_eng
 
-    
+
 def StrongTranslation(sourcesKOR_tmp, sourcesENG_tmp):
 
     #문단 부분만 추출
     para_kor = sourcesKOR_tmp.findAll('p')
     para_eng = sourcesENG_tmp.findAll('p')
 
-    #문단이 없으면 다음 문서로 넘어가기 
+    #문단이 없으면 다음 문서로 넘어가기
     if len(para_kor)==0 or len(para_eng)==0:
-        return -1, -1 
+        return -1, -1
 
     ############# KOREA ############
     non_bmp_map=dict.fromkeys(range(0x10000,sys.maxunicode+1),0xfffd)
@@ -274,15 +275,15 @@ def header_for_link(sourcesKOR, sourcesENG, i, metric_result ):
     para_kor = sourcesKOR_tmp.findAll('p')
     para_eng = sourcesENG_tmp.findAll('p')
 
-    
-    #강한번역, 약한번역에 따른 처리 
+    '''
+    #강한번역, 약한번역에 따른 처리
     if metric_result>=0.8:
         final_header_kor, final_header_eng = StrongTranslation(sourcesKOR_tmp, sourcesENG_tmp)
-        
+
     else:
         final_header_kor, final_header_eng = WeakTranslation(sourcesKOR_tmp, sourcesENG_tmp)
-    
-
+    '''
+    final_header_kor, final_header_eng = WeakTranslation(sourcesKOR_tmp, sourcesENG_tmp)
     if final_header_kor==-1 or final_header_eng==-1:
         return -1, -1
 
@@ -334,7 +335,7 @@ def header_for_link(sourcesKOR, sourcesENG, i, metric_result ):
                 tt = tt[kk + 1:]
             k_link_list[k].append(str(tt))
 
-            
+
     ###########  ENGLISH  ###########
     tmp_eng_link = [[] for j in range(len(final_header_eng))]
     # <a ~ </a>부분 잘라내기
@@ -357,7 +358,7 @@ def header_for_link(sourcesKOR, sourcesENG, i, metric_result ):
                 else:
                     break
             break
-        
+
     # <a ~ </a>부분에서 단어만 추출
     tmp = [[] for j in range(len(tmp_eng_link))]
     e_link_list = [[] for j in range(len(tmp_eng_link))]
@@ -381,8 +382,5 @@ def header_for_link(sourcesKOR, sourcesENG, i, metric_result ):
             if kk >= 0:
                 tt = tt[kk + 1:]
             e_link_list[k].append(str(tt))
-            
+
     return (k_link_list, e_link_list)
-
-
-

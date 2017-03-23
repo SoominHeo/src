@@ -8,7 +8,7 @@ from konlpy.utils import pprint
 
 
 header_path = "./../../data/wiki/header/{lang}/{idx}.txt"
-out_path = "./../../data/wiki/result/NUM/{lang}/{idx}.txt"
+out_path = "./../../data/wiki/NUM/{lang}/{idx}.txt"
 kkma = Kkma()
 POS = ["NR", "MDN"]
 #POS = ["NNP"]
@@ -86,7 +86,7 @@ def ko_Num(start, end):
     lines = 0
     for num in range(start,end+1):
         n = str(num)
-        print(n)
+
         try:
             file = open(header_path.format(lang='kor',idx=n), "rt", encoding='UTF8')
         except IOError as e:
@@ -143,4 +143,3 @@ def ko_Num(start, end):
                 if len(fin_list[i][j])>0 and fin_list[i][j][0].isdigit():
                     write_file.write(str(fin_list[i][j])+', ')
             write_file.write('\n')
-

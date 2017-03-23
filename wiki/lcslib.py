@@ -4,9 +4,14 @@ import copy
 import ngram
 import special_feature
 current_path = os.getcwd()
+data_path = "/../../data/"
+wiki_path = "/../../data/wiki/"
 ANS_path = "/../../data/wiki/ANS/result/{subtype}/{distance}/{value}/"
 LCS_path = "/../../data/wiki/LCS/{subtype}/{lang}/{distance}/{value}/"
-
+HTML_path = "/../../data/wiki/html/{lang}/"
+FEATURE_path = "/../../data/wiki/feature/"
+HEADER_path = "/../../data/wiki/header/{lang}/"
+NUM_path = "/../../data/wiki/NUM/{lang}/"
 def long(list1, list2):
 	return  list1 if len(list1) >= len(list2) else list2
 
@@ -15,7 +20,7 @@ def short(list1, list2):
 
 def make_dict():
 	dictionary = open("./../../data/Herald/dic_revised.csv",'r',encoding ='utf8')
-	#new_dictionary = open("./../../data/Herald/data2.csv",'w',encoding='utf8') 
+	#new_dictionary = open("./../../data/Herald/data2.csv",'w',encoding='utf8')
 	#special_character_list = ['.', '^', '$', '*', '+', '?', '{', '}', '[', ']', '\\', '|', '(', ')']
 	lines = dictionary.readlines()
 	#bracket = re.compile(r'\(.*?\)')
@@ -108,9 +113,10 @@ def number_list(file):
 			tmp.append(element)
 		tmp += tmp
 		number_list.append(tmp)
-	return number_list		
+	return number_list
 
 def noun_list(text,trans_set):
+	vowel=['a','e','o','i','u','y']
 	noun_list = []
 	count = 0
 	for line in text:
@@ -118,8 +124,26 @@ def noun_list(text,trans_set):
 		for value in trans_set:
 			for element in value:
 				element = " " + element
+				elements=copy.deepcopy(element)
+
+				## 복수형 처리 ##
+				# ch, sh, s, z, x로 단어가 끝나는 경우 -->'es'추가
+				if elements[len(elements)-2:]=='ch' or elements[len(elements)-2:]=='sh' or elements[len(elements)-1]=='s' or elements[len(elements)-1]=='x' or elements[len(elements)-1]=='z':
+					elements=elements+'es'
+                # y로 단어가 끝나고 y앞에 자음이 있는경우 y-->'ies'변환
+				elif (elements[len(elements)-2] not in vowel) and (elements[len(elements)-1]=='y'):
+					elements = elements[:-1]+"i"
+					elements=elements+'es'
+                # 그 이외
+				else:
+					elements=elements+'s'
+
 				line = " " + line
-				if line.lower().find(element.lower()) != -1:
+				if line.lower().find(elements.lower())!=-1:
+					if element[1:].lower() not in tmp:
+						tmp.append(element[1:].lower())
+
+				elif line.lower().find(element.lower()) != -1:
 					if element[1:].lower() not in tmp:
 						tmp.append(element[1:].lower())
 		noun_list.append(tmp)
@@ -130,7 +154,7 @@ def noun_list(text,trans_set):
 def add_list(list1, list2):
 	longer = long(list1,list2)
 	shorter = short(list1,list2)
-	
+
 	#append shorter on to longer one
 	for idx in range(len(shorter)):
 		longer[idx].extend(shorter[idx])
@@ -148,7 +172,7 @@ def common_set_table(list1,list2):
 	#print("\neng")
 	#for idx,element in enumerate(list2):
 	#	print(idx+1,element)
-	
+
 	for element_1 in range(len(list1)):
 		tmp = []
 		for element_2 in range(len(list2)):
@@ -160,7 +184,7 @@ def make_candidate(table,x,y):
 	candidate = []
 	for tmp_x in range(x):
 		candidate += table[tmp_x][:y]
-	
+
 	return candidate
 def get_max_pair(table,kor,eng,x,y):
 	candidate = make_candidate(table,x,y)
@@ -173,7 +197,7 @@ def get_max_pair(table,kor,eng,x,y):
 	#print("y ",y)
 	#print(new_x,new_y)
 
-	#have to limit 
+	#have to limit
 	#if new_x == x-2 and new_y==y-1:
 	#	if (set(kor[new_x]) & set(eng[new_y-1])) & (set(kor[new_x-1]) & set(eng[new_y-1])) == set():
 	#	    return new_x,new_y
@@ -189,10 +213,10 @@ def jaccard(kor, eng):
     deno=0
     numer=0
     aver=0
-    
+
     tmp_d=[]
     tmp_k=[]
-    
+
 
     if kor=='\n' or eng=='\n':
         return 0.0
@@ -203,8 +227,8 @@ def jaccard(kor, eng):
                 tmp_k.append(kor[kk])
         else:
             continue
-    
-    
+
+
     tmp_d=copy.deepcopy(tmp_k)
     for ee in range(len(eng)):
         if eng[ee]:
@@ -216,42 +240,42 @@ def jaccard(kor, eng):
 
     deno=len(tmp_d)
 
-    
+
     for x in tmp_k:
         if x=='':
             continue
-        
+
         for y in eng:
             if y=='':
                 continue
-            
+
             elif x==y:
                 numer=numer+1
                 break
-                
+
     if deno==0:
         return 0.0
     else:
-      
+
         aver=numer/deno
-        
+
         return aver
 
 def LCS_TraceBack(m, n, LCStable,lcs):
     new_list =[]
-    
+
     if m==0 or n==0:
         return lcs
-    
+
     if (LCStable[m][n] > LCStable[m][n-1]) and (LCStable[m][n] > LCStable[m-1][n]) and (LCStable[m][n] > LCStable[m-1][n-1]):
         new_list.append(m)
         new_list.append(n)
         lcs.append((m,n))
         result = LCS_TraceBack(m-1, n-1, LCStable, lcs)
-    
+
     elif (LCStable[m][n] > LCStable[m-1][n]) and (LCStable[m][n] == LCStable[m][n-1]):
         result = LCS_TraceBack(m, n-1, LCStable, lcs)
-    
+
     else:
         result = LCS_TraceBack(m-1, n, LCStable, lcs)
     result.sort()
@@ -307,7 +331,7 @@ def line_lcs(kor,eng,jaccard_value):
 				LCStable[kor_idx].append(0)
 			else:
 				LCStable[kor_idx].append(-1)
-                
+
 
 	for kor_idx in range(k_len):
 		for eng_idx in range(e_len):
@@ -322,7 +346,7 @@ def line_lcs(kor,eng,jaccard_value):
 				else:
 					LCStable[kor_idx+1][eng_idx+1]=LCStable[kor_idx][eng_idx+1]
 	length = LCStable[k_len][e_len]
-	result = []	
+	result = []
 	a = LCS_TraceBack(len(kor),len(eng),LCStable,result)
 	#result = LCSS_TraceBack(len(kor),len(eng),LCStable,5,0,0)
 	return result
@@ -334,14 +358,14 @@ def word_lcs(kor, eng,special):
 	longest = 0
 	if len(kor) == 0 or len(eng) == 0:
 		return None
-	lengths = [[0 for y in range(len(eng)+1)] for x in range(len(kor)+1)] 
+	lengths = [[0 for y in range(len(eng)+1)] for x in range(len(kor)+1)]
 
 	table = common_set_table(kor, eng)
-	longest = [] 
+	longest = []
 	for row in table:
 		longest += row
 	longest = max(longest)
-	
+
 	result = []
 	length_kor = len(table)
 	length_eng = len(table[0])
@@ -362,7 +386,7 @@ def word_lcs(kor, eng,special):
 		for y in range(length_eng):
 			if x == 0 or y == 0:
 				lengths[x+1][y+1] = table[x][y]
-			else:	
+			else:
 				candidate = []
 				for tmp_x in range(x):
 					candidate += lengths[tmp_x+1][:y+1]
@@ -375,7 +399,7 @@ def word_lcs(kor, eng,special):
 					#print(table[x][y])
 					#print(max(candidate))
 					#print(candidate)
-	
+
 	#print("lengths ")
 	#for idx,row in enumerate(lengths):
 	#	print(idx,row)
@@ -409,7 +433,7 @@ def check_answer(result,idx,subtype,distance_value,jaccard_value):
 	score = 0
 	#erase " symbol and , symbol
 	for line in answer:
- 		
+
 		# remove " ,' ', '\n' symbol
 		line = line.replace(",K","\t")
 		line = line.replace("E","")
@@ -418,11 +442,11 @@ def check_answer(result,idx,subtype,distance_value,jaccard_value):
 		line = line.replace('\n',"")
  		# split eng and kor
 		line = line.split('\t')
- 		
+
 		#if len(line[0]) != 0 and len(line[0].split(','))== 1 :
 		if(len(line[0]) != 0 and len(line)>= 2):
 			for eANS in line[0].split(','):
-				answer_list.append((int(line[1].split(',')[0]),int(eANS))) 
+				answer_list.append((int(line[1].split(',')[0]),int(eANS)))
 		#	answer_list.append((int(line[1].split(',')[0]),int(line[0])))
 			answer_number += 1
 	#print(result)
@@ -462,15 +486,28 @@ def check_answer(result,idx,subtype,distance_value,jaccard_value):
 	answer_file.close()
 	check_file.close()
 	return answer_number, machine_number,len(right)
-
 def make_directory(path):
 	if not os.path.exists(path):
 		os.makedirs(path)
 
 def check_directory(subtype, distance,value):
-	print("123123123")
+	#data_path
+	make_directory(current_path+data_path)
+	#wiki_path
+	make_directory(current_path+wiki_path)
 	#ANS/line/{value}/line_{}Fill/{lang}
 	make_directory(current_path+(ANS_path.format(value=value, distance = distance,subtype= subtype)))
 	#LCS/line/{value}{line_{}Fill/lang}
 	make_directory(current_path+(LCS_path.format(value=value, distance = distance,subtype=subtype,lang="eng")))
 	make_directory(current_path+(LCS_path.format(value=value, distance = distance,subtype=subtype,lang="kor")))
+	#HTML_path
+	make_directory(current_path+(HTML_path.format(lang="eng")))
+	make_directory(current_path+(HTML_path.format(lang="kor")))
+	#FEATURE_path
+	make_directory(current_path+FEATURE_path)
+	#HEADER_path
+	make_directory(current_path+HEADER_path.format(lang="eng"))
+	make_directory(current_path+HEADER_path.format(lang="kor"))
+	#NUM_path
+	make_directory(current_path+NUM_path.format(lang="eng"))
+	make_directory(current_path+NUM_path.format(lang="kor"))

@@ -13,13 +13,13 @@ def extractNNP_ENG(trans_set,i):
         line = f.readline()
         if not line:
             break;
-        print(line)
+
         tmp = []
-        for value in trans_set[count]:
+        for value in trans_set:
             if line.lower().find(value.lower()) != -1:
                 tmp.append(value)
         count = count+1
-        print(tmp)
+
         if count == len(trans_set):
             break
         noun_list.append(tmp)

@@ -26,10 +26,10 @@ import extract_num_KOR
 import extract_num_ENG
 import extractNNP_KOR
 import extractNNP_ENG
-
-
+import ngram
+import lcslib
 csv_path = "../../data/wiki/{csv}.csv"
-html_path = "../../data/wiki/{lang}_html/{idx}.html"
+html_path = "../../data/wiki/html/{lang}/{idx}.txt"
 header_path = "../../data/header/{lang}/{idx}.txt"
 list_path = "../../data/wiki/{attr}/{lang}/{idx}.txt"
 
@@ -46,7 +46,7 @@ def save_list(newlist,csv):
         for y in s:
             if(y[0:5]=="href="):
                 url = "https://ko.wikipedia.org"+y[6:len(y)-1]
-    
+
         s=x.split('"')
         nextistitle=0
         for y in s:
@@ -121,14 +121,14 @@ def make_list_csv():#680000개 전체 데이터 url
                         tmp=nexturl
                         nexturl = 'https://ko.wikipedia.org'+d
                         break;
-                            
+
         newlist = []
         for x in list_audio:
             if(str(x).find('pt-anonuserpage')<0):
                 newlist.append(str(x))
             else:
                 break;
-    
+
         if(save_list(newlist,csv)==-1):
             break;
     csv.close()
@@ -183,7 +183,7 @@ def pair_cro():#noredirect 부분만 저장
             log.write(line)
             continue
         sources_kor = BeautifulSoup(address_kor,"html.parser")
-        
+
         list = sources_kor.findAll('title')
         notag = remove_tags(str(list[0]))
         sp = notag.split(' - 위키백과')
@@ -214,7 +214,7 @@ def check_all_pair(dic, i):
     sources_k = BeautifulSoup(k,"html.parser")
     e = open(html_path.format(lang='eng',idx=i),"r",encoding='UTF8')
     sources_e = BeautifulSoup(e,"html.parser")
-    
+
     k.close()
     e.close()
     #Metric 평가요소
@@ -224,13 +224,13 @@ def check_all_pair(dic, i):
     t4=check_translate_pair.check_translate_pair(sources_k)
     t5=paragraph.paragraph(sources_k,sources_e)
     t6=reading.reading(sources_k,sources_e)
-    
+
     ck_link_list = [[]]
     e_link_list = [[]]
-    
+
     if(t5==-1):
         return -1,-1,-1
-    
+
     #Metric
     metric_result=metric.metric(t1,t2,t3,t4,t5,t6)
     #print (metric_result)
@@ -249,12 +249,16 @@ def check_all_pair(dic, i):
 def make_file_for_LCS(ck_link_list, e_link_list,dic ,i):
     if(ck_link_list==-1):
         return -1
+    '''
     k_num_list = extract_num_KOR.extract_num_KOR(i)
     e_num_list = extract_num_ENG.extract_num_ENG(i)
+    '''
 
     #k_NNP_list = []
+    '''
     k_NNP_list = extractNNP_KOR.extractNNP_KOR(dic,i)
-    e_NNP_list = extractNNP_ENG.extractNNP_ENG(i)
+    e_NNP_list = extractNNP_ENG.extractNNP_ENG(dic,i)
+    '''
     '''
     print("k_link: " + str(ck_link_list))
     print("k_num: " + str(k_num_list))
@@ -264,8 +268,8 @@ def make_file_for_LCS(ck_link_list, e_link_list,dic ,i):
     print("e_NNP: " + str(e_NNP_list) + "\n")
     '''
     write_file(ck_link_list, e_link_list, "result/link_list", i)
-    write_file(k_NNP_list, e_NNP_list, "result/NNP_list", i)
-    write_file(k_num_list, e_num_list, "result/num_list", i)
+    #write_file(k_NNP_list, e_NNP_list, "result/NNP_list", i)
+    #write_file(k_num_list, e_num_list, "result/num_list", i)
 
 def write_file(k_list, e_list, path, index):
     k_file = open(list_path.format(attr=path,lang='kor',idx=index), "w", encoding="UTF8")
