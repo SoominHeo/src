@@ -29,6 +29,6 @@ def check_directory(subtype, distance,value):
 	make_directory(current_path+NUM_path.format(lang="kor"))
 
 check_directory("word_fill","5","0.3")
-zip_ref = zipfile.ZipFile("./Herald.zip", 'r')
+zip_ref = zipfile.ZipFile("./sample.zip", 'r')
 zip_ref.extractall("../data/")
 zip_ref.close()
