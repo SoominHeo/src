@@ -38,5 +38,5 @@ def check_directory(subtype, distance,value):
 
 check_directory("word_fill","5","0.3")
 zip_ref = zipfile.ZipFile("./wiki.zip", 'r')
-zip_ref.extractall("./data/wiki")
+zip_ref.extractall("../data/wiki")
 zip_ref.close()
