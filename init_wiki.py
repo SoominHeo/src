@@ -2,14 +2,14 @@ import os
 import zipfile
 current_path = os.getcwd()
 
-data_path = "/data/"
-wiki_path = "/data/wiki/"
-ANS_path = "/data/wiki/ANS/result/{subtype}/{distance}/{value}/"
-LCS_path = "/data/wiki/LCS/{subtype}/{lang}/{distance}/{value}/"
-HTML_path = "/data/wiki/html/{lang}/"
-FEATURE_path = "/data/wiki/feature/"
-HEADER_path = "/data/wiki/header/{lang}/"
-NUM_path = "/data/wiki/NUM/{lang}/"
+data_path = "/../data/"
+wiki_path = "/../data/wiki/"
+ANS_path = "/../data/wiki/ANS/result/{subtype}/{distance}/{value}/"
+LCS_path = "/../data/wiki/LCS/{subtype}/{lang}/{distance}/{value}/"
+HTML_path = "/../data/wiki/html/{lang}/"
+FEATURE_path = "/../data/wiki/feature/"
+HEADER_path = "/../data/wiki/header/{lang}/"
+NUM_path = "/../data/wiki/NUM/{lang}/"
 def make_directory(path):
 	if not os.path.exists(path):
 		os.makedirs(path)
