@@ -14,7 +14,7 @@ def no_single_space(start, end):
             eng=f_eng.readlines()
             
             for k in range(len(kor)):
-                if kor[k]=="\n":
+                if kor[k]=="\n" or kor[k]==" \n" or kor[k]=="  \n":
                     continue
                 else:
                    f_no_kor.write(kor[k])
