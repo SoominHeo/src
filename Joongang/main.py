@@ -28,5 +28,5 @@ import lcslib
 #en_Num.en_Num(0,10)
 #print("LCS")
 #8217
-root = ngram.getRoot("dictionary.csv")
+root = ngram.getRoot("../dictionary.csv")
 LCS.run(1,1,root,5,5,3,3)
