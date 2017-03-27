@@ -91,7 +91,7 @@ def ko_Num(start, end):
             file = open(header_path.format(lang='kor',idx=n), "rt", encoding='UTF8')
         except IOError as e:
             print ("There is no" + n + ".txt")
-            return -1
+            #return -1
         write_file = open(out_path.format(lang='kor',idx=n),'w',encoding='utf8')
         first_list = []
         i = 0
