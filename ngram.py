@@ -96,7 +96,7 @@ def binarysearch(l,key, left, right):
         mid = int((left+right)/2)
         if(mid >= len(l)): return -1
         mid_value = bytes(l[mid].key,'utf-8').hex()
-        print(l[mid].key, mid_value, key, left, right)
+        
         if(mid_value == key): return mid
         elif(mid_value < key): return binarysearch(l,key,mid+1,right)
         elif(mid_value > key): return binarysearch(l,key,left,mid-1)
@@ -106,10 +106,10 @@ def search(parent, key):
     list = []
     # to do
     child_num = len(parent.children)
-    print("search key : ",key)
+    
     s = binarysearch(parent.children,bytes(key,'utf-8').hex(),0,child_num)
     if(s==-1): return "none"
-    else: print("search result : ",parent.children[s].key) 
+    
     list = getChildren(parent.children[s]) 
     '''
     for x in parent.children:
@@ -125,11 +125,11 @@ def findValue(parent, key):
     num=0
     sp = key.split(" ")
     child_num = len(parent.children)-1
-    print("key : ",key)
+    
     s = binarysearch(parent.children,bytes(sp[i],'utf-8').hex(),0,child_num)
     
     if(s==-1): return "none"
-    else: print("result : ",parent.children[s].key)
+    
     num = s
     # to do
     while 1:
