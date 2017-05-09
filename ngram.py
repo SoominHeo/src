@@ -94,17 +94,22 @@ def getChildren(parent):
 def binarysearch(l,key, left, right):
     if(left <= right):
         mid = int((left+right)/2)
+        if(mid >= len(l)): return -1
         mid_value = bytes(l[mid].key,'utf-8').hex()
+        print(l[mid].key, mid_value, key, left, right)
         if(mid_value == key): return mid
         elif(mid_value < key): return binarysearch(l,key,mid+1,right)
         elif(mid_value > key): return binarysearch(l,key,left,mid-1)
+
     return -1
 def search(parent, key):
     list = []
     # to do
-    child_num = len(parent.children)-1
+    child_num = len(parent.children)
+    print("search key : ",key)
     s = binarysearch(parent.children,bytes(key,'utf-8').hex(),0,child_num)
     if(s==-1): return "none"
+    else: print("search result : ",parent.children[s].key) 
     list = getChildren(parent.children[s]) 
     '''
     for x in parent.children:
@@ -120,12 +125,17 @@ def findValue(parent, key):
     num=0
     sp = key.split(" ")
     child_num = len(parent.children)-1
+    print("key : ",key)
     s = binarysearch(parent.children,bytes(sp[i],'utf-8').hex(),0,child_num)
+    
     if(s==-1): return "none"
+    else: print("result : ",parent.children[s].key)
     num = s
     # to do
     while 1:
         ch = parent.children[num]
+        #print(ch.key)
+        #print(sp[i])
         if(ch.key==sp[i]):
             if(i+1 >= len(sp)):
                 return ch.value.replace("\n","")
@@ -246,3 +256,26 @@ def getRoot(fromfile):
 #print(findValue(tmp_root,"닛산 GT-R"))
 #search(root, "FM")
 #search(root, "느무르")
+#r = getRoot("dictionary.csv")
+#print(search(r,"유인"))
+'''
+print(r.children[72181].key)
+print(r.children[72182].key)
+print(r.children[72183].key)
+print(r.children[72184].key)
+print(r.children[72185].key)
+print(r.children[72186].key)
+count = 0
+for x in r.children:
+    print(x.key)
+    if(x.key=="유인"):
+        print(x.key)
+        break
+    count+=1
+print(count)
+print(r.children[116801].key)
+print(r.children[116802].key)
+print(r.children[116803].key)
+print(r.children[116804].key)
+print(r.children[116805].key)
+'''
