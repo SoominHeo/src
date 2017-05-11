@@ -14,7 +14,7 @@ def div_english_sentence(content,filenumber):
     content=content.replace("＂\n","＂**next**")
     content=content.replace("＂\n","＂**next**")
     '''
-    f = open("../../data/Herald/sample/eng/"+str(filenumber)+".txt","w",encoding="UTF8")
+    f = open("./"+str(filenumber)+".txt","w",encoding="UTF8")
     #f = open("./result.txt","w",encoding="UTF8")
     for x in content:
         flag=0
@@ -40,6 +40,7 @@ def div_english_sentence(content,filenumber):
             if(ord(x[t+3])>=65 and ord(x[t+3])<=90):
                 x = x[:t+2]+"\n"+x[t+3:]
         for y in range(len(x)):
+            
             if(flag==1 and (x[y]=='.'or x[y]=='?' or x[y]=='!') and y+1<len(x)):
                 if(x[y+1]!='”' and x[y+1]!='＂' and x[y+1]!='"' and x[y+1]!=')'):
                     if(x[y]=='?'):
@@ -50,11 +51,16 @@ def div_english_sentence(content,filenumber):
                         #x=str(x).replace('.',"%^&*")
                     elif(x[y]=='!'):
                         x = x[:y]+"%&%&"+x[y+1:]
-            if(flag==1 and (x[y]=='”' or x[y]=='＂' or x[y]=='"' or x[y]==')')):
+            
+            if(flag==1 and x[y]=='('):
+                flag=2
+            elif(flag==2 and x[y]==')'):
+                flag=1
+            elif(flag==1 and (x[y]=='”' or x[y]=='＂' or x[y]=='"' or x[y]==')')):
                 flag=0
             elif(flag==0 and (x[y]=='“' or x[y]=='＂' or x[y]=='(' or x[y]=='"') ):
                 flag=1
-
+        
         tokens = sent_tokenize(x)
         for m in range(len(tokens)):
             s = 0
@@ -80,4 +86,7 @@ def div_eng(start, end):
         #f = open("./3.txt","rU",encoding="UTF8")
         content = f.readlines()
         div_english_sentence(content,i) 
-   
+
+f = open("8323.txt","r",encoding="UTF8")
+l = f.readlines()
+div_english_sentence(l,123123)
