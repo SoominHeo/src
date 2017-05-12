@@ -18,10 +18,26 @@ def div_english_sentence(content,filenumber):
     #f = open("./result.txt","w",encoding="UTF8")
     for x in content:
         flag=0
+        x = str(x).replace("\u3000\n","\n")
+        x = str(x).replace(" \n","\n")
         x = str(x).replace(".” ",".”\n")
         x = str(x).replace(".\" ",".\"\n")
         x = str(x).replace("No.","No")
         x = str(x).replace("a.k.a.","HHHH1")
+        x = str(x).replace("Jan.","Jan")
+        x = str(x).replace("Feb.","Feb")
+        x = str(x).replace("Mar.","Mar")
+        x = str(x).replace("April.","April")
+        x = str(x).replace("May.","May")
+        x = str(x).replace("Jun.","Jun")
+        x = str(x).replace("Jul.","Jul")
+        x = str(x).replace("July.","July")
+        x = str(x).replace("Aug.","Aug")
+        x = str(x).replace("Sep.","Sep")
+        x = str(x).replace("Oct.","Oct")
+        x = str(x).replace("Nov.","Nov")
+        x = str(x).replace("Dec.","Dec")
+        
         p = re.compile("[A-Z]\.[ ]?")
         findlist = p.findall(x)
         '''
@@ -76,6 +92,9 @@ def div_english_sentence(content,filenumber):
     buffer = buffer.replace("\n\n","\n")
     buffer = buffer.replace("\n\n","\n")
     buffer = buffer.replace("\n\n","\n")
+    buffer = buffer.replace("\n\n","\n")
+    buffer = buffer.replace("\n\n","\n")
+    
     f.write(buffer)
     f.close()
 

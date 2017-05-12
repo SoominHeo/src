@@ -25,6 +25,12 @@ def div_korean_sentence(bodies_split,filenumber):
         if j!=len(tokens)-1:
             buffer = buffer + "\n"
     buffer = buffer.replace("\n\n","\n")
+    buffer = buffer.replace("\n\n","\n")
+    buffer = buffer.replace("\n\n","\n")
+    buffer = buffer.replace("\n\n","\n")
+    buffer = buffer.replace("\n\n","\n")
+    buffer = buffer.replace("\n\n","\n")
+    buffer = buffer.replace("\n\n","\n")
     buffer = buffer.replace("　\n","")
     f.write(buffer)
     f.close()    
