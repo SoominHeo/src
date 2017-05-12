@@ -21,15 +21,17 @@ print("전체 한글 문장수 : ",count)
 
 
 #사람이 뽑은 전체 한글 문장 수
+
 count = 0
 for x in range(0,sheet_number):
-        
+	
 	try:
 		sheet_b = e.get_sheet_by_name(str(x))
 	except:
 		continue
 	for y in range(1,100):
 		if(sheet_b['B'+str(y)].value!=None):
+	
 			count+=1
 		
 print("사람이 뽑은 전체 한글 문장수 : ",count)
@@ -43,7 +45,7 @@ sum = 0
 count = 0
 
 for x in range(0,sheet_number):
-        
+
 	try:
 		sheet_b = e.get_sheet_by_name(str(x))
 	except:
@@ -53,16 +55,19 @@ for x in range(0,sheet_number):
 			if(len(sheet_b['B'+str(y)].value.split(","))==1):
 				if(y==1):
 					if(sheet_b['B'+str(y)].value != sheet_b['B'+str(y+1)].value):
+
 						count+=1
 				else:
 					if(sheet_b['B'+str(y)].value != sheet_b['B'+str(y+1)].value and sheet_b['B'+str(y)].value != sheet_b['B'+str(y-1)].value ):
+						
 						count+=1
 print("사람이 뽑은 1대1 한글 문장수 : ",count)
 sum += count
 #사람이 뽑은 1대N 한글 문장 수
+
 count = [0 for x in range(10)]
 for x in range(0,sheet_number):
-        
+	
 	try:
 		sheet_b = e.get_sheet_by_name(str(x))
 	except:
@@ -71,6 +76,7 @@ for x in range(0,sheet_number):
 		if(sheet_b['B'+str(y)].value!=None):
 			lenght_N = len(sheet_b['B'+str(y)].value.split(","))
 			if(lenght_N!=1):
+				
 				count[lenght_N] += 1
 for x in range(2,len(count)):
 	print("사람이 뽑은 1대"+str(x)+" 한글 문장수 : ",count[x])
@@ -78,8 +84,8 @@ for x in range(2,len(count)):
 #사람이 뽑은 N대1 한글 문장 수
 count = [0 for x in range(10)]
 tmp = 1
+
 for x in range(0,sheet_number):
-        
 	try:
 		sheet_b = e.get_sheet_by_name(str(x))
 	except:
@@ -96,6 +102,9 @@ for x in range(0,sheet_number):
 						count[tmp] += 1
 						tmp = 1
 					prev = sheet_b['B'+str(y)].value
+					if(sheet_b['C'+str(y+1)].value==None and tmp != 1):
+						count[tmp]+=1
+						break
 
 for x in range(2,len(count)):
 	print("사람이 뽑은 "+str(x)+"대1 한글 문장수 : ",count[x]*x)
@@ -110,7 +119,6 @@ print("사람이 뽑은 N대N 한글 문장수 : ",all_count-sum)
 #기계가 뽑은 전체 한글 문장 수
 count = 0
 for x in range(0,sheet_number):
-        
 	try:
 		sheet_b = e.get_sheet_by_name(str(x))
 	except:
