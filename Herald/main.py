@@ -16,7 +16,7 @@ import lcslib
 #lcslib.check_answer([],1,"word_fill",5,0.3)
 
 #ngram.storeDictionary("../../final_dic.csv","../../dictionary.csv",266081)
-root = ngram.getRoot("../../dictionary.csv")
+root = ngram.getRoot("../dictionary.csv")
 LCS.run(1,1798,root,5,5,3,3)
 #LCS2.run(0,1831,dic,5,5,3,9)
 #LCS.run2(1,5,3,3)
