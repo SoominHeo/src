@@ -16,7 +16,7 @@ def sub_kor_sentence(temp, word, st, start, finish):
 
     return temp, st, start, finish
 
-def kor_sentence(p):
+def kor_sentence(tmp):
     temp=""
     st=[]
     start = 0
@@ -27,6 +27,10 @@ def kor_sentence(p):
     
     endword=['가','나','다','라','까','지','자','요','죠','네','오','야','어','해','든','게','돼','아','봐','데','래','대','군','론','소','렴','걸','와','마','줘','고','\"','%']
     endsign=['.','!','?']
+    
+    p=""
+    for i in range(len(tmp[0])):
+        p=p+tmp[0][i]
 
 
     for z in range(len(p)):
